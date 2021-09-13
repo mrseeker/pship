@@ -49,6 +49,7 @@ CONSOLE_TACTICAL = 2084
 CONSOLE_TRANSPORTER = 2083
 CONSOLE_MONITOR = 19362
 CONSOLE_FIGHTER = 23308
+CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter"]
 
 NO_SDB_ATTR = 2000
 NO_LOCATION_ATTR = 2002

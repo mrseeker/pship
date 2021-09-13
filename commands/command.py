@@ -184,3 +184,5 @@ class Command(BaseCommand):
 #                 self.character = self.caller.get_puppet(self.session)
 #             else:
 #                 self.character = None
+
+
