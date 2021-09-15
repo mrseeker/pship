@@ -10,6 +10,7 @@ from evennia.utils.search import search_tag,search_object
 from evennia import gametime
 import math
 import random
+from evennia.scripts.tickerhandler import TICKER_HANDLER
 
 def up_alloc_balance(self):
     balance_eng_power(self)
@@ -245,7 +246,7 @@ def up_missile_io(self):
     if(self.db.missile["out"] < 0.0):
         self.db.missile["out"] = 0.0
     self.db.sensor["version"] = 1
-    
+        
 def up_autopilot(self):
     r = xyz2range(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"],self.db.coords["xd"],self.db.coords["yd"],self.db.coords["zd"])
     s = 99
@@ -727,9 +728,9 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
     for i in range(contacts):
         gain = 0
         for j in range(contacts):
-            if (temp_sdb[i] == self.ndb.slist[j]["key"]):
+            if (temp_sdb[i] == self.db.slist["key"][j]):
                 gain = 1
-                temp_num[i] = self.ndb.slist[j]["num"]
+                temp_num[i] = self.db.slist["num"][j]
                 break
         if (gain > 0):
             ++self.db.sensor["counter"]
@@ -741,19 +742,19 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
     for i in range(contacts):
         lose = 0
         for j in range(contacts):
-            if(temp_sdb[j] == self.ndb.slist[i]["key"]):
+            if(temp_sdb[j] == self.db.slist["key"][i]):
                 lose = 1
                 break
         if (lose > 0):
-            obj_x = search_object(self.ndb.slist[i]["key"])[0]
+            obj_x = search_object(self.db.slist["key"][i])[0]
             alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(obj_x.db.structure["type"]) + " contact lost: " + str(obj_x.db.name)))
-            if (self.db.trans["s_lock"] == self.ndb.slist[i]["key"]):
+            if (self.db.trans["s_lock"] == self.db.slist["key"][i]):
                 alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.db.name)))
                 self.db.trans.s_lock = 0
-            if (self.db.trans["d_lock"] == self.ndb.slist[i]["key"]):
+            if (self.db.trans["d_lock"] == self.db.slist["key"][i]):
                 alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.db.name)))
                 self.db.trans.d_lock = 0
-            if (self.db.tract["lock"] == self.ndb.slist[i]["key"]):
+            if (self.db.tract["lock"] == self.db.slist["key"][i]):
                 alerts.console_message(self,["helm","operation"],alerts.ansi_warn("Tractor beam lost lock on " + str(obj_x.db.name)))
                 self.db.tract["lock"] = 0
                 self.db.status["tractoring"] = 0
@@ -762,16 +763,16 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 obj_x.db.engine["version"] = 1
             flag = 0
             for j in range(self.db.beam["banks"]):
-                if (self.ndb.blist["lock"] == self.db.slist["key"]):
+                if (self.db.blist["lock"][j] == self.db.slist["key"][i]):
                     flag = 1
-                    self.ndb.blist[lock][j] = 0
+                    self.db.blist["lock"][j] = 0
             if (flag > 0):
                 alerts.console_message(self,["tactical"],alerts.ansi_warn("Phaser Array lock lost on " + str(obj_x.db.name)))
             flag = 0
             for j in range(self.db.missile["tubes"]):
-                if (self.ndb.mlist["lock"] == self.db.slist["key"]):
+                if (self.db.mlist["lock"][j] == self.db.slist["key"][i]):
                     flag = 1
-                    self.ndb.mlist[lock][j] = 0
+                    self.db.mlist["lock"][j] = 0
             if (flag > 0):
                 alerts.console_message(self,["tactical"],alerts.ansi_warn("Missile lock lost on " + str(obj_x.db.name)))
                 
@@ -780,9 +781,9 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
         self.db.sensor["counter"] = 0
     else:
         for i in range(contacts):
-            self.ndb.slist[i]["key"] = temp_sdb[i]
-            self.ndb.slist[i]["num"] = temp_num[i]
-            self.ndb.slist[i]["lev"] = temp_lev[i]
+            self.db.slist["key"][i] = temp_sdb[i]
+            self.db.slist["num"][i] = temp_num[i]
+            self.db.slist["lev"][i] = temp_lev[i]
 
 def up_sensor_list(self):
     contacts = 0
@@ -820,8 +821,8 @@ def up_sensor_list(self):
         up_sensor_message(self,contacts,temp_sdb,temp_lev)
     else:
         for i in range(self.db.sensor["contacts"]):
-            self.ndb.slist["key"][i] = temp_sdb[i]
-            self.ndb.slist["lev"][i] = temp_lev[i]
+            self.db.slist["key"][i] = temp_sdb[i]
+            self.db.slist["lev"][i] = temp_lev[i]
     
 def up_repair(self):
     self.db.structure["repair"] += self.db.move["dt"] * self.db.structure["max_repair"] / 1000.0 * (1.0 + math.sqrt(self.db.alloc["miscellaneous"] * self.db.power["total"]))
@@ -829,6 +830,7 @@ def up_repair(self):
         self.db.structure["repair"] = self.db.structure["max_repair"]
         alerts.max_repair(self)
 
+#TICKER_HANDLER.add(10, do_space_db_iterate)
 def do_space_db_iterate():
     objects = search_tag("space_object")
     count = 0

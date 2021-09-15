@@ -39,18 +39,17 @@ class CmdEngine(default_cmds.MuxCommand):
         caller = self.caller
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-            
         if not self.args:
             self.caller.msg("You did not enter any commands.")
         elif(self.args == "status"):
             if(errors.error_on_console(self.caller,obj)):
                 return 0
-            table = evtable.EvTable("Name","In","Out","Storage","Damage")
+            table = evtable.EvTable("Name","In","Out","Power","Condition")
             if (obj.db.main["exist"]):
-                table.add_row("Main",obj.db.main["in"],obj.db.main["out"],obj.db.main["gw"],str(obj.db.main["damage"]*100) + "%")
+                table.add_row("Main",obj.db.main["in"],obj.db.main["out"],str(obj.db.main["gw"]) + "GW",str(obj.db.main["damage"]) + "%")
             if (obj.db.aux["exist"]):
-                table.add_row("Aux",obj.db.aux["in"],obj.db.aux["out"],obj.db.aux["gw"],str(obj.db.aux["damage"]*100) + "%")
-            table.add_row("Battery",obj.db.batt["in"],obj.db.batt["out"],obj.db.batt["gw"])
+                table.add_row("Aux",obj.db.aux["in"],obj.db.aux["out"],str(obj.db.aux["gw"]) + "GW",str(obj.db.aux["damage"]) + "%")
+            table.add_row("Battery",obj.db.batt["in"],str(obj.db.batt["out"]) + "GW",obj.db.batt["gw"])
             self.caller.msg("Engine status:")
             self.caller.msg(table)
         elif(self.args == "start"):
@@ -90,11 +89,10 @@ class CmdEngine(default_cmds.MuxCommand):
             #Ejecting core stuff here...
                         
         elif(self.args == "abort" and obj.db.engineering["start_sequence"] != 0):
-            self.caller.msg("You are aborting the procedure for " + obj.name + ". Please do NOT leave the console.")
             alerts.console_message(self.caller,["engineering"],alerts.ansi_warn("Aborting... Please stand by..."))
             obj.db.engineering["start_sequence"]=-1
-            for i in range(1,10):
-                yield(i*5)
+            for i in range(1,11):
+                yield(5)
                 self.caller.msg("Aborting sequence "+ str(i*10) + "% complete...")
             alerts.console_message(self.caller,["engineering"],alerts.ansi_notify("Restart is now possible."))
             obj.db.engineering["start_sequence"]=0
@@ -103,14 +101,17 @@ class CmdEngine(default_cmds.MuxCommand):
             alerts.console_message(self.caller,["engineering"],alerts.ansi_warn("Shutting down engines... type 'engine abort' to stop the process."))
             obj.db.engineering["start_sequence"]=-1
             for i in range(1,10):
-                yield(i*30)
-                if(ship_obj.db.engineering["start_sequence"]==0):
+                yield(10)
+                if(obj.db.engineering["start_sequence"]==0):
                     return
-                self.caller.msg("Aborting sequence "+ str(i*10) + "% complete...")
+                self.caller.msg("Shutdown sequence "+ str(i*10) + "% complete...")
             setter.do_set_inactive(self.caller,obj)
             alerts.console_message(self.caller,["engineering"],alerts.ansi_notify("Engines have stopped. Restart is now possible."))
             obj.db.engineering["start_sequence"]=0
-        
+        elif((self.args == "shutdown" or self.args=="start") and obj.db.engineering["start_sequence"] < 0):
+            self.caller.msg(alerts.ansi_red("Shutdown sequence already in progress..."))
+        elif((self.args == "shutdown" or self.args=="start") and obj.db.engineering["start_sequence"] > 0):
+            self.caller.msg(alerts.ansi_red("Startup sequence already in progress..."))
         else:
             self.caller.msg("Command not found: " + self.args)
     def step1(self):
@@ -144,6 +145,5 @@ class CmdEngine(default_cmds.MuxCommand):
         ship_obj = search_object(obj_x.db.ship)[0]
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
-        
         ship_obj.db.engineering["start_sequence"]=0
         setter.do_set_active(self.caller,ship_obj)

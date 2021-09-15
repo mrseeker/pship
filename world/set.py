@@ -24,13 +24,13 @@ def do_set_inactive(self,obj):
         obj.db.beam["in"] = 0.0
         obj.db.beam["out"] = 0.0
         for i in range(obj.db.beam["banks"]):
-            obj.ndb.blist["lock"][i] = 0
-            obj.ndb.blist["active"][i] = 0
+            obj.db.blist["lock"][i] = 0
+            obj.db.blist["active"][i] = 0
         obj.db.missile["in"] = 0.0
         obj.db.missile["out"] = 0.0
         for i in range(obj.db.missile["tubes"]):
-            obj.ndb.mlist["lock"][i] = 0
-            obj.ndb.mlist["active"][i] = 0
+            obj.db.mlist["lock"][i] = 0
+            obj.db.mlist["active"][i] = 0
         obj.db.main["in"] = 0.0
         obj.db.main["out"] = 0.0
         obj.db.batt["in"] = 0.0
@@ -95,8 +95,8 @@ def do_set_active(self,obj):
         obj.db.missile["in"] = 0.0
         obj.db.missile["out"] = 0.0
         for i in range(obj.db.missile["tubes"]):
-            obj.ndb.mlist["lock"][i] = 0
-            obj.ndb.mlist["active"][i] = 0
+            obj.db.mlist["lock"][i] = 0
+            obj.db.mlist["active"][i] = 0
         obj.db.main["in"] = 0.0
         obj.db.main["out"] = 0.0
         obj.db.batt["in"] = 0.0
@@ -161,9 +161,9 @@ def do_set_main_reactor(self,level,obj):
         else:
             obj.db.main["in"] = level
         if (obj.db.main["in"] > obj.db.main["damage"]):
-            alerts.console_message(obj,["engineering"],ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|H")))
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|H")))
         else:
-            alerts.console_message(obj,["engineering"],ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0)))
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0)))
         return 1
     return 0
     
@@ -184,8 +184,191 @@ def do_set_aux_reactor(self,level,obj):
         else:
             obj.db.aux["in"] = level
         if (obj.db.aux["in"] > obj.db.aux["damage"]):
-            alerts.console_message(obj,["engineering"],ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|H")))
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|H")))
         else:
-            alerts.console_message(obj,["engineering"],ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0)))
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0)))
         return 1
     return 0
+    
+def do_set_battery(self,level,obj):
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(not obj.db.batt["exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " has no batteries."))
+    elif(obj.db.main["damage"] <= 0.0):
+        alerts.notify(self,alerts.ansi_red("Batteries are inoperative."))
+    elif(obj.db.fuel["reserves"] <= 0.0):
+        alerts.notify(self,alerts.ansi_red("There is no battery power."))
+    else:
+        if (level < 0.0):
+            obj.db.batt["in"] = 0.0
+        elif(level > 1.0):
+            obj.db.batt["in"] = 1.0
+        else:
+            obj.db.batt["in"] = level
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"Batteries set at " + "{:10.3f}".format(obj.db.batt["in"] * 100.0)))
+        return 1
+    return 0
+
+def do_set_lrs(self,active,obj):
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(not obj.db.sensor["lrs_exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " has no long-range sensors."))
+    elif(obj.db.sensor["lrs_damage"] <= 0.0):
+        alerts.notify(self,alerts.ansi_red("Long-range sensors are inoperative."))
+    else:
+        if (active):
+            if(obj.db.sensor.lrs_active):
+                alerts.notify(self,alerts.ansi_red("Long-range sensors are already online."))
+            else:
+                obj.db.sensor["lrs_active"] = 1
+                obj.db.sensor["version"] = 1
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Long-range sensors online"))
+                return 1
+        else:
+            if(not obj.db.sensor.lrs_active):
+                alerts.notify(self,alerts.ansi_red("Long-range sensors are already offline."))
+            else:
+                obj.db.sensor["lrs_active"] = 0
+                obj.db.sensor["version"] = 1
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Long-range sensors offline"))
+                return 1
+    return 0
+    
+def do_set_srs(self,active,obj):
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(not obj.db.sensor["srs_exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " has no short-range sensors."))
+    elif(obj.db.sensor["srs_damage"] <= 0.0):
+        alerts.notify(self,alerts.ansi_red("Short-range sensors are inoperative."))
+    elif(obj.db.cloak["active"] and obj.db.tech["cloak"] < 2.0):
+        alerts.notify(self,alerts.ansi_red(obj.name + " cannot use short-range sensors while cloaked."))
+    else:
+        if (active):
+            if(obj.db.sensor["srs_active"]):
+                alerts.notify(self,alerts.ansi_red("Short-range sensors are already online."))
+            else:
+                obj.db.sensor["srs_active"] = 1
+                obj.db.sensor["version"] = 1
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Short-range sensors online"))
+                return 1
+        else:
+            if(not obj.db.sensor["srs_active"]):
+                alerts.notify(self,alerts.ansi_red("Short-range sensors are already offline."))
+            else:
+                obj.db.sensor["srs_active"] = 0
+                obj.db.sensor["version"] = 1
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Short-range sensors offline"))
+                return 1
+    return 0
+    
+def do_set_ew(self,active,obj):
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(not obj.db.sensor["ew_exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " has no electronic warfare systems."))
+    elif(obj.db.sensor["ew_damage"] <= 0.0):
+        alerts.notify(self,alerts.ansi_red("Electronic warfare systems are inoperative."))
+    elif(obj.db.cloak["active"] and obj.db.tech["cloak"] < 2.0):
+        alerts.notify(self,alerts.ansi_red(obj.name + " cannot use electronic warfare systems while cloaked."))
+    else:
+        if (active):
+            if(obj.db.sensor["ew_active"]):
+                alerts.notify(self,alerts.ansi_red("Electronic warfare systems are already online."))
+            else:
+                obj.db.sensor["ew_active"] = 1
+                obj.db.sensor["version"] = 1
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Electronic warfare systems online"))
+                return 1
+        else:
+            if(not obj.db.sensor["ew_active"]):
+                alerts.notify(self,alerts.ansi_red("Electronic warfare systems are already offline."))
+            else:
+                obj.db.sensor["ew_active"] = 0
+                obj.db.sensor["version"] = 1
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Electronic warfare systems offline"))
+                return 1
+    return 0
+    
+
+def do_set_cloak(self,active,obj):
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(not obj.db.cloak["exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " has no cloaking device."))
+    elif(obj.db.cloak["damage"] <= 0.0):
+        alerts.notify(self,alerts.ansi_red("Cloaking device is inoperative."))
+    else:
+        if (active):
+            if(obj.db.cloak["active"]):
+                alerts.notify(self,alerts.ansi_red("Cloaking device is already online"))
+                return 0
+            elif(obj.db.alloc["cloak"] * obj.db.power["total"] < obj.db.cloak["cost"]):
+                alerts.notify(self,alerts.ansi_red("Insufficient power for cloaking device."))
+                return 0
+            elif(obj.db.tech["cloak"] < 2.0):
+                if(obj.db.sensor["srs_active"]):
+                    obj.db.sensor["srs_active"] = 0
+                    alerts.console_message(self,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Short-range sensors offline"))
+                if(obj.db.sensor["ew_active"]):
+                    obj.db.sensor["ew_active"] = 0
+                    alerts.console_message(self,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Electronic warfare systems offline"))
+                if(obj.db.trans["active"]):
+                    obj.db.trans["active"] = 0
+                    obj.db.trans["d_lock"] = 0
+                    obj.db.trans["s_lock"] = 0
+                    alerts.console_message(self,["helm","operation","transporter"],alerts.ansi_cmd(self.name,"Transporters offline"))
+                if(obj.db.tract["active"]):
+                    obj.db.tract["active"] = 0
+                    obj.db.tract["lock"] = 0
+                    if obj.db.status["tractoring"]:
+                        x = obj.db.status["tractoring"]
+                        obj_x = search_object(x)[0]
+                        alerts.tract_unlock(self,obj,obj_x)
+                        obj_x.db.status["tractored"] = 0
+                        obj.power["version"] = 1
+                        obj_x.power["version"] = 1
+                    alerts.console_message(self,["helm","operation"],alerts.ansi_cmd(self.name,"Tractor beams offline"))
+                if(obj.db.beam["exist"]):
+                    for i in range(obj.db.beam["banks"]):
+                        obj.db.blist["lock"][i] = 0
+                if(obj.db.missile["exist"]):
+                    for i in range(obj.db.missile["tubes"]):
+                        obj.db.mlist["lock"][i] = 0
+                if (obj.db.shield["exist"]):
+                    flag = 0
+                    buffer = ""
+                    for i in range(constants.MAX_SHIELD_NAME):
+                        if(obj.db.shield[i]["active"]):
+                            if (flag):
+                                buffer += "\n"
+                            obj.db.shield[i]["active"] = 0
+                            buffer += alerts.ansi_cmd(self.name,constants.SHIELD_NAME[i] + " offline")
+                            flag += 1
+                    if (flag):
+                        alerts.console_message(self,["helm"],buffer)
+                obj.db.cloak["active"] = 1
+                obj.db.sensor["version"] = 1
+                alerts.console_message(self,["helm","tactical"],alerts.ansi_cmd(self.name,"Cloaking device online"))
+                alerts.ship_cloak_online(obj)
+                return 1
+        else:
+            if (not obj.db.cloak["active"]):
+                alerts.notify(self,alerts.ansi_red("Cloaking device is already offline"))
+                return 0
+            else:
+                if(obj.db.tech["cloak"] < 2.0):
+                    if(not obj.db.sensor["srs_active"]):
+                        obj.db.sensor["srs_active"] = 1
+                        alerts.console_message(self,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Short-range sensors online"))
+                    if(not obj.db.sensor["ew_active"]):
+                        obj.db.sensor["ew_active"] = 1
+                        alerts.console_message(self,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Electronic warfare systems online"))
+                obj.db.cloak["active"] = 0
+                obj.db.sensor["version"] = 1
+                obj.db.engine["version"] = 1
+                alerts.console_message(self,["helm","tactical"],alerts.ansi_cmd(self.name,"Cloaking device offline"))
+                alerts.ship_cloak_offline(obj)
+                return 1

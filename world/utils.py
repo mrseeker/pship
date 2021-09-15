@@ -181,6 +181,35 @@ def sdb2arc(n1,n2):
             firing_arc += 48
     return firing_arc
 
+def contact2sdb(obj,c):
+    for i in range(int(obj.db.sensor["contacts"])):
+        if (c == obj.db.slist["num"][i]):
+            return (obj.db.slist["key"][i])
+            break
+    return constants.SENSOR_FAIL
+
+
+def sdb2contact(obj,s):
+    for i in range(int(obj.db.sensor["contacts"])):
+        if (s.name == obj.db.slist["key"][i]):
+            return (obj.db.slist["num"][i])
+            break
+    return constants.SENSOR_FAIL
+
+def contact2slist(obj,c):
+    for i in range(int(obj.db.sensor["contacts"])):
+        if (c == obj.db.slist["num"][i]):
+            return i
+            break
+    return constants.SENSOR_FAIL
+
+def sdb2slist(obj,s):
+    for i in range(int(obj.db.sensor["contacts"])):
+        if (s == obj.db.slist["key"][i]):
+            return i
+            break
+    return constants.SENSOR_FAIL
+
 def sdb2shield(n1,n2):
     obj1 = search_object(n1)[0]
     obj2 = search_object(n2)[0]
@@ -235,12 +264,7 @@ def arc_check(contact, weapon):
 
 def get_empty_sdb():
 #NOT IMPLEMENTED!
-    return VACANCY_FAIL
-
-def contact2sdb(x, c):
-#NOT IMPLEMENTED
-    return SENSOR_FAIL
-    
+    return VACANCY_FAIL    
 
 def sdb2max_antimatter(x):
     obj = search_object(x)[0]

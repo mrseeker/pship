@@ -50,6 +50,7 @@ CONSOLE_TRANSPORTER = 2083
 CONSOLE_MONITOR = 19362
 CONSOLE_FIGHTER = 23308
 CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter"]
+SHIELD_NAME = ["Forward shield","Starboard shield","Aft shield","Port shield","Dorsal shield","Ventral shield"]
 
 NO_SDB_ATTR = 2000
 NO_LOCATION_ATTR = 2002
