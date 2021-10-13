@@ -325,8 +325,12 @@ def yaw(self):
     console_message(self,["helm"],"New yaw set")
     return 1
 
-
 def main_balance(self):
     #TODO
     console_message(self,["engineering"],"New main_balance set")
+    return 1
+
+def batt_runout(self):
+    #TODO
+    console_message(self,["engineering"],"Battery runout!")
     return 1
