@@ -295,10 +295,10 @@ def sdb2max_warp(obj):
         return 0.0
     if (p <= 0.0):
         return 0.0
-    if (obj.db.status["tractoring"] is not None):
+    if (obj.db.status["tractoring"]):
         obj_tractoring = search_object(obj.db.status["tractoring"])[0]
         a *= (obj.db.structure["displacement"] + obj_tractoring.db.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
-    elif(obj.db.status["tractored"] is not None):
+    elif(obj.db.status["tractored"]):
         obj_tractored = search_object(obj.db.status["tractored"])[0]
         a *= (obj.db.structure.displacement + obj_tractored.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
     
@@ -318,10 +318,10 @@ def sdb2max_impulse(x):
         return 0.0
     if (p <= 0.0):
         return 0.0
-    if (obj.db.status["tractoring"] is not None):
+    if (obj.db.status["tractoring"]):
         obj_tractoring = search_object(obj.db.status["tractoring"])[0]
         a *= (obj.db.structure["displacement"] + obj_tractoring.structure.displacement + 0.1) / (ob.dbj.structure["displacement"] + 0.1)
-    elif(obj.db.status["tractored"] is not None):
+    elif(obj.db.status["tractored"]):
         obj_tractored = search_object(obj.db.status["tractored"])[0]
         a *= (obj.db.structure.displacement + obj_tractored.db.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
     
