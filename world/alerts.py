@@ -325,6 +325,17 @@ def speed_warp(self):
     console_message(self,["helm"],"Speed enters warp")
     return 1
 
+def ship_enter_warp(self):
+    #TODO
+    console_message(self,["helm"],"Ship enters warp")
+    return 1
+
+def ship_exit_warp(self):
+    #TODO
+    console_message(self,["helm"],"Ship exits warp")
+    return 1
+
+
 def speed_exit_warp(self):
     #TODO
     console_message(self,["helm"],"Speed exits warp")
