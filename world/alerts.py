@@ -226,17 +226,17 @@ def ship_cloak_offline(self):
     do_space_notify_one(self, ["helm","tactical","science"], "disengages its cloaking device")
 
 def exit_empire(self):
-    console_message(self,["helm"],ansi_alert("Exiting " + self.db.move["empire"] + " space"))
+    console_message(self,["helm"],ansi_alert("Exiting " + unparse_empire(self.db.move["empire"]) + " space"))
 
 def enter_empire(self):
-    console_message(self,["helm"],ansi_warn("Entering " + self.db.move["empire"] + " space"))
+    console_message(self,["helm"],ansi_warn("Entering " + unparse_empire(self.db.move["empire"]) + " space"))
     
 def border_cross(self, type):
     #Check if we are actually moving, and not creating ships
     if (utils.sdb2true_speed(self) == 0.0):
         return
     if (self.move["out"] != 0.0):
-        space_obj = search_tag(category="space_object",tag=constants.SHIP_ATTR_NAME)
+        space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
         for obj in space_obj:
             if(obj.db.status["active"]):
                 if(obj.db.structure["type"] is not None):
