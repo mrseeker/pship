@@ -1,9 +1,69 @@
 """
 Sets the variables
 """
-from world import alerts,constants,iterate, errors
+from world import alerts,constants,iterate, errors,utils,balance
 from evennia.utils.search import search_object
 from evennia import gametime
+import math
+
+def do_set_coords_manual(self,obj,x,y,z):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.coords["xo"] = obj.db.coords["x"] - utils.pc2su(x)
+        obj.db.coords["yo"] = obj.db.coords["y"] - utils.pc2su(y)
+        obj.db.coords["zo"] = obj.db.coords["z"] - utils.pc2su(z)
+        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Relative coordinates set to " + str("{:10.3f}".format(x)) + " " +  str("{:10.3f}".format(y)) + " " + str("{:10.3f}".format(z))))
+        return 1
+    return 0
+
+def do_set_coords_reset(self,obj):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.coords["xo"] = 0
+        obj.db.coords["yo"] = 0
+        obj.db.coords["zo"] = 0
+        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Relative coordinates reset to " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"]))) + " " +  str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"]))) + " " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"])))))
+        return 1
+    return 0
+
+def do_set_coords_layin(self,obj,x,y,z):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif (obj.db.status["connected"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is still connected."))
+    elif (not obj.db.engine["warp_exist"] and not obj.db.engine["impulse_exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " cannot be maneuvered."))
+    else:
+        obj.db.coords["xd"] = utils.pc2su(x) + obj.db.coords["xo"];
+        obj.db.coords["yd"] = utils.pc2su(y) + obj.db.coords["yo"];
+        obj.db.coords["zd"] = utils.pc2su(z) + obj.db.coords["zo"];
+        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Coordinates " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["xd"]))) + " " +  str("{:10.3f}".format(utils.su2pc(obj.db.coords["yd"]))) + " " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["zd"]))) + " laid in"))
+        return 1
+    return 0
+
+def do_set_coords_engage(self,obj):
+
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red(obj.name + " is in dock."))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red(obj.name + " is on a landing pad."))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red(obj.name + " is still connected."))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red(obj.name + " cannot be maneuvered."))
+    else:
+        delta_x = obj.db.coords["xd"] - obj.db.coords["x"]
+        delta_y = obj.db.coords["yd"] - obj.db.coords["y"]
+        yaw_in = utils.xy2bearing(delta_x,delta_y)
+        obj.db.course["yaw_in"] = yaw_in
+        obj.db.course["pitch_in"] = float(utils.xyz2elevation(obj.db.coords["xd"] - obj.db.coords["x"],obj.db.coords["yd"] - obj.db.coords["y"],obj.db.coords["zd"] - obj.db.coords["z"]))
+        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Course " + str("{:3.3f}".format(obj.db.course["yaw_in"])) + " " +  str("{:3.3f}".format(obj.db.course["pitch_in"])) + " engaged"))
+        return 1
+    return 0
 
 
 def do_set_inactive(self,obj):
@@ -372,3 +432,27 @@ def do_set_cloak(self,active,obj):
                 alerts.console_message(self,["helm","tactical"],alerts.ansi_cmd(self.name,"Cloaking device offline"))
                 alerts.ship_cloak_offline(obj)
                 return 1
+                
+
+def do_set_eng_alloc(self, helm, tactical, operations, obj):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.alloc["helm"] = math.fabs(helm)
+        obj.db.alloc["tactical"] = math.fabs(tactical)
+        obj.db.alloc["operations"] = math.fabs(operations)
+        balance.balance_eng_power(obj)
+        balance.balance_helm_power(obj);
+        balance.balance_shield_power(obj)
+        balance.balance_tact_power(obj)
+        balance.balance_sensor_power(obj)
+        balance.balance_ops_power(obj)
+        alerts.report_eng_power(self,obj)
+        alerts.report_helm_power(self,obj)
+        alerts.report_tact_power(self,obj)
+        alerts.report_ops_power(self,obj)
+        obj.db.engine["version"] = 1
+        obj.db.sensor["version"] = 1
+        obj.db.cloak["version"] = 1
+        return 1
+    return 0

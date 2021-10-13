@@ -11,10 +11,8 @@ VACANCY_FAIL = -101
 BAD_SDB_FAIL = -102
 ARC_FAIL = -103
 
-MAX_SHIELD_NAME = 6
 MAX_EMPIRE_NAME = 12
 MAX_SYSTEM_NAME = 19
-MAX_QUADRANT_NAME = 4
 MAX_TYPE_NAME = 12
 MAX_BEAM_NAME = 22
 MAX_MISSILE_NAME = 18
@@ -49,8 +47,6 @@ CONSOLE_TACTICAL = 2084
 CONSOLE_TRANSPORTER = 2083
 CONSOLE_MONITOR = 19362
 CONSOLE_FIGHTER = 23308
-CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter"]
-SHIELD_NAME = ["Forward shield","Starboard shield","Aft shield","Port shield","Dorsal shield","Ventral shield"]
 
 NO_SDB_ATTR = 2000
 NO_LOCATION_ATTR = 2002
@@ -106,6 +102,7 @@ SPACE_ATTR_NAME = "SPACE"
 CLASS_ATTR_NAME = "CLASS"
 CONSOLE_ATTR_NAME = "CONSOLES"
 CONSOLE_USER_ATTR_NAME = "USER"
+EMPIRE_ATTR_NAME = "BEACON"
 SHIP_ATTR_NAME = "SHIP"
 
 ALLOCATE_ATTR_NAME = "ALLOCATE"
@@ -196,3 +193,12 @@ STATUS_DATA_NUMBER = 10
 
 IFF_ATTR_NAME = "IFF"
 IFF_DATA_NUMBER = 1
+
+CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter"]
+damage_name = ["No Damage","Patched Damage","Minor Damage","Light Damage","Moderate Damage","Heavy Damage","Severe Damage","Inoperative","Destroyed"]
+shield_name = ["Forward shield","Starboard shield","Aft shield","Port shield","Dorsal shield","Ventral shield"]
+cloak_name = ["Other","Cloak"]
+quadrant_name = ["Alpha","Beta","Delta","Gamma"]
+system_name = ["Superstructure","Fusion Reactor","Batteries","Beam Weapon","Cloaking Device","EW Systems","Impulse Drive","LR Sensors","M/A Reactor","Missile Weapon","Shield","SR Sensors","Tractor Beams","Transporters","Warp Drive"]
+MAX_SHIELD_NAME = len(shield_name)
+MAX_QUADRANT_NAME = len(quadrant_name)

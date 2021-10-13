@@ -2,9 +2,7 @@
 Iterates the world and it's settings
 """
 
-from world import constants
-from world import alerts
-from world import utils
+from world import constants, alerts, utils, balance
 from world import set as setter
 from evennia.utils.search import search_tag,search_object
 from evennia import gametime
@@ -13,20 +11,20 @@ import random
 from evennia.scripts.tickerhandler import TICKER_HANDLER
 
 def up_alloc_balance(self):
-    balance_eng_power(self)
-    balance_helm_power(self)
-    balance_shield_power(self)
-    balance_tact_power(self)
-    balance_sensor_power(self)
-    balance_ops_power(self)
-    report_eng_power(self)
-    report_helm_power(self)
-    report_tact_power(self)
-    report_ops_power(self)
-    self.alloc["version"] = 0
-    self.engine["version"] = 1
-    self.sensor["version"] = 1
-    self.cloak["version"] = 1
+    balance.balance_eng_power(self)
+    balance.balance_helm_power(self)
+    balance.balance_shield_power(self)
+    balance.balance_tact_power(self)
+    balance.balance_sensor_power(self)
+    balance.balance_ops_power(self)
+    alerts.report_eng_power(self)
+    alerts.report_helm_power(self)
+    alerts.report_tact_power(self)
+    alerts.report_ops_power(self)
+    self.db.alloc["version"] = 0
+    self.db.engine["version"] = 1
+    self.db.sensor["version"] = 1
+    self.db.cloak["version"] = 1
     
 def up_main_io(self):
     if self.db.main["gw"]:
@@ -233,6 +231,39 @@ def up_beam_io(self):
     if(self.db.beam["out"] < 0.0):
         self.db.beam["out"] = 0.0
     self.db.sensor["version"] = 1
+    
+def up_empire(self):
+    space_obj = search_tag(category="space_object",tag=constants.EMPIRE_ATTR_NAME)
+    best_range = Integer.MAX_VALUE
+    best_empire = ""
+    for obj in space_obj:
+        if(obj.db.status["active"]):
+            if (obj.db.space != 0 and self.db.space != obj.db.space):
+                continue
+            dx = (obj.db.coords["x"] - self.db.coord["x"]) / constants.PARSEC
+            dy = (obj.db.coords["y"] - self.db.coord["y"]) / constants.PARSEC
+            dz = (obj.db.coords["z"] - self.db.coord["z"]) / constants.PARSEC
+            range = (dx * dx + dy * dy + dz * dz)
+            inside_range = math.fabs(range - (obj.db.radius * obj.db.radius))
+            
+            if (range <= (obj.db.radius * obj.db.radius)): #object in radius
+                if (best_empire <= 0 or inside_range < best_range): #closer to center than previous best
+                    best_range = range
+                    best_empire = obj.name
+    if (self.db.move["empire"] != best_empire):
+        if (self.db.move["empire"] != ""):
+            same = 0
+            if (self.db.move["empire"] == best_empire):
+                same = 1
+            if (not same):
+                alerts.exit_empire(self)
+                if(random.random(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
+                    alerts.border_cross(self,0)
+        self.db.move["empire"] = best_empire
+        if (self.db.move["empire"] == ""):
+            alerts.enter_empire(self)
+            if(random.random(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
+                alerts.border_cross(self,1)
     
 def up_missile_io(self):
     if (self.db.missile["out"] > self.db.missile["in"]):

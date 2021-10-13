@@ -104,33 +104,21 @@ def xyz2vis(x,y,z):
     else:
         return vis
         
-def sdb2bearing(n1,n2):
-   obj1 = search_object(n1)[0]
-   obj2 = search_object(n2)[0]
-   
+def sdb2bearing(obj1,obj2):
    x = obj2.db.coords["x"] - obj1.db.coords["x"]
    y = obj2.db.coords["x"] - obj1.db.coords["y"]
    return xy2bearing(x,y)
    
-def sdb2elevation(n1,n2):
-    obj1 = search_object(n1)[0]
-    obj2 = search_object(n2)[0]
-   
+def sdb2elevation(obj1,obj2):
     x = obj2.db.coords["x"] - obj1.db.coords["x"]
     y = obj2.db.coords["y"] - obj1.db.coords["y"]
     z = obj2.db.coords["z"] - obj1.db.coords["z"]
     return xyz2elevation(x,y,z)
 
-def sdb2range(n1,n2):
-    obj1 = search_object(n1)[0]
-    obj2 = search_object(n2)[0]
-    
+def sdb2range(obj1,obj2):
     return xyz2range(obj1.db.coords["x"],obj1.db.coords["y"],obj1.db.coords["z"],obj2.db.coords["x"],obj2.db.coords["y"],obj2.db.coords["z"])
     
-def sdb2arc(n1,n2):
-    obj1 = search_object(n1)[0]
-    obj2 = search_object(n2)[0]
-    
+def sdb2arc(obj1,obj2):
     firing_arc = 0
     x = obj2.db.coords["x"] - obj1.db.coords["x"]
     y = obj2.db.coords["y"] - obj1.db.coords["y"]
@@ -180,6 +168,27 @@ def sdb2arc(n1,n2):
         else:
             firing_arc += 48
     return firing_arc
+
+def sdb2true_speed(obj):
+
+    v1 = math.fabs(obj.db.move["out"])
+
+    if (obj.db.status["tractored"]):
+        obj_tract = search_object(obj.db.status["tractored"])[0]
+        v2 = math.fabs(obj_tract.db.move["out"]);
+        if (v1 > v2):
+            v1 = v1 
+        else:
+            v1 = v2
+    elif(obj.db.status["tractoring"]):      
+        obj_tract = search_object(obj.db.status["tractoring"])[0]
+        v2 = math.fabs(obj_tract.db.move["out"]);
+        if (v1 > v2):
+            v1 = v1
+        else: 
+            v1 = v2
+        
+    return v1
 
 def contact2sdb(obj,c):
     for i in range(int(obj.db.sensor["contacts"])):
@@ -266,21 +275,19 @@ def get_empty_sdb():
 #NOT IMPLEMENTED!
     return VACANCY_FAIL    
 
-def sdb2max_antimatter(x):
-    obj = search_object(x)[0]
+def sdb2max_antimatter(obj):
     return obj.db.move["ratio"] * obj.db.tech["ly_range"] * 320000000.0
     
-def sdb2max_deuterium(x):
-    obj = search_object(x)[0]
+def sdb2max_deuterium(obj):
     return obj.db.move["ratio"] * obj.db.tech["ly_range"] * 640000000.0
     
-def sdb2max_reserve(x):
-    obj = search_object(x)[0]
+def sdb2max_reserves(obj):
     return obj.db.batt["gw"] * 3600.0
+
+def sdb2language(obj):
+    return obj.db.language
     
-def sdb2max_warp(x):
-    obj = search_object(x)[0]
-    
+def sdb2max_warp(obj):
     a = obj.db.move["ratio"]
     p = (0.99 * obj.db.power["main"]) + (0.01 * obj.db.power["total"] * obj.db.alloc["movement"])
     
@@ -395,8 +402,7 @@ def sdb2ecm_srs(x):
     else:
         return 1.0
         
-def sdb2dissipation(x, shield):
-    obj = search_object(x)[0]
+def sdb2dissipation(obj, shield):
     d = 0.0
     
     if (obj.db.shield[shield]["active"] and obj.db.shield[shield]["damage"] > 0.0):

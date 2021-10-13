@@ -4,8 +4,8 @@ Handles all engine-related commands
 
 from evennia import default_cmds
 from world import set as setter
-from world import alerts, errors
-from evennia import CmdSet, utils
+from world import alerts, errors,unparse,constants, utils
+from evennia import CmdSet
 from evennia.utils.search import search_object
 from evennia.utils import evtable
 
@@ -15,6 +15,66 @@ class EngineeringCmdSet(CmdSet):
     
         def at_cmdset_creation(self):
             self.add(CmdEngine())
+            self.add(CmdAlloc())
+    
+
+class CmdAlloc(default_cmds.MuxCommand):
+    """
+    Commands related to the allocation of the engine.
+
+    Usage: alloc <command> <value>
+    
+    Command list:
+    status - Gives a full status of the allocations
+    HTO - Sets the allocation of the Helm, Tactical and Operations
+    main - Allocation of the M/A reactor
+    aux - Allocation of the Fusion reactor
+    batt - Allocation of the batteries
+    """
+
+    key = "alloc"
+    help_category = "Engineering"
+    
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+                return 0
+        if (self.args[0] == "HTO" and len(self.args) == 4):
+            setter.do_set_eng_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+        elif (self.args[0] == "main" and len(self.args) == 2):
+            setter.do_set_main_reactor(self.caller,float(self.args[1]),obj)
+        elif (self.args[0] == "aux" and len(self.args) == 2):
+            setter.do_set_aux_reactor(self.caller,float(self.args[1]),obj)
+        elif (self.args[0] == "batt" and len(self.args) == 2):
+            setter.do_set_battery(self.caller,float(self.args[1]),obj)
+        elif (self.args[0] == "status"):
+            #Give a full report back
+            buffer = "|y|[bTotal Allocation Report|n\n"
+            table = evtable.EvTable("|cAllocation|n","|cEPS Power|n","|cPercentage|n","")
+            table.add_row("|cTotal EPS|n",unparse.unparse_power(obj.db.power["total"]),unparse.unparse_percent(1.0))
+            table.add_row("|cTotal Helm|n",unparse.unparse_power(obj.db.alloc["helm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["helm"]))
+            table.add_row("|cMovement|n",unparse.unparse_power(obj.db.alloc["movement"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["movement"]),alerts.ansi_rainbow_scale(obj.db.alloc["movement"],35))
+            table.add_row("|cShields|n",unparse.unparse_power(obj.db.alloc["shields"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shields"]))
+            for i in range(constants.MAX_SHIELD_NAME):
+                table.add_row("|c"+unparse.unparse_shield(i) + "|n",unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shield"][i]),alerts.ansi_rainbow_scale(obj.db.alloc["shield"][i],35))
+            table.add_row("|c"+constants.cloak_name[obj.db.cloak["exist"]]+"|n",unparse.unparse_power(obj.db.alloc["cloak"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["cloak"]),alerts.ansi_rainbow_scale(obj.db.alloc["cloak"],35))
+            table.add_row("|cTotal Tactical|n",unparse.unparse_power(obj.db.alloc["tactical"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tactical"]))
+            table.add_row("|cBeam Weapons|n",unparse.unparse_power(obj.db.alloc["beams"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["beams"]),alerts.ansi_rainbow_scale(obj.db.alloc["beams"],35))
+            table.add_row("|cMissile Weapons|n",unparse.unparse_power(obj.db.alloc["missiles"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["missiles"]),alerts.ansi_rainbow_scale(obj.db.alloc["missiles"],35))
+            table.add_row("|cEW Systems|n",unparse.unparse_power(obj.db.alloc["sensors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["sensors"]))
+            table.add_row("|cECM|n",unparse.unparse_power(obj.db.alloc["ecm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["ecm"]),alerts.ansi_rainbow_scale(obj.db.alloc["ecm"],35))
+            table.add_row("|cECCM|n",unparse.unparse_power(obj.db.alloc["eccm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["eccm"]),alerts.ansi_rainbow_scale(obj.db.alloc["eccm"],35))
+            table.add_row("|cBeam Weapons|n",unparse.unparse_power(obj.db.alloc["beams"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["beams"]),alerts.ansi_rainbow_scale(obj.db.alloc["beams"],35))
+            table.add_row("|cTotal Operations|n",unparse.unparse_power(obj.db.alloc["operations"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["operations"]))
+            table.add_row("|cTransporters|n",unparse.unparse_power(obj.db.alloc["transporters"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["transporters"]),alerts.ansi_rainbow_scale(obj.db.alloc["transporters"],35))
+            table.add_row("|cTractors|n",unparse.unparse_power(obj.db.alloc["tractors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tractors"]),alerts.ansi_rainbow_scale(obj.db.alloc["tractors"],35))
+            table.add_row("|cMiscellaneous|n",unparse.unparse_power(obj.db.alloc["miscellaneous"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["miscellaneous"]),alerts.ansi_rainbow_scale(obj.db.alloc["miscellaneous"],35))
+            alerts.notify(self.caller,buffer + str(table) + "\n")
+        else:    
+            self.caller.msg("Command not found: " + str(self.args))
 
 class CmdEngine(default_cmds.MuxCommand):
     """
@@ -44,14 +104,45 @@ class CmdEngine(default_cmds.MuxCommand):
         elif(self.args == "status"):
             if(errors.error_on_console(self.caller,obj)):
                 return 0
-            table = evtable.EvTable("Name","In","Out","Power","Condition")
-            if (obj.db.main["exist"]):
-                table.add_row("Main",obj.db.main["in"],obj.db.main["out"],str(obj.db.main["gw"]) + "GW",str(obj.db.main["damage"]) + "%")
-            if (obj.db.aux["exist"]):
-                table.add_row("Aux",obj.db.aux["in"],obj.db.aux["out"],str(obj.db.aux["gw"]) + "GW",str(obj.db.aux["damage"]) + "%")
-            table.add_row("Battery",obj.db.batt["in"],str(obj.db.batt["out"]) + "GW",obj.db.batt["gw"])
-            self.caller.msg("Engine status:")
-            self.caller.msg(table)
+            buffer = "|y|[bEngineering Status Report|n\n"
+            table = evtable.EvTable("|cName|n","|cValue|n","")
+            table.add_row("|cName|n",obj.name)
+            table.add_row("|cClass|n",unparse.unparse_class(obj))
+            table.add_row("")
+            table.add_row("|cSpeed|n",unparse.unparse_movement(obj))
+            table.add_row("|cTotal Power|n",unparse.unparse_power(obj.db.power["total"]))
+            table.add_row("")
+            if (obj.db.engine["warp_exist"] or obj.db.engine["impulse_exist"]):
+                if(obj.db.engine["warp_exist"]):
+                    table.add_row("|cWarp Cruise|n",str(obj.db.engine["warp_cruise"]))
+                if(obj.db.engine["impulse_exist"]):
+                    table.add_row("|cImpulse Cruise|n",unparse.unparse_percent_3(obj.db.engine["impulse_cruise"]))
+                table.add_row("")
+                if(obj.db.engine["warp_exist"]):
+                    table.add_row("|cWarp Maximum|n",str(obj.db.engine["warp_max"]))
+                if(obj.db.engine["impulse_exist"]):
+                    table.add_row("|cImpulse Maximum|n",unparse.unparse_percent_3(obj.db.engine["impulse_max"]))
+                table.add_row("")
+            if(obj.db.main["exist"] or obj.db.aux["exist"] or obj.db.batt["exist"]):
+                if (obj.db.main["exist"] and obj.db.main["gw"]):
+                    m = utils.sdb2max_antimatter(obj)
+                    table.add_row("|cAntimatter|n",str(obj.db.fuel["antimatter"]/ 1000000.0) + "/" + str(m / 1000000.0) + " tons (" +unparse.unparse_percent(obj.db.fuel["antimatter"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["antimatter"]/m,25))
+                if (obj.db.aux["exist"] and obj.db.aux["gw"]):
+                    m = utils.sdb2max_deuterium(obj)
+                    table.add_row("|cDeuterium|n",str(obj.db.fuel["deuterium"]/ 1000000.0) + "/" + str(m / 1000000.0) + " tons (" +unparse.unparse_percent(obj.db.fuel["deuterium"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["deuterium"]/m,25))
+                if (obj.db.batt["exist"] and obj.db.batt["gw"]):
+                    m = utils.sdb2max_reserves(obj)
+                    table.add_row("|cReserves|n",str(obj.db.fuel["reserves"]/ 3600.0) + "/"+ str(m / 3600.0) + " GW^H (" +unparse.unparse_percent(obj.db.fuel["reserves"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["reserves"]/m,25))
+            buffer += str(table)
+            alerts.notify(self.caller,buffer)        
+#            table = evtable.EvTable("Name","In","Out","Current Power", "Max Power","Condition")
+#            if (obj.db.main["exist"]):
+#                table.add_row("Main",unparse.unparse_percent(obj.db.main["in"]),unparse.unparse_percent(obj.db.main["out"]),unparse.unparse_power(obj.db.main["gw"] * obj.db.main["in"]),unparse.unparse_power(obj.db.main["gw"]),unparse.unparse_damage(obj.db.main["damage"]))
+#            if (obj.db.aux["exist"]):
+#                table.add_row("Aux",unparse.unparse_percent(obj.db.aux["in"]),unparse.unparse_percent(obj.db.aux["out"]),unparse.unparse_power(obj.db.aux["gw"] * obj.db.aux["in"]),unparse.unparse_power(obj.db.aux["gw"]),unparse.unparse_damage(obj.db.aux["damage"]))
+#            table.add_row("Battery",unparse.unparse_percent(obj.db.batt["in"]),unparse.unparse_percent(obj.db.batt["out"]),unparse.unparse_power(obj.db.batt["gw"]))
+#            self.caller.msg("Engine status:")
+#            self.caller.msg(table)
         elif(self.args == "start"):
             if (self.args == "start" and obj.db.engineering["start_sequence"]==0):
                 if (obj.db.structure["type"] == 0):
@@ -145,5 +236,6 @@ class CmdEngine(default_cmds.MuxCommand):
         ship_obj = search_object(obj_x.db.ship)[0]
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
+        alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"Engine startup complete!"))
         ship_obj.db.engineering["start_sequence"]=0
         setter.do_set_active(self.caller,ship_obj)

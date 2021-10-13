@@ -29,3 +29,4 @@ def error_on_contact(self,n1,n2):
     else:
         return 0
     return 1
+    
