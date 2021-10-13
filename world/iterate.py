@@ -130,8 +130,8 @@ def up_reserve(self):
         self.db.batt["out"] = 0.0
         self.db.power["batt"] = 0.0
         alerts.batt_runout(self)
-    elif (self.db.fuel["reserves"] > utils.sdb2max_reserve(self)):
-        self.db.fuel["reserves"] = utils.sdb2max_reserve(self)
+    elif (self.db.fuel["reserves"] > utils.sdb2max_reserves(self)):
+        self.db.fuel["reserves"] = utils.sdb2max_reserves(self)
         
 def up_total_power(self):
     self.db.power["total"] = self.db.power["main"] + self.db.power["aux"] + self.db.power["batt"]
@@ -571,7 +571,7 @@ def up_visibility(self):
     if (self.db.status["docked"] or self.db.status["landed"]):
         self.db.sensor["visibility"] = 1.0
     else:
-        self.db.sensor["visibility"] = utils.xyz2vis(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"])
+        self.db.sensor["visibility"] = float(utils.xyz2vis(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"]))
 
 def up_yaw_io(self):
     if(self.db.course["yaw_out"] < self.db.course["yaw_in"]):
