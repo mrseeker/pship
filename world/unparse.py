@@ -53,7 +53,7 @@ def unparse_distance(value):
     type = "SU"
     if (value > 9999999.0):
         type = "PC"
-    return "{:.0f}".format(unparse_range(value)) + " " + type
+    return unparse_range(value) + " " + type
 
 def unparse_freq(value):
     return "{:.3f}".format(value) + " GHz"
