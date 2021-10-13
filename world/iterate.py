@@ -571,7 +571,7 @@ def up_visibility(self):
     if (self.db.status["docked"] or self.db.status["landed"]):
         self.db.sensor["visibility"] = 1.0
     else:
-        self.db.sensor["visibility"] = xyz2vis(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"])
+        self.db.sensor["visibility"] = utils.xyz2vis(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"])
 
 def up_yaw_io(self):
     if(self.db.course["yaw_out"] < self.db.course["yaw_in"]):
