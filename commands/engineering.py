@@ -125,13 +125,13 @@ class CmdEngine(default_cmds.MuxCommand):
                 table.add_row("")
             if(obj.db.main["exist"] or obj.db.aux["exist"] or obj.db.batt["exist"]):
                 if (obj.db.main["exist"] and obj.db.main["gw"]):
-                    m = world.utils.sdb2max_antimatter(obj)
+                    m = utils.sdb2max_antimatter(obj)
                     table.add_row("|cAntimatter|n",str(obj.db.fuel["antimatter"]/ 1000000.0) + "/" + str(m / 1000000.0) + " tons (" +unparse.unparse_percent(obj.db.fuel["antimatter"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["antimatter"]/m,25))
                 if (obj.db.aux["exist"] and obj.db.aux["gw"]):
-                    m = world.utils.sdb2max_deuterium(obj)
+                    m = utils.sdb2max_deuterium(obj)
                     table.add_row("|cDeuterium|n",str(obj.db.fuel["deuterium"]/ 1000000.0) + "/" + str(m / 1000000.0) + " tons (" +unparse.unparse_percent(obj.db.fuel["deuterium"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["deuterium"]/m,25))
                 if (obj.db.batt["exist"] and obj.db.batt["gw"]):
-                    m = world.utils.sdb2max_reserves(obj)
+                    m = utils.sdb2max_reserves(obj)
                     table.add_row("|cReserves|n",str(obj.db.fuel["reserves"]/ 3600.0) + "/"+ str(m / 3600.0) + " GW^H (" +unparse.unparse_percent(obj.db.fuel["reserves"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["reserves"]/m,25))
             buffer += str(table)
             alerts.notify(self.caller,buffer)        
