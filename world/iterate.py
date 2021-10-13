@@ -382,7 +382,7 @@ def up_autopilot(self):
     if(self.db.status["autopilot"] != a):
         self.db.status["autopilot"] = a
         self.db.course["yaw_in"] = utils.xy2bearing(self.db.coords["xd"] - self.db.coords["x"],self.db.coords["yd"] - self.db.coords["y"])
-        self.db.course["pitch_in"] = utils.xyz2elevation(self.db.coords["xd"] - self.sb.coords["x"],self.db.coords["yd"] - self.sb.coords["y"],self.db.coords["zd"] - self.sb.coords["z"])
+        self.db.course["pitch_in"] = utils.xyz2elevation(self.db.coords["xd"] - self.db.coords["x"],self.db.coords["yd"] - self.db.coords["y"],self.db.coords["zd"] - self.db.coords["z"])
         if(self.db.move["in"] > s):
             if (s >=1.0 and s > self.db.engine["warp_cruise"]):
                 s = self.db.engine["warp_cruise"]
@@ -500,7 +500,7 @@ def up_speed_io(self):
                     alerts.ship_enter_warp(self)
             else:
                 self.db.move["out"] += a
-                if (self.db.move["out"] >= self.sb.move["in"]):
+                if (self.db.move["out"] >= self.db.move["in"]):
                     self.db.move["out"] = self.db.move["in"]
                     alerts.speed_warp(self)
     
