@@ -863,7 +863,7 @@ def up_repair(self):
 
 #TICKER_HANDLER.add(10, do_space_db_iterate)
 def do_space_db_iterate():
-    objects = search_tag("space_object")
+    objects = search_tag(category="space_object")
     count = 0
     
     for obj in objects:
