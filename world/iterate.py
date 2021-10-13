@@ -238,7 +238,7 @@ def up_empire(self):
     best_range = sys.maxsize
     best_empire = ""
     for obj in space_obj:
-        if(obj.db.status["active"]):
+        if(obj.db.status["active"] and obj.name != self.name):
             if (obj.db.space != 0 and self.db.space != obj.db.space):
                 continue
             dx = (obj.db.coords["x"] - self.db.coords["x"]) / constants.PARSEC
