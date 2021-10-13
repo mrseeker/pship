@@ -235,7 +235,7 @@ def up_beam_io(self):
     
 def up_empire(self):
     space_obj = search_tag(category="space_object",tag=constants.EMPIRE_ATTR_NAME)
-    best_range = sys.maxint
+    best_range = sys.maxsize
     best_empire = ""
     for obj in space_obj:
         if(obj.db.status["active"]):
