@@ -125,13 +125,13 @@ class CmdEngine(default_cmds.MuxCommand):
                 table.add_row("")
             if(obj.db.main["exist"] or obj.db.aux["exist"] or obj.db.batt["exist"]):
                 if (obj.db.main["exist"] and obj.db.main["gw"]):
-                    m = utils.sdb2max_antimatter(obj)
+                    m = world.utils.sdb2max_antimatter(obj)
                     table.add_row("|cAntimatter|n",str(obj.db.fuel["antimatter"]/ 1000000.0) + "/" + str(m / 1000000.0) + " tons (" +unparse.unparse_percent(obj.db.fuel["antimatter"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["antimatter"]/m,25))
                 if (obj.db.aux["exist"] and obj.db.aux["gw"]):
-                    m = utils.sdb2max_deuterium(obj)
+                    m = world.utils.sdb2max_deuterium(obj)
                     table.add_row("|cDeuterium|n",str(obj.db.fuel["deuterium"]/ 1000000.0) + "/" + str(m / 1000000.0) + " tons (" +unparse.unparse_percent(obj.db.fuel["deuterium"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["deuterium"]/m,25))
                 if (obj.db.batt["exist"] and obj.db.batt["gw"]):
-                    m = utils.sdb2max_reserves(obj)
+                    m = world.utils.sdb2max_reserves(obj)
                     table.add_row("|cReserves|n",str(obj.db.fuel["reserves"]/ 3600.0) + "/"+ str(m / 3600.0) + " GW^H (" +unparse.unparse_percent(obj.db.fuel["reserves"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["reserves"]/m,25))
             buffer += str(table)
             alerts.notify(self.caller,buffer)        
@@ -211,7 +211,7 @@ class CmdEngine(default_cmds.MuxCommand):
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"System core temp at 2.500.000K"))
-        evennia.utils.delay(120,self.step2)
+        utils.delay(120,self.step2)
         
         do_set_main_reactor
         
@@ -221,7 +221,7 @@ class CmdEngine(default_cmds.MuxCommand):
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"Injecting antimatter..."))
-        evennia.utils.delay(120,self.step3)
+        utils.delay(120,self.step3)
         
     def step3(self):
         obj_x = search_object(self.caller.location)[0]
@@ -229,7 +229,7 @@ class CmdEngine(default_cmds.MuxCommand):
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"Building up pressure..."))
-        evennia.utils.delay(60,self.step4)
+        utils.delay(60,self.step4)
     
     def step4(self):
         obj_x = search_object(self.caller.location)[0]
