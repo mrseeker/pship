@@ -280,7 +280,7 @@ def up_missile_io(self):
     self.db.sensor["version"] = 1
         
 def up_autopilot(self):
-    r = xyz2range(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"],self.db.coords["xd"],self.db.coords["yd"],self.db.coords["zd"])
+    r = utils.xyz2range(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"],self.db.coords["xd"],self.db.coords["yd"],self.db.coords["zd"])
     s = 99
     a = self.db.status["autopilot"]
     
