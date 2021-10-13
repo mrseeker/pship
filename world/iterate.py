@@ -832,7 +832,7 @@ def up_sensor_list(self):
             z = math.fabs(self.db.coords["z"] - obj.db.coords["z"])
             if (z > limit):
                 continue
-            level = (self.db.sensor["srs_resolution"] + 0.01) * obj.sensor["srs_signature"] / (0.1 + (x * x + y * y + z * z) / 10101.010101)
+            level = (self.db.sensor["srs_resolution"] + 0.01) * obj.db.sensor["srs_signature"] / (0.1 + (x * x + y * y + z * z) / 10101.010101)
             x /= constants.PARSEC
             y /= constants.PARSEC
             z /= constants.PARSEC
