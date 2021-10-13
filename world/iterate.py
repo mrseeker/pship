@@ -258,12 +258,12 @@ def up_empire(self):
                 same = 1
             if (not same):
                 alerts.exit_empire(self)
-                if(random.random(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
+                if(random.randint(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
                     alerts.border_cross(self,0)
         self.db.move["empire"] = best_empire
         if (self.db.move["empire"] == ""):
             alerts.enter_empire(self)
-            if(random.random(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
+            if(random.randint(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
                 alerts.border_cross(self,1)
     
 def up_missile_io(self):
