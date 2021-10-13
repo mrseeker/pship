@@ -237,6 +237,8 @@ def up_empire(self):
     space_obj = search_tag(category="space_object",tag=constants.EMPIRE_ATTR_NAME)
     best_range = sys.maxsize
     best_empire = ""
+    if (space_obj is None):
+        return 0
     for obj in space_obj:
         if(obj.db.status["active"]):
             if (obj.db.space != 0 and self.db.space != obj.db.space):
