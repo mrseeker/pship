@@ -8,6 +8,7 @@ from evennia.utils.search import search_tag,search_object
 from evennia import gametime
 import math
 import random
+import sys
 from evennia.scripts.tickerhandler import TICKER_HANDLER
 
 def up_alloc_balance(self):
@@ -234,7 +235,7 @@ def up_beam_io(self):
     
 def up_empire(self):
     space_obj = search_tag(category="space_object",tag=constants.EMPIRE_ATTR_NAME)
-    best_range = Integer.MAX_VALUE
+    best_range = sys.maxint
     best_empire = ""
     for obj in space_obj:
         if(obj.db.status["active"]):
