@@ -65,7 +65,7 @@ def up_batt_io(self):
 
 def up_main_damage(self):
     if (self.db.main["exist"]):
-        dmg = (self.db.main["out"] - self.db.main["damage"]) * self.db.move["dt"] / self.tech["main_max"] / 1000.0
+        dmg = (self.db.main["out"] - self.db.main["damage"]) * self.db.move["dt"] / self.db.tech["main_max"] / 1000.0
         if (self.db.main["damage"] > 0.0 and (self.db.main["damage"] - dmg) <= 0.0):
             alerts.main_overload(self)
         self.db.main["damage"] -= dmg
@@ -81,7 +81,7 @@ def up_main_damage(self):
 
 def up_aux_damage(self):
     if (self.db.aux["exist"]):
-        dmg = (self.db.aux["out"] - self.db.aux["damage"]) * self.db.move["dt"] / self.tech["aux_max"] / 1000.0
+        dmg = (self.db.aux["out"] - self.db.aux["damage"]) * self.db.move["dt"] / self.db.tech["aux_max"] / 1000.0
         if (self.db.aux["damage"] > 0.0 and (self.db.aux["damage"] - dmg) <= 0.0):
             alerts.aux_overload(self)
         self.db.aux["damage"] -= dmg
