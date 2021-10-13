@@ -91,9 +91,9 @@ def xyz2vis(x,y,z):
     px = x / constants.PARSEC
     py = y / constants.PARSEC
     pz = z / constants.PARSEC
-    dx = math.fabs(px - math.round(px / 100.0) * 100.0)
-    dy = math.fabs(px - math.round(py / 100.0) * 100.0)
-    dz = math.fabs(px - math.round(pz / 100.0) * 100.0)
+    dx = math.fabs(px - round(px / 100.0) * 100.0)
+    dy = math.fabs(px - round(py / 100.0) * 100.0)
+    dz = math.fabs(px - round(pz / 100.0) * 100.0)
     
     vis = 1.1 - (1.0 / (1.0 + dx * dx + dy * dy + dz * dz))
     
