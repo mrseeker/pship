@@ -27,6 +27,34 @@ def unparse_class(obj):
 def unparse_percent(value):
    return "{:.0f}".format(value * 100) + "%"
 
+def unparse_range(value):
+    if (value > 999.9 * constants.PARSEC):
+        return "[{:5.0f}]".format(value / constants.PARSEC)
+    elif (value > 99.99 * constants.PARSEC):
+        return "[{:5.1f}]".format(value / constants.PARSEC)
+    elif (value > 9.999 * constants.PARSEC):
+        return "[{:5.2f}]".format(value / constants.PARSEC)
+    elif (value > 9999999.0):
+        return"[{:5.3f}]".format(value / constants.PARSEC)
+    elif (value > 99999.9):
+        return"{:7.0f}".format(value)
+    elif (value > 9999.99):
+        return "{:7.1f}".format(value)
+    elif (value > 999.999):
+        return "{:7.2f}".format(value)
+    elif (value > 99.9999):
+        return "{:7.3f}".format(value)
+    elif (value > 9.99999):
+        return "{:7.4f}".format(value)
+    else:
+        return "{:7.5f}".format(value)
+
+def unparse_distance(value):
+    type = "SU"
+    if (value > 9999999.0):
+        type = "PC"
+    return "{:.0f}".format(unparse_range(value)) + " " + type
+
 def unparse_freq(value):
     return "{:.3f}".format(value) + " GHz"
 
