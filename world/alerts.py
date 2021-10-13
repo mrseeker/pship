@@ -320,6 +320,32 @@ def roll(self):
     console_message(self,["helm"],"New roll set")
     return 1
 
+def speed_warp(self):
+    #TODO
+    console_message(self,["helm"],"Speed enters warp")
+    return 1
+
+def speed_exit_warp(self):
+    #TODO
+    console_message(self,["helm"],"Speed exits warp")
+    return 1
+
+def speed_stop(self):
+    #TODO
+    console_message(self,["helm"],"Speed has stopped")
+    return 1
+
+def enter_quadrant(self):
+    #TODO
+    console_message(self,["helm"],"Entering quadrant")
+    return 1
+
+
+def speed_impulse(self):
+    #TODO
+    console_message(self,["helm"],"Speed enters impulse")
+    return 1
+
 def yaw(self):
     #TODO
     console_message(self,["helm"],"New yaw set")
@@ -330,7 +356,33 @@ def main_balance(self):
     console_message(self,["engineering"],"New main_balance set")
     return 1
 
+def max_repair(self):
+    #TODO
+    console_message(self,["engineering"],"Maximum repairs")
+    return 1
+
+def anti_runout(self):
+    #TODO
+    console_message(self,["engineering"],"Antimatter runout!")
+    return 1
+
+def deut_runout(self):
+    #TODO
+    console_message(self,["engineering"],"Deeuterium runout!")
+    return 1
+
+
 def batt_runout(self):
     #TODO
     console_message(self,["engineering"],"Battery runout!")
+    return 1
+
+def main_overload(self):
+    #TODO
+    console_message(self,["engineering"],"Main overload!")
+    return 1
+
+def aux_overload(self):
+    #TODO
+    console_message(self,["engineering"],"Aux overload!")
     return 1
