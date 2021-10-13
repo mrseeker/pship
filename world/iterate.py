@@ -234,18 +234,16 @@ def up_beam_io(self):
     self.db.sensor["version"] = 1
     
 def up_empire(self):
-    space_obj = search_tag(category="space_object",tag=constants.EMPIRE_ATTR_NAME)
+    space_obj = search_tag(category="space_object",tag="empire")
     best_range = sys.maxsize
     best_empire = ""
-    if (not space_obj):
-        return 0
     for obj in space_obj:
         if(obj.db.status["active"]):
             if (obj.db.space != 0 and self.db.space != obj.db.space):
                 continue
-            dx = (obj.db.coords["x"] - self.db.coord["x"]) / constants.PARSEC
-            dy = (obj.db.coords["y"] - self.db.coord["y"]) / constants.PARSEC
-            dz = (obj.db.coords["z"] - self.db.coord["z"]) / constants.PARSEC
+            dx = (obj.db.coords["x"] - self.db.coords["x"]) / constants.PARSEC
+            dy = (obj.db.coords["y"] - self.db.coords["y"]) / constants.PARSEC
+            dz = (obj.db.coords["z"] - self.db.coords["z"]) / constants.PARSEC
             range = (dx * dx + dy * dy + dz * dz)
             inside_range = math.fabs(range - (obj.db.radius * obj.db.radius))
             
