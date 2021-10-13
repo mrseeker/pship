@@ -158,7 +158,7 @@ def transmit_message(self,freq,range,code,message,language="default"):
     if (range <= 0):
         console_message(self,["communication"],ansi_red("#-1 BAD RANGE VALUE"))
     #sending the message here...
-    space_obj = search_tag(category="space_object",tag=constants.SHIP_ATTR_NAME)
+    space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] is not None):
@@ -195,7 +195,7 @@ def do_ship_notify(self,text):
     do_all_console_notify(self,text)
     
 def do_space_notify_one(self,console,text):
-    space_obj = search_tag(category="space_object",tag=constants.SHIP_ATTR_NAME)
+    space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] is not None):
@@ -206,7 +206,7 @@ def do_space_notify_one(self,console,text):
                             console.message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
 
 def do_space_notify_two(self,obj2,console,text):
-    space_obj = search_tag(category="space_object",tag=constants.SHIP_ATTR_NAME)
+    space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] is not None):
@@ -226,10 +226,10 @@ def ship_cloak_offline(self):
     do_space_notify_one(self, ["helm","tactical","science"], "disengages its cloaking device")
 
 def exit_empire(self):
-    console_message(self,["helm"],ansi_alert("Exiting " + unparse.unparse_empire(self.db.move["empire"]) + " space"))
+    console_message(self,["helm"],ansi_alert("Exiting " + unparse.unparse_empire(self) + " space"))
 
 def enter_empire(self):
-    console_message(self,["helm"],ansi_warn("Entering " + unparse.unparse_empire(self.db.move["empire"]) + " space"))
+    console_message(self,["helm"],ansi_warn("Entering " + unparse.unparse_empire(self) + " space"))
     
 def border_cross(self, type):
     #Check if we are actually moving, and not creating ships
