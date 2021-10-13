@@ -90,7 +90,7 @@ def unparse_velocity(obj):
     if (v == 0):
         return "Stationary"
     else:
-        return unparse.unparse_distance(math.fabs(v)) + "/sec"
+        return unparse_distance(math.fabs(v)) + "/sec"
    
 def unparse_damage(value):
     if(value == 1.0):
