@@ -7,7 +7,7 @@ from world import set as setter
 from world import alerts, errors,unparse,constants, utils
 from evennia import CmdSet
 from evennia.utils.search import search_object
-from evennia.utils import evtable
+from evennia.utils import evtable, utils
 
 class EngineeringCmdSet(CmdSet):
         
@@ -211,7 +211,7 @@ class CmdEngine(default_cmds.MuxCommand):
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"System core temp at 2.500.000K"))
-        utils.delay(120,self.step2)
+        evennia.utils.delay(120,self.step2)
         
         do_set_main_reactor
         
@@ -221,7 +221,7 @@ class CmdEngine(default_cmds.MuxCommand):
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"Injecting antimatter..."))
-        utils.delay(120,self.step3)
+        evennia.utils.delay(120,self.step3)
         
     def step3(self):
         obj_x = search_object(self.caller.location)[0]
@@ -229,7 +229,7 @@ class CmdEngine(default_cmds.MuxCommand):
         if(ship_obj.db.engineering["start_sequence"]<0):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"Building up pressure..."))
-        utils.delay(60,self.step4)
+        evennia.utils.delay(60,self.step4)
     
     def step4(self):
         obj_x = search_object(self.caller.location)[0]
