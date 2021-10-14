@@ -470,7 +470,7 @@ def do_set_autopilot (self, obj, flag):
         alerts.notify(self,alerts.ansi_red(obj.name + " cannot be maneuvered."))
     elif(obj.db.status["docked"] == 1):
         alerts.notify(self,alerts.ansi_red(obj.name + " is in dock."))
-    elif(obj.db.status["autopilot"] == 1):
+    elif(obj.db.status["autopilot"] > 0):
         if (flag == 1):
             alerts.notify(self,alerts.ansi_red("Autopilot is already engaged."))
         else:
