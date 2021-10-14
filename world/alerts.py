@@ -179,8 +179,9 @@ def console_message(self,console,text):
                 if (obj.db.ship == self.name):
                     obj.msg_contents(text)
         else:
-           console_message(self,"general",text)
-           return
+            if (console is not "general"):
+                console_message(self,"general",text)
+            return
 
 def do_console_notify(self,console,text):
     console_message(self,console,text)
