@@ -294,3 +294,27 @@ class CmdEngage(default_cmds.MuxCommand):
         if(errors.error_on_console(self.caller,obj)):
             return 0
         setter.do_set_coords_engage(self.caller,obj)
+
+class CmdAutopilot(default_cmds.MuxCommand):
+    """
+    Turns the autopilot on/off
+
+    Usage: autopilot [0-1]
+    
+    Command list:
+    None
+    """
+
+    key = "autopilot"
+    help_category = "Helm"
+    
+    def func(self):
+        self.args = self.args.strip()
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+        if 
+        setter.do_set_coords_engage(self.caller,obj,self.args[1])

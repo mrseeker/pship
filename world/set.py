@@ -456,3 +456,34 @@ def do_set_eng_alloc(self, helm, tactical, operations, obj):
         obj.db.cloak["version"] = 1
         return 1
     return 0
+
+def do_set_autopilot (self, obj, flag)
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif (obj.db.status["docked"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is in dock."))
+    elif(obj.db.status["landed"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is on a landing pad."))
+    elif(obj.db.status["connected"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is still connected."))
+    elif(not obj.db.engine["warp_exist"] && not obj.db.engine["impulse_exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " cannot be maneuvered."))
+    elif(obj.db.status["docked"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is in dock."))
+    elif(obj.db.status["autopilot"] == 0):
+        if (flag == 1):
+            alerts.notify(self,alerts.ansi_red("Autopilot is already engaged."))
+        else:
+            obj.db.status["autopilot"] = 0
+            alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Autopilot disengaged"))
+            return 1
+    else:
+        if (flag == 0):
+            alerts.notify(self,alerts.ansi_red("Autopilot is already disengaged."))
+        elif(obj.db.coords["xd"] == obj.db.coords["x"] && obj.db.coords["yd"] == obj.db.coords["y"] && obj.db.coords["zd"] == obj.db.coords["z"]):
+            alerts.notify(self,alerts.ansi_red(obj.name + " is already there."))
+        else:
+            self.db.status["autopilot"] = 100
+            alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Autopilot engaged"))
+            return 1
+    return 0
