@@ -78,4 +78,4 @@ class CmdBroadcast(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        do_ship_notify(obj,' '.join(self.args))
+        do_ship_notify(obj,ansi_cmd(caller,' '.join(self.args)))
