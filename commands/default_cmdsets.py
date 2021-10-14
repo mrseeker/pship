@@ -15,7 +15,7 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 """
 
 from evennia import default_cmds
-from world import alerts
+from world import alerts, errors
 from evennia.utils.search import search_object
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
