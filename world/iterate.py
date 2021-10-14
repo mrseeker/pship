@@ -847,7 +847,7 @@ def up_sensor_list(self):
             temp_sdb.insert(contacts,obj.key)
             temp_lev.insert(contacts,level)
             contacts = contacts + 1
-            if (contacts == MAX_SENSOR_CONTACTS):
+            if (contacts == constants.MAX_SENSOR_CONTACTS):
                 break
     
     if (contacts != self.db.sensor["contacts"]):
