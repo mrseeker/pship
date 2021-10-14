@@ -62,7 +62,7 @@ class Fighter(Ship):
     """
     def at_object_creation(self):
         super().at_object_creation()
-        self.cmdset.add("commands.engineering.EngineeringCmdSet", persistent=True)
+        self.cmdset.add("commands.engineering.EngineeringFighterCmdSet", persistent=True)
         self.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         self.cmdset.add("commands.helm.FighterCmdSet", persistent=True)
 

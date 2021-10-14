@@ -29,7 +29,6 @@ class FighterCmdSet(CmdSet):
             self.add(CmdCalculate())
             self.add(CmdStatus_Fighter())
             self.add(CmdAutopilot())
-            self.add(CmdAlloc())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """

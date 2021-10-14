@@ -17,7 +17,77 @@ class EngineeringCmdSet(CmdSet):
         def at_cmdset_creation(self):
             self.add(CmdEngine())
             self.add(CmdAlloc())
+
+class EngineeringFighterCmdSet(CmdSet):
+        key = "EngineeringFighterCmdSet"
+
+        def at_cmdset_creation(self):
+            self.add(CmdEngine())
+            self.add(CmdAlloc_Fighter())
+
+class CmdAlloc_Fighter(default_cmds.MuxCommand):
+    """
+    Commands related to the allocation of the engine.
+
+    Usage: alloc <command> <value>
     
+    Command list:
+    status - Gives a full status of the allocations
+    HTO - Sets the allocation of the Helm, Tactical and Operations
+    MSC - Sets the allocation of the Movement, Shields and Cloak
+    shield - Allocation of the shields (forward, starboard, aft, port, dorsal, ventral)
+    main - Allocation of the M/A reactor
+    aux - Allocation of the Fusion reactor
+    batt - Allocation of the batteries
+    """
+
+    key = "alloc"
+    help_category = "Engineering"
+    
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+                return 0
+        if (self.args[0] == "HTO" and len(self.args) == 4):
+            setter.do_set_eng_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+        elif (self.args[0] == "main" and len(self.args) == 2):
+            setter.do_set_main_reactor(self.caller,float(self.args[1]),obj)
+        elif (self.args[0] == "aux" and len(self.args) == 2):
+            setter.do_set_aux_reactor(self.caller,float(self.args[1]),obj)
+        elif (self.args[0] == "batt" and len(self.args) == 2):
+            setter.do_set_battery(self.caller,float(self.args[1]),obj)
+        if (self.args[0] == "MSC" and len(self.args) == 4):
+            setter.do_set_helm_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+        elif (self.args[0] == "shield" and len(self.args) == 7):
+            setter.do_set_shield_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
+        elif (self.args[0] == "status"):
+            #Give a full report back
+            buffer = "|y|[bTotal Allocation Report|n\n"
+            table = evtable.EvTable("|cAllocation|n","|cEPS Power|n","|cPercentage|n","")
+            table.add_row("|cTotal EPS|n",unparse.unparse_power(obj.db.power["total"]),unparse.unparse_percent(1.0))
+            table.add_row("|cTotal Helm|n",unparse.unparse_power(obj.db.alloc["helm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["helm"]))
+            table.add_row("|cMovement|n",unparse.unparse_power(obj.db.alloc["movement"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["movement"]),alerts.ansi_rainbow_scale(obj.db.alloc["movement"],35))
+            table.add_row("|cShields|n",unparse.unparse_power(obj.db.alloc["shields"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shields"]))
+            for i in range(constants.MAX_SHIELD_NAME):
+                table.add_row("|c"+unparse.unparse_shield(i) + "|n",unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shield"][i]),alerts.ansi_rainbow_scale(obj.db.alloc["shield"][i],35))
+            table.add_row("|c"+constants.cloak_name[obj.db.cloak["exist"]]+"|n",unparse.unparse_power(obj.db.alloc["cloak"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["cloak"]),alerts.ansi_rainbow_scale(obj.db.alloc["cloak"],35))
+            table.add_row("|cTotal Tactical|n",unparse.unparse_power(obj.db.alloc["tactical"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tactical"]))
+            table.add_row("|cBeam Weapons|n",unparse.unparse_power(obj.db.alloc["beams"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["beams"]),alerts.ansi_rainbow_scale(obj.db.alloc["beams"],35))
+            table.add_row("|cMissile Weapons|n",unparse.unparse_power(obj.db.alloc["missiles"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["missiles"]),alerts.ansi_rainbow_scale(obj.db.alloc["missiles"],35))
+            table.add_row("|cEW Systems|n",unparse.unparse_power(obj.db.alloc["sensors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["sensors"]))
+            table.add_row("|cECM|n",unparse.unparse_power(obj.db.alloc["ecm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["ecm"]),alerts.ansi_rainbow_scale(obj.db.alloc["ecm"],35))
+            table.add_row("|cECCM|n",unparse.unparse_power(obj.db.alloc["eccm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["eccm"]),alerts.ansi_rainbow_scale(obj.db.alloc["eccm"],35))
+            table.add_row("|cBeam Weapons|n",unparse.unparse_power(obj.db.alloc["beams"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["beams"]),alerts.ansi_rainbow_scale(obj.db.alloc["beams"],35))
+            table.add_row("|cTotal Operations|n",unparse.unparse_power(obj.db.alloc["operations"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["operations"]))
+            table.add_row("|cTransporters|n",unparse.unparse_power(obj.db.alloc["transporters"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["transporters"]),alerts.ansi_rainbow_scale(obj.db.alloc["transporters"],35))
+            table.add_row("|cTractors|n",unparse.unparse_power(obj.db.alloc["tractors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tractors"]),alerts.ansi_rainbow_scale(obj.db.alloc["tractors"],35))
+            table.add_row("|cMiscellaneous|n",unparse.unparse_power(obj.db.alloc["miscellaneous"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["miscellaneous"]),alerts.ansi_rainbow_scale(obj.db.alloc["miscellaneous"],35))
+            alerts.notify(self.caller,buffer + str(table) + "\n")
+        else:    
+            self.caller.msg("Command not found: " + str(self.args))
 
 class CmdAlloc(default_cmds.MuxCommand):
     """
