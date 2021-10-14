@@ -17,6 +17,7 @@ class HelmCmdSet(CmdSet):
             self.add(CmdEngage())
             self.add(CmdStatus())
             self.add(CmdCalculate())
+            self.add(CmdAutopilot())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -26,6 +27,7 @@ class FighterCmdSet(CmdSet):
             self.add(CmdEngage())
             self.add(CmdCalculate())
             self.add(CmdStatus_Fighter())
+            self.add(CmdAutopilot())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """
