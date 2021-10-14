@@ -341,7 +341,7 @@ def sdb2cruise_warp(x):
     if (obj.db.engine["warp_damage"] <= 0.0):
         return 0.0
     
-    a = sqrt(10.0 * obj.db.main["gw"]  / obj.db.move["ratio"])
+    a = math.sqrt(10.0 * obj.db.main["gw"]  / obj.db.move["ratio"])
     if (a < 1.0):
         return 0.0
         
