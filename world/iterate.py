@@ -820,6 +820,8 @@ def up_sensor_list(self):
     contacts = 0
     limit = constants.PARSEC * 100.0
     objects = search_tag(category="space_object")
+    temp_sdb = []
+    temp_lev = []
     for obj in objects:
         if (self.db.location == obj.db.location and self.db.space == obj.db.space and obj.db.structure["type"] and self.key != obj.key):
             x = math.fabs(self.db.coords["x"] - obj.db.coords["x"])
@@ -844,7 +846,7 @@ def up_sensor_list(self):
                 continue
             temp_sdb[contacts] = obj.key
             temp_lev[contacts] = level
-            ++contacts
+            contacts = contacts + 1
             if (contacts == MAX_SENSOR_CONTACTS):
                 break
     
