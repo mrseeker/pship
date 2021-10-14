@@ -844,8 +844,8 @@ def up_sensor_list(self):
                     level *= obj.db.cloak["level"]
             if (level < 0.01):
                 continue
-            temp_sdb[contacts] = obj.key
-            temp_lev[contacts] = level
+            temp_sdb.insert(contacts,obj.key)
+            temp_lev.insert(contacts,level)
             contacts = contacts + 1
             if (contacts == MAX_SENSOR_CONTACTS):
                 break
