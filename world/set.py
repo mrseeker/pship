@@ -76,7 +76,7 @@ def do_set_inactive(self,obj):
     elif(obj.db.power["total"] != 0):
         alerts.notify(self, alerts.ansi_red(obj.name + " power systems are still online."))
     else:
-        alerts.do_all_console_notify(obj, alerts.ansi_cmd(self.name,"All systems shutting down"))
+        alerts.do_all_console_notify(obj, alerts.ansi_cmd_ext(self.name,self.location,"All systems shutting down"))
         alerts.do_ship_notify(obj, self.name + " deactivates all systems")
         alerts.do_space_notify_one(obj, ["helm","tactical","science"],obj.name + " deactivates all systems")
         for i in range(constants.MAX_SHIELD_NAME):
@@ -142,7 +142,7 @@ def do_set_active(self,obj):
     elif(obj.db.status["active"]):
         alerts.notify(self, alerts.ansi_red(obj.name + " systems are already active."))
     else:
-        alerts.do_all_console_notify(obj, alerts.ansi_cmd(self.name,"All systems initializing and starting up"))
+        alerts.do_all_console_notify(obj, alerts.ansi_cmd_ext(self.name,self.location,"All systems initializing and starting up"))
         alerts.do_ship_notify(obj, self.name + " activates all systems")
         alerts.do_space_notify_one(obj, ["helm","tactical","science"],obj.name + " activates all systems")
         for i in range(constants.MAX_SHIELD_NAME):
