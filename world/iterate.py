@@ -759,7 +759,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
     for i in range(contacts):
         gain = 0
         for j in range(contacts):
-            if j > len(self.db.slist["key"]):
+            if j > len(self.db.slist["key"] - 1):
                 break
             if (temp_sdb[i] == self.db.slist["key"][j]):
                 gain = 1
