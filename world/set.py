@@ -456,6 +456,38 @@ def do_set_eng_alloc(self, helm, tactical, operations, obj):
         obj.db.cloak["version"] = 1
         return 1
     return 0
+    
+def do_set_helm_alloc (self, movement, shields, cloak, obj):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.alloc["movement"] = math.fabs(movement)
+        obj.db.alloc["shields"] = math.fabs(shields)
+        obj.db.alloc["cloak"] = math.fabs(cloak)
+        balance.balance_helm_power(obj)
+        balance.balance_shield_power(obj)
+        alerts.report_helm_power(obj)
+        obj.db.engine["version"] = 1
+        obj.db.sensor["version"] = 1
+        obj.db.cloak["version"] = 1
+        return 1
+    return 0
+    
+def do_set_shield_alloc (self, forward, starboard, aft, port, dorsal, ventral, obj):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.alloc["shield"][0] = math.fabs(forward)
+        obj.db.alloc["shield"][1] = math.fabs(starboard)
+        obj.db.alloc["shield"][2] = math.fabs(aft)
+        obj.db.alloc["shield"][3] = math.fabs(port)
+        obj.db.alloc["shield"][4] = math.fabs(dorsal)
+        obj.db.alloc["shield"][5] = math.fabs(ventral)
+        balance.balance_shield_power(obj)
+        alerts.report_shield_power(obj)
+        self.db.engine["version"] = 1
+        return 1
+    return 0
 
 def do_set_autopilot (self, obj, flag):
     if (errors.error_on_console(self,obj)):

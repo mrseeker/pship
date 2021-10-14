@@ -18,6 +18,7 @@ class HelmCmdSet(CmdSet):
             self.add(CmdStatus())
             self.add(CmdCalculate())
             self.add(CmdAutopilot())
+            self.add(CmdAlloc())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -28,6 +29,7 @@ class FighterCmdSet(CmdSet):
             self.add(CmdCalculate())
             self.add(CmdStatus_Fighter())
             self.add(CmdAutopilot())
+            self.add(CmdAlloc())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """
@@ -271,6 +273,47 @@ class CmdCalculate(default_cmds.MuxCommand):
         elif(self.args[0] == "su2pc"):
             for arg in self.args[1:]:
                 self.caller.msg(str(arg) + " - " + str(utils.su2pc(float(arg))))
+        else:    
+            self.caller.msg("Command not found: " + str(self.args))
+
+class CmdAlloc(default_cmds.MuxCommand):
+    """
+    Commands related to the allocation of the helm.
+
+    Usage: alloc <command> <value>
+    
+    Command list:
+    status - Gives a full status of the allocations
+    MSC - Sets the allocation of the Movement, Shields and Cloak
+    shield - Allocation of the shields (forward, starboard, aft, port, dorsal, ventral)
+
+    """
+
+    key = "alloc"
+    help_category = "Helm"
+    
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+                return 0
+        if (self.args[0] == "MSC" and len(self.args) == 4):
+            setter.do_set_helm_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+        elif (self.args[0] == "shield" and len(self.args) == 7):
+            setter.do_set_shield_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
+        elif (self.args[0] == "status"):
+            #Give a full report back
+            buffer = "|y|[bHelm Allocation Report|n\n"
+            table = evtable.EvTable("|cAllocation|n","|cEPS Power|n","|cPercentage|n","")
+            table.add_row("|cTotal Helm|n",unparse.unparse_power(obj.db.alloc["helm"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["helm"]))
+            table.add_row("|cMovement|n",unparse.unparse_power(obj.db.alloc["movement"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["movement"]),alerts.ansi_rainbow_scale(obj.db.alloc["movement"],35))
+            table.add_row("|cShields|n",unparse.unparse_power(obj.db.alloc["shields"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shields"]))
+            for i in range(constants.MAX_SHIELD_NAME):
+                table.add_row("|c"+unparse.unparse_shield(i) + "|n",unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shield"][i]),alerts.ansi_rainbow_scale(obj.db.alloc["shield"][i],35))
+            table.add_row("|c"+constants.cloak_name[obj.db.cloak["exist"]]+"|n",unparse.unparse_power(obj.db.alloc["cloak"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["cloak"]),alerts.ansi_rainbow_scale(obj.db.alloc["cloak"],35))
+            alerts.notify(self.caller,buffer + str(table) + "\n")
         else:    
             self.caller.msg("Command not found: " + str(self.args))
 
