@@ -206,14 +206,6 @@ class CmdEngine(default_cmds.MuxCommand):
                     table.add_row("|cReserves|n",str(obj.db.fuel["reserves"]/ 3600.0) + "/"+ str(m / 3600.0) + " GW^H (" +unparse.unparse_percent(obj.db.fuel["reserves"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["reserves"]/m,25))
             buffer += str(table)
             alerts.notify(self.caller,buffer)        
-#            table = evtable.EvTable("Name","In","Out","Current Power", "Max Power","Condition")
-#            if (obj.db.main["exist"]):
-#                table.add_row("Main",unparse.unparse_percent(obj.db.main["in"]),unparse.unparse_percent(obj.db.main["out"]),unparse.unparse_power(obj.db.main["gw"] * obj.db.main["in"]),unparse.unparse_power(obj.db.main["gw"]),unparse.unparse_damage(obj.db.main["damage"]))
-#            if (obj.db.aux["exist"]):
-#                table.add_row("Aux",unparse.unparse_percent(obj.db.aux["in"]),unparse.unparse_percent(obj.db.aux["out"]),unparse.unparse_power(obj.db.aux["gw"] * obj.db.aux["in"]),unparse.unparse_power(obj.db.aux["gw"]),unparse.unparse_damage(obj.db.aux["damage"]))
-#            table.add_row("Battery",unparse.unparse_percent(obj.db.batt["in"]),unparse.unparse_percent(obj.db.batt["out"]),unparse.unparse_power(obj.db.batt["gw"]))
-#            self.caller.msg("Engine status:")
-#            self.caller.msg(table)
         elif(self.args == "start"):
             if (self.args == "start" and obj.db.engineering["start_sequence"]==0):
                 if (obj.db.structure["type"] == 0):
