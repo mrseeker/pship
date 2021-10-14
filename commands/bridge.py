@@ -45,15 +45,15 @@ class CmdAlerts(default_cmds.MuxCommand):
         if(errors.error_on_console(self.caller,obj)):
             return 0
         if (self.args[0] == "green"):
-            do_ship_notify(obj,"\033[5m|X|[gALERT: Green alert|n")
+            alerts.do_ship_notify(obj,"\033[5m|X|[gALERT: Green alert|n")
         elif (self.args[0] == "yellow"):
-            do_ship_notify(obj,"\033[5m|X|[yALERT: Yellow alert|n")
+            alerts.do_ship_notify(obj,"\033[5m|X|[yALERT: Yellow alert|n")
         elif (self.args[0] == "red"):
-            do_ship_notify(obj,"\033[5m|X|[rALERT: Red alert|n")
+            alerts.do_ship_notify(obj,"\033[5m|X|[rALERT: Red alert|n")
         elif (self.args[0] == "blue"):
-            do_ship_notify(obj,"\033[5m|c|[bALERT: Blue alert|n")
+            alerts.do_ship_notify(obj,"\033[5m|c|[bALERT: Blue alert|n")
         elif (self.args[0] == "black"):
-            do_ship_notify(obj,"\033[5m|w|[XALERT: Black alert|n")
+            alerts.do_ship_notify(obj,"\033[5m|w|[XALERT: Black alert|n")
         else:    
             self.caller.msg("Alert not found: " + str(self.args))
 
@@ -78,4 +78,4 @@ class CmdBroadcast(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        do_ship_notify(obj,ansi_cmd(caller,' '.join(self.args)))
+        alerts.do_ship_notify(obj,ansi_cmd(caller,' '.join(self.args)))
