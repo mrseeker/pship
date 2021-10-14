@@ -15,6 +15,8 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 """
 
 from evennia import default_cmds
+from world import alerts
+from evennia.utils.search import search_object
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -33,7 +35,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-
+        self.add(CmdSendConsole())
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
     """
@@ -93,3 +95,25 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
+
+class CmdSendConsole(default_cmds.MuxCommand):
+    """
+    Send a message through the console
+
+    Usage: send <console> <message>
+    
+    """
+
+    key = "send"
+    help_category = "Comms"
+    
+    def func(self):
+        self.args = self.args.strip()
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+        alerts.console_message(self,self.args[0],alerts.ansi_cmd(self.name,self.args[1:))
+        return 1
