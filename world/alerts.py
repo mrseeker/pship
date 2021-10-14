@@ -182,7 +182,7 @@ def console_message(self,console,text):
                 if (obj.db.ship == self.name):
                     obj.msg_contents(text)
         else:
-            if (console is not "bridge"):
+            if (console != "bridge"):
                 console_message(self,"bridge",text)
             return
 
