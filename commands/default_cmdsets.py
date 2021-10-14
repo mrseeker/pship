@@ -101,6 +101,7 @@ class CmdSendConsole(default_cmds.MuxCommand):
     Send a message through the console
 
     Usage: send <console> <message>
+    Split multiple consoles with ;
     
     """
 
@@ -115,5 +116,5 @@ class CmdSendConsole(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        alerts.console_message(obj,self.args[0],alerts.ansi_cmd(caller.name,' '.join(self.args[1:])))
+        alerts.console_message(obj,self.args[0].split(";"),alerts.ansi_cmd(caller.name,' '.join(self.args[1:])))
         return 1
