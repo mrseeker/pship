@@ -63,6 +63,7 @@ class Fighter(Ship):
     """
     def at_object_creation(self):
         super().at_object_creation()
+        self.cmdset.add("commands.bridge.FighterBridgeCmdSet", persistent=True)
         self.cmdset.add("commands.engineering.EngineeringFighterCmdSet", persistent=True)
         self.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         self.cmdset.add("commands.helm.FighterCmdSet", persistent=True)
@@ -73,6 +74,7 @@ class Test(Ship):
     """
     def at_object_creation(self):
         super().at_object_creation()
+        self.cmdset.add("commands.bridge.BridgeCmdSet", persistent=True)
         for console in ["helm","engineering","tactical"]:
             ship_console = create_object(Console,key=self.key + "-"+ console)
             ship_console.db.sdesc = console

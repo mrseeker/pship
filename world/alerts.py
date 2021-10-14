@@ -27,6 +27,9 @@ def ansi_red(text):
 def ansi_green(text):
     return "|g" + text + "|n"
 
+def ansi_yellow(text):
+    return "|y" + text + "|n"
+
 def ansi_rainbow_scale(a,max):
     color1 = 0
     color2 = 0
