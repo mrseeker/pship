@@ -85,6 +85,7 @@ class Test(Ship):
             if(console == "helm"):
                 self.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
             ship_console.tags.add(category=self.key,tag=console)
+            ship_console.tags.add(category="console",tag=console)
             exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
             exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)
         
