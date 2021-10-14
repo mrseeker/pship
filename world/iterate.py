@@ -9,7 +9,6 @@ from evennia import gametime
 import math
 import random
 import sys
-from evennia.scripts.tickerhandler import TICKER_HANDLER
 
 def up_alloc_balance(self):
     balance.balance_eng_power(self)
@@ -862,7 +861,6 @@ def up_repair(self):
         self.db.structure["repair"] = self.db.structure["max_repair"]
         alerts.max_repair(self)
 
-#TICKER_HANDLER.add(10, do_space_db_iterate)
 def do_space_db_iterate():
     objects = search_tag(category="space_object")
     count = 0
