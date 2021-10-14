@@ -483,7 +483,7 @@ def do_set_autopilot (self, obj, flag):
         elif(obj.db.coords["xd"] == obj.db.coords["x"] and obj.db.coords["yd"] == obj.db.coords["y"] and obj.db.coords["zd"] == obj.db.coords["z"]):
             alerts.notify(self,alerts.ansi_red(obj.name + " is already there."))
         else:
-            self.db.status["autopilot"] = 100
+            obj.db.status["autopilot"] = 100
             alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Autopilot engaged"))
             return 1
     return 0
