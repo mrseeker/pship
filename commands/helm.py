@@ -318,5 +318,4 @@ class CmdAutopilot(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        if 
         setter.do_set_coords_engage(self.caller,obj,self.args[1])
