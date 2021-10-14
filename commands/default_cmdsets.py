@@ -115,5 +115,5 @@ class CmdSendConsole(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        alerts.console_message(self,self.args[0],alerts.ansi_cmd(self.name,self.args[1:]))
+        alerts.console_message(caller,self.args[0],alerts.ansi_cmd(self.name,self.args[1:]))
         return 1
