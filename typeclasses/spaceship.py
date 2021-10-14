@@ -23,7 +23,7 @@ class Ship(Room):
         self.db.ship = self.key
         self.db.language = "default"
         self.tags.add(category="space_object",tag=constants.SHIP_ATTR_NAME)
-        self.tags.add(category="console",tag="general")
+        self.tags.add(category=self.key,tag="bridge")
         self.db.coords = {"x":0.0,"y":0.0,"z":0.0,"xo":0.0,"yo":0.0,"zo":0.0,"zd":0.0,"xd":0.0,"yd":0.0,"zd":0.0}
         self.db.move = {"in":0.0,"out":0.0,"v":0.0,"ratio":1.0,"time":0,"quadrant":0,"dt":0,"cochranes":0,"empire":0}
         self.db.course = {"version":0,"d":[[0,0,0],[0,0,0],[0,0,0]],"yaw_in":0.0,"yaw_out":0.0,"roll_in":0.0,"roll_out":0.0,"pitch_in":0.0,"pitch_out":0.0}
@@ -85,7 +85,6 @@ class Test(Ship):
             if(console == "helm"):
                 self.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
             ship_console.tags.add(category=self.key,tag=console)
-            ship_console.tags.add(category="console",tag=console)
             exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
             exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)
         

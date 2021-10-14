@@ -194,7 +194,7 @@ STATUS_DATA_NUMBER = 10
 IFF_ATTR_NAME = "IFF"
 IFF_DATA_NUMBER = 1
 
-CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter","general"]
+CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter","general","bridge"]
 damage_name = ["No Damage","Patched Damage","Minor Damage","Light Damage","Moderate Damage","Heavy Damage","Severe Damage","Inoperative","Destroyed"]
 shield_name = ["Forward shield","Starboard shield","Aft shield","Port shield","Dorsal shield","Ventral shield"]
 cloak_name = ["Other","Cloak"]

@@ -173,14 +173,14 @@ def transmit_message(self,freq,range,code,message,language="default"):
 
 def console_message(self,console,text):
     for console_name in console:
-        console_obj = search_tag(console_name,category="console")
+        console_obj = search_tag(console_name,category=self.key)
         if (console_obj.count() > 0):
             for obj in console_obj:
                 if (obj.db.ship == self.name):
                     obj.msg_contents(text)
         else:
-            if (console is not "general"):
-                console_message(self,"general",text)
+            if (console is not "bridge"):
+                console_message(self,"bridge",text)
             return
 
 def do_console_notify(self,console,text):
@@ -188,7 +188,7 @@ def do_console_notify(self,console,text):
 
 def do_all_console_notify(self,text):
     for console_name in constants.CONSOLE_LIST:
-        console_obj = search_tag(console_name,category="console")
+        console_obj = search_tag(console_name,category=self.key)
         if (console_obj.count() > 0):
             for obj in console_obj:
                 if (obj.db.ship == self.name):
