@@ -680,7 +680,7 @@ def up_vectors(self):
     self.db.course["d"][0][2] = sp
     self.db.course["d"][1][0] = -(sy * cr) + (cy * sp * sr)
     self.db.course["d"][1][1] = (cy * cr) + (sy * sp * sr)
-    self.db.course["d"][0][2] = -(cp * sr)
+    self.db.course["d"][1][2] = -(cp * sr)
     self.db.course["d"][2][0] = -(sy * sr) - (cy * sp * cr)
     self.db.course["d"][2][1] = (cy * sr) - (sy * sp * cr)
     self.db.course["d"][2][2] = (cp * cr)
