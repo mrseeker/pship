@@ -18,9 +18,6 @@ def ansi_notify(text):
 def ansi_cmd(name,text):
     return "|w|[G"+ name + ": "+ text + "|n"
 
-def ansi_cmd_ext(name,location,text):
-    return ansi_cmd(name + "(" + location + ")",text)
-
 def ansi_blink(text):
     return "\033[5m" + text
 
