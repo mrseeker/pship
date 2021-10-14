@@ -379,9 +379,11 @@ def anti_runout(self):
 
 def deut_runout(self):
     #TODO
-    console_message(self,["engineering"],"Deeuterium runout!")
+    console_message(self,["engineering"],"Deuterium runout!")
     return 1
 
+def batt_balance(self):
+    console_message(self,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(self.db.batt["out"] * 100.0)))
 
 def batt_runout(self):
     #TODO
