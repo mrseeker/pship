@@ -16,6 +16,7 @@ class HelmCmdSet(CmdSet):
             self.add(CmdCoords())
             self.add(CmdEngage())
             self.add(CmdStatus())
+            self.add(CmdCalculate())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -23,6 +24,7 @@ class FighterCmdSet(CmdSet):
         def at_cmdset_creation(self):
             self.add(CmdCoords())
             self.add(CmdEngage())
+            self.add(CmdCalculate())
             self.add(CmdStatus_Fighter())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
@@ -219,6 +221,58 @@ class CmdCoords(default_cmds.MuxCommand):
         else:    
             self.caller.msg("Command not found: " + str(self.args))
             
+
+class CmdCalculate(default_cmds.MuxCommand):
+    """
+    Calculates from one type to another type
+
+    Usage: calc <command>
+    
+    Command list:
+    ly2pc - Lightyear to Parsec
+    ly2su - Lightyear to Standard Unit
+    pc2ly - Parsec to Lightyear
+    pc2su - Parsec to Standard Unit
+    su2ly - Standard Unit to Lightyear
+    su2pc - Standard Unit to Parsec
+    """
+
+    key = "calc"
+    help_category = "Helm"
+    
+    def func(self):
+        self.args = self.args.strip()
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+                return 0
+
+        if (self.args[0] == ""):
+            self.caller.msg("Please fill in an unit for conversion")
+        elif(self.args[0] == "ly2pc"):
+            for arg in self.args[1:]:
+                self.caller.msg(str(arg) + " - " + str(utils.ly2pc(float(arg))))
+        elif(self.args[0] == "ly2su"):
+            for arg in self.args[1:]:
+                self.caller.msg(str(arg) + " - " + str(utils.ly2su(float(arg))))
+        elif(self.args[0] == "pc2ly"):
+            for arg in self.args[1:]:
+                self.caller.msg(str(arg) + " - " + str(utils.pc2ly(float(arg))))
+        elif(self.args[0] == "pc2su"):
+            for arg in self.args[1:]:
+                self.caller.msg(str(arg) + " - " + str(utils.pc2su(float(arg))))
+        elif(self.args[0] == "su2ly"):
+            for arg in self.args[1:]:
+                self.caller.msg(str(arg) + " - " + str(utils.su2ly(float(arg))))
+        elif(self.args[0] == "su2pc"):
+            for arg in self.args[1:]:
+                self.caller.msg(str(arg) + " - " + str(utils.su2pc(float(arg))))
+        else:    
+            self.caller.msg("Command not found: " + str(self.args))
+
+
 class CmdEngage(default_cmds.MuxCommand):
     """
     Engages the engines
