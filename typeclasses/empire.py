@@ -9,7 +9,7 @@ class Empire(Object):
         super().at_object_creation()
         self.db.desc = "This is a beacon used to indicate empires"
         self.db.type = constants.EMPIRE_ATTR_NAME
-        self.tags.add(category="space_object",tag=constants.EMPIRE_ATTR_NAME)
+        self.tags.add(constants.EMPIRE_ATTR_NAME,category="space_object")
         self.db.sdesc = "Default Empire"
         self.db.location = 0
         self.db.space = 0
