@@ -18,10 +18,10 @@ def up_alloc_balance(self):
     balance.balance_tact_power(self)
     balance.balance_sensor_power(self)
     balance.balance_ops_power(self)
-    alerts.report_eng_power(self,obj=self)
-    alerts.report_helm_power(self,obj=self)
-    alerts.report_tact_power(self,obj=self)
-    alerts.report_ops_power(self,obj=self)
+    alerts.report_eng_power(self)
+    alerts.report_helm_power(self)
+    alerts.report_tact_power(self)
+    alerts.report_ops_power(self)
     self.db.alloc["version"] = 0
     self.db.engine["version"] = 1
     self.db.sensor["version"] = 1

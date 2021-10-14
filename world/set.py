@@ -447,10 +447,10 @@ def do_set_eng_alloc(self, helm, tactical, operations, obj):
         balance.balance_tact_power(obj)
         balance.balance_sensor_power(obj)
         balance.balance_ops_power(obj)
-        alerts.report_eng_power(self,obj)
-        alerts.report_helm_power(self,obj)
-        alerts.report_tact_power(self,obj)
-        alerts.report_ops_power(self,obj)
+        alerts.report_eng_power(obj)
+        alerts.report_helm_power(obj)
+        alerts.report_tact_power(obj)
+        alerts.report_ops_power(obj)
         obj.db.engine["version"] = 1
         obj.db.sensor["version"] = 1
         obj.db.cloak["version"] = 1

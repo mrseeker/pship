@@ -248,19 +248,19 @@ def border_cross(self, type):
                             if (obj.name != self.name):
                                 if (utils.sdb2range(self,obj) < constants.MAX_NOTIFICATION_DISTANCE):
                                     if (type):
-                                        do_console_notify(self, ansi_notify(self.name + " disengages its cloaking device."))
+                                        do_console_notify(self, ansi_notify(self.name + " crosses the border."))
 
-def report_eng_power(self,obj):
+def report_eng_power(obj):
     table = evtable.EvTable("|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bEngineering Allocation Report|n\n"
     table.add_row("|cTotal EPS",unparse.unparse_power(obj.db.power["total"]),"100%")
     table.add_row("|cTotal Helm",unparse.unparse_power(obj.db.alloc["helm"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["helm"]),ansi_rainbow_scale(obj.db.alloc["helm"],35))
     table.add_row("|cTotal Tactical",unparse.unparse_power(obj.db.alloc["tactical"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tactical"]),ansi_rainbow_scale(obj.db.alloc["tactical"],35))
     table.add_row("|cTotal Operations",unparse.unparse_power(obj.db.alloc["operations"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["operations"]),ansi_rainbow_scale(obj.db.alloc["operations"],35))
-    console_message(self,["engineering"], buffer + str(table) + "|n")
+    console_message(obj,["engineering"], buffer + str(table) + "|n")
     return 1
 
-def report_helm_power(self,obj):
+def report_helm_power(obj):
     table = evtable.EvTable("|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bHelm/Navigation Allocation Report|n\n"
     table.add_row("|cTotal Helm",unparse.unparse_power(obj.db.alloc["helm"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["helm"]))
@@ -269,10 +269,10 @@ def report_helm_power(self,obj):
     for i in range(constants.MAX_SHIELD_NAME):
         table.add_row("|c"+ unparse.unparse_shield(i),unparse.unparse_power(obj.db.alloc["shield"][i] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shield"][i]),ansi_rainbow_scale(obj.db.alloc["shield"][i],35))
     table.add_row("|c"+ constants.cloak_name[obj.db.cloak["exist"]] + "|n",unparse.unparse_power(obj.db.alloc["cloak"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["cloak"]),ansi_rainbow_scale(obj.db.alloc["cloak"],35))
-    console_message(self,["helm","engineering"], buffer + str(table) + "|n")
+    console_message(obj,["helm","engineering"], buffer + str(table) + "|n")
     return 1
 
-def report_tact_power(self,obj):
+def report_tact_power(obj):
     table = evtable.EvTable("|cAllocation|n","|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bTactical/Weapon Allocation Report|n\n"
     table.add_row("|cTotal Tactical",unparse.unparse_power(obj.db.alloc["tactical"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tactical"]))
@@ -281,36 +281,36 @@ def report_tact_power(self,obj):
     table.add_row("|cEW Systems",unparse.unparse_power(obj.db.alloc["sensors"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["sensors"]),ansi_rainbow_scale(obj.db.alloc["sensors"],35))
     table.add_row("|cECM",unparse.unparse_power(obj.db.alloc["ecm"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["ecm"]),ansi_rainbow_scale(obj.db.alloc["ecm"],35))
     table.add_row("|cECCM",unparse.unparse_power(obj.db.alloc["eccm"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["eccm"]),ansi_rainbow_scale(obj.db.alloc["ecm"],35))
-    console_message(self,["engineering","science","tactical"], buffer + str(table) + "|n")
+    console_message(obj,["engineering","science","tactical"], buffer + str(table) + "|n")
     return 1
 
-def report_ops_power(self,obj):
+def report_ops_power(obj):
     table = evtable.EvTable("|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bOperations Allocation Report|n\n"
     table.add_row("|cTotal Operations",unparse.unparse_power(obj.db.alloc["operations"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["operations"]))
     table.add_row("|cTransporters",unparse.unparse_power(obj.db.alloc["transporters"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["transporters"]),ansi_rainbow_scale(obj.db.alloc["transporters"],35))
     table.add_row("|cTractors",unparse.unparse_power(obj.db.alloc["tractors"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tractors"]),ansi_rainbow_scale(obj.db.alloc["tractors"],35))
     table.add_row("|cMiscellaneous",unparse.unparse_power(obj.db.alloc["miscellaneous"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["miscellaneous"]),ansi_rainbow_scale(obj.db.alloc["miscellaneous"],35))
-    console_message(self,["engineering","damage","operation"], buffer + str(table) + "|n")
+    console_message(obj,["engineering","damage","operation"], buffer + str(table) + "|n")
     return 1
     
-def report_shield_power(self,obj):
+def report_shield_power(obj):
     table = evtable.EvTable("|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bShield Allocation Report|n\n"
     table.add_row("|cShields|n",unparse.unparse_power(obj.db.alloc["shields"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shields"]))
     for i in range(constants.MAX_SHIELD_NAME):
         table.add_row("|c"+ unparse.unparse_shield(i)+"|n",unparse.unparse_power(obj.db.alloc["shield"][i] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shield"][i]),ansi_rainbow_scale(obj.db.alloc["shield"][i],35))
     table.add_row("|c" + constants.cloak_name[obj.db.cloak["exist"]] + "|n",unparse.unparse_power(obj.db.alloc["cloak"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["cloak"]),ansi_rainbow_scale(obj.db.alloc["cloak"],35))
-    console_message(self,["helm","engineering"], buffer + str(table)+"|n")
+    console_message(obj,["helm","engineering"], buffer + str(table)+"|n")
     return 1
 
-def report_sensor_power(self,obj):
+def report_sensor_power(obj):
     table = evtable.EvTable("|cAllocation", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bEW Systems Allocation Report\n"
     table.add_row("|cEW Systems",unparse.unparse_power(obj.db.alloc["sensors"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["sensors"]))
     table.add_row("|cECM",unparse.unparse_power(obj.db.alloc["ecm"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["ecm"]),ansi_rainbow_scale(obj.db.alloc["ecm"],35))
     table.add_row("|cECCM",unparse.unparse_power(obj.db.alloc["eccm"] * obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["eccm"]),ansi_rainbow_scale(obj.db.alloc["eccm"],35))
-    console_message(self,["engineering","science","tactical"], buffer + str(table)+"|n")
+    console_message(obj,["engineering","science","tactical"], buffer + str(table)+"|n")
     return 1
 
 def pitch(self):
