@@ -71,7 +71,7 @@ def unparse_empire(obj):
     if (obj.db.move["empire"] == 0):
         return "Neutral"
     else:
-        empire = search_object(obj.db.move["empire"])
+        empire = search_object(obj.db.move["empire"])[0]
         if(empire is not None):
             return empire[0].db.sdesc
         else:
