@@ -68,7 +68,7 @@ def unparse_quadrant(obj):
         return constants.quadrant_name[obj.db.move["quadrant"]]
 
 def unparse_empire(obj):
-    if (obj.db.move["empire"] == 0):
+    if (obj.db.move["empire"] == ''):
         return "Neutral"
     else:
         empire = search_object(obj.db.move["empire"])[0]
