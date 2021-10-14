@@ -46,9 +46,9 @@ class Ship(Room):
         self.db.fuel = {"antimatter":0,"deuterium":0,"reserves":0}
         self.db.beam = {"exist":1,"in":0.0,"out":0.0,"banks":0}
         self.db.missile = {"exist":1,"tubes":0,"in":0.0,"out":0.0}
-        self.db.slist = {"key":[],"num":[],"lev":[]}
-        self.db.blist = {"lock":[],"active":[]}
-        self.db.mlist = {"lock":[],"active":[]}
+        self.db.slist = {"key":[]* constants.MAX_SENSOR_CONTACTS,"num":[0] * constants.MAX_SENSOR_CONTACTS,"lev":[0] * constants.MAX_SENSOR_CONTACTS}
+        self.db.blist = {"lock":[]*constants.MAX_BEAM_BANKS,"active":[0]*constants.MAX_BEAM_BANKS}
+        self.db.mlist = {"lock":[]*constants.MAX_MISSILE_TUBES,"active":[0]*constants.MAX_MISSILE_TUBES}
         self.db.freq = {}
         self.db.engineering = {"start_sequence":0,"override":self.key}
         
