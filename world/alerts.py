@@ -208,7 +208,7 @@ def do_space_notify_one(self,console,text):
                     if(self.name != obj.name):
                         contact = utils.sdb2contact(obj,self)
                         if (contact != constants.SENSOR_FAIL):
-                            console.message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
+                            console_message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
 
 def do_space_notify_two(self,obj2,console,text):
     space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
@@ -220,7 +220,7 @@ def do_space_notify_two(self,obj2,console,text):
                         contact1 = utils.sdb2contact(obj,self)
                         contact2 = utils.sdb2contact(obj,obj2)
                         if (contact1 != constants.SENSOR_FAIL or contact2 != constants.SENSOR_FAIL):
-                            console.message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
+                            console_message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
 
 def ship_cloak_online(self):
     do_ship_notify(self, ansi_notify(self.name + " engages its cloaking device."));
