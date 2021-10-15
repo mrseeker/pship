@@ -233,8 +233,7 @@ class CmdEngine(default_cmds.MuxCommand):
                         self.caller.msg("Starting engine... "+ str(int(i/10*100)) + "% complete...")
                     alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Engine startup complete!"))
                     obj.db.engineering["start_sequence"] = 0
-                    setter.do_set_active(self.caller,ship_obj)
-                    setter.do_set_battery(1.0)
+                    setter.do_set_active(self.caller,obj)
             else:
                 self.caller.msg("Engines are already starting... type 'engine abort' to stop the process.")
         elif(self.args == "eject main " + obj.db.engineering["override"]):
