@@ -90,7 +90,7 @@ class CmdStatus_Fighter(default_cmds.MuxCommand):
                     buffer += "{:.15s}".format(unparse.unparse_power(d)) + " " + "{:.5s}".format(unparse.unparse_percent(1.0 - (1.0 / d)))+ " " + alerts.ansi_red_scale(obj.db.shield[i]["damage"], 20) + "\n"
                 if (i < constants.MAX_SHIELD_NAME -1):
                     buffer += "\n"
-        alerts.console_message(self.caller,["engineering"],buffer)
+        alerts.console_message(obj,["engineering"],buffer)
 
 class CmdStatus(default_cmds.MuxCommand):
     """
