@@ -59,8 +59,8 @@ def up_aux_io(self):
 def up_batt_io(self):
     self.db.batt["out"] = self.db.batt["in"]
     alerts.batt_balance(self)
-    self.power["batt"] = self.db.batt["gw"] * self.db.batt["out"]
-    self.power["version"] = 1
+    self.db.power["batt"] = self.db.batt["gw"] * self.db.batt["out"]
+    self.db.power["version"] = 1
     
 
 def up_main_damage(self):
