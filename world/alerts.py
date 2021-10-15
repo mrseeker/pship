@@ -176,7 +176,7 @@ def transmit_message(self,freq,range,code,message,language="default"):
 
 def console_message(self,console,text):
     for console_name in console:
-        console_obj = search_tag(console_name,category=self.key)
+        console_obj = search_tag(console_name,category=self.key.lower())
         if (console_obj.count() > 0):
             for obj in console_obj:
                 if (obj.db.ship == self.name):
@@ -191,7 +191,7 @@ def do_console_notify(self,console,text):
 
 def do_all_console_notify(self,text):
     for console_name in constants.CONSOLE_LIST:
-        console_obj = search_tag(console_name,category=self.key)
+        console_obj = search_tag(console_name,category=self.key.lower())
         if (console_obj.count() > 0):
             for obj in console_obj:
                 if (obj.db.ship == self.name):
