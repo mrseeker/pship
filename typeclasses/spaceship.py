@@ -25,7 +25,7 @@ class Ship(Room):
         self.tags.add(category="space_object",tag=constants.SHIP_ATTR_NAME)
         self.tags.add(category=self.key,tag="bridge")
         self.db.coords = {"x":0.0,"y":0.0,"z":0.0,"xo":0.0,"yo":0.0,"zo":0.0,"zd":0.0,"xd":0.0,"yd":0.0,"zd":0.0}
-        self.db.move = {"in":0.0,"out":0.0,"v":0.0,"ratio":1.0,"time":0,"quadrant":0,"dt":0,"cochranes":0,"empire":0}
+        self.db.move = {"in":0.0,"out":0.0,"v":0.0,"ratio":1.0,"time":0,"quadrant":0,"dt":0,"cochranes":0,"empire":""}
         self.db.course = {"version":0,"d":[[0,0,0],[0,0,0],[0,0,0]],"yaw_in":0.0,"yaw_out":0.0,"roll_in":0.0,"roll_out":0.0,"pitch_in":0.0,"pitch_out":0.0}
         self.db.iff = {"frequency":0.0}
         self.db.shield = {"exist":1,0:{"active":0,"damage":1.0,"maximum":1.0,"ratio":1.0},1:{"active":0,"damage":1.0,"maximum":1.0,"ratio":1.0},2:{"active":0,"damage":1.0,"maximum":1.0,"ratio":1.0},3:{"active":0,"damage":1.0,"maximum":1.0,"ratio":1.0},4:{"active":0,"damage":1.0,"maximum":1.0,"ratio":1.0},5:{"active":0,"damage":1.0,"maximum":1.0,"ratio":1.0},"ratio":1.0,"visibility":1.0,"maximum":1.0,"freq":0.0}
