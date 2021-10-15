@@ -226,7 +226,14 @@ class CmdEngine(default_cmds.MuxCommand):
                     self.caller.msg("Starting up engines for " + obj.name)
                     alerts.console_message(obj,["engineering"],alerts.ansi_notify(self.caller.name + " is starting up the engines... type 'engine abort' to stop the process."))
                     obj.db.engineering["start_sequence"]=1
-                    utils.delay(60,self.step1)
+                    for i in range(1,6):
+                        if (obj.db.engineering["start_sequence"] == 0):
+                            return
+                        yield(10)
+                        self.caller.msg("Starting engine... "+ str(i/6*100) + "% complete..."
+                    alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Engine startup complete!"))
+                    ship_obj.db.engineering["start_sequence"]=0
+                    setter.do_set_active(self.caller,ship_obj)
             else:
                 self.caller.msg("Engines are already starting... type 'engine abort' to stop the process.")
         elif(self.args == "eject main " + obj.db.engineering["override"]):
@@ -268,34 +275,3 @@ class CmdEngine(default_cmds.MuxCommand):
             self.caller.msg(alerts.ansi_red("Startup sequence already in progress..."))
         else:
             self.caller.msg("Command not found: " + self.args)
-    def step1(self):
-        obj_x = search_object(self.caller.location)[0]
-        ship_obj = search_object(obj_x.db.ship)[0]
-        if(ship_obj.db.engineering["start_sequence"]<0):
-            return
-        alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"System core temp at 2.500.000K"))
-        utils.delay(120,self.step2)
-    def step2(self):
-        obj_x = search_object(self.caller.location)[0]
-        ship_obj = search_object(obj_x.db.ship)[0]
-        if(ship_obj.db.engineering["start_sequence"]<0):
-            return
-        alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Injecting antimatter..."))
-        utils.delay(120,self.step3)
-        
-    def step3(self):
-        obj_x = search_object(self.caller.location)[0]
-        ship_obj = search_object(obj_x.db.ship)[0]
-        if(ship_obj.db.engineering["start_sequence"]<0):
-            return
-        alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Building up pressure..."))
-        utils.delay(60,self.step4)
-    
-    def step4(self):
-        obj_x = search_object(self.caller.location)[0]
-        ship_obj = search_object(obj_x.db.ship)[0]
-        if(ship_obj.db.engineering["start_sequence"]<0):
-            return
-        alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Engine startup complete!"))
-        ship_obj.db.engineering["start_sequence"]=0
-        setter.do_set_active(self.caller,ship_obj)
