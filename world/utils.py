@@ -456,3 +456,9 @@ def sdb2friendly(n1,n2):
         return 1
     else:
         return 0
+        
+def sdb2eccm_srs(obj):
+    if (obj.db.sensor["ew_active"] == 1):
+        return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
+    else:
+        return 1.0
