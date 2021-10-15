@@ -230,7 +230,7 @@ class CmdEngine(default_cmds.MuxCommand):
                         if (obj.db.engineering["start_sequence"] == 0):
                             return
                         yield(10)
-                        self.caller.msg("Starting engine... "+ str(i/6*100) + "% complete..."
+                        self.caller.msg("Starting engine... "+ str(i/6*100) + "% complete...")
                     alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Engine startup complete!"))
                     ship_obj.db.engineering["start_sequence"]=0
                     setter.do_set_active(self.caller,ship_obj)
