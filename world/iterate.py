@@ -755,7 +755,8 @@ def up_signature(self):
     self.db.sensor["version"] = 0
     
 def up_sensor_message(self, contacts, temp_sdb, temp_lev):
-    temp_num = []
+    temp_num = [0] * constants.MAX_SENSOR_CONTACTS
+
     for i in range(contacts):
         gain = 0
         for j in range(contacts):
@@ -820,8 +821,9 @@ def up_sensor_list(self):
     contacts = 0
     limit = constants.PARSEC * 100.0
     objects = search_tag(category="space_object")
-    temp_sdb = []
-    temp_lev = []
+    temp_sdb = [""]* constants.MAX_SENSOR_CONTACTS
+    temp_lev = [0]* constants.MAX_SENSOR_CONTACTS
+    
     for obj in objects:
         if (self.db.location == obj.db.location and self.db.space == obj.db.space and obj.db.structure["type"] and self.key != obj.key):
             x = math.fabs(self.db.coords["x"] - obj.db.coords["x"])
