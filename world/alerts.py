@@ -179,8 +179,7 @@ def console_message(self,console,text):
         console_obj = search_tag(console_name,category=self.key.lower())
         if (console_obj.count() > 0):
             for obj in console_obj:
-                if (obj.db.ship == self.name):
-                    obj.msg_contents(text)
+                obj.msg_contents(text)
         else:
             if (console != "bridge"):
                 console_message(self,"bridge",text)
