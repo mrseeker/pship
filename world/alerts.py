@@ -369,15 +369,16 @@ def yaw(self):
     return 1
 
 def main_balance(self):
-    #TODO
-    console_message(self,["engineering"],"New main_balance set")
+    console_message(self,["engineering"],ansi_alert("M/A reactor balanced at {:.3f}%".format(self.db.main["out"] * 100.0)))
     return 1
 
 def aux_balance(self):
-    #TODO
-    console_message(self,["engineering"],"New aux_balance set")
+    console_message(self,["engineering"],ansi_alert("Fusion reactor balanced at {:.3f}%".format(self.db.aux["out"] * 100.0)))
     return 1
 
+def batt_balance(self):
+    console_message(self,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(self.db.batt["out"] * 100.0)))
+    return 1
 
 def max_repair(self):
     #TODO
