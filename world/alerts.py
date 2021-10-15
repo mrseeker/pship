@@ -373,6 +373,12 @@ def main_balance(self):
     console_message(self,["engineering"],"New main_balance set")
     return 1
 
+def aux_balance(self):
+    #TODO
+    console_message(self,["engineering"],"New aux_balance set")
+    return 1
+
+
 def max_repair(self):
     #TODO
     console_message(self,["engineering"],"Maximum repairs")
