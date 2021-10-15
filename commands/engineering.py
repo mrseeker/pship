@@ -275,9 +275,6 @@ class CmdEngine(default_cmds.MuxCommand):
             return
         alerts.console_message(self.caller,["engineering"],alerts.ansi_cmd(self.caller.name,"System core temp at 2.500.000K"))
         utils.delay(120,self.step2)
-        
-        do_set_main_reactor
-        
     def step2(self):
         obj_x = search_object(self.caller.location)[0]
         ship_obj = search_object(obj_x.db.ship)[0]
