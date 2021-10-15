@@ -118,19 +118,19 @@ def do_set_inactive(self,obj):
         obj.db.tract["active"] = 0
         obj.db.tract["lock"] = 0
         if (obj.db.status["tractoring"]):
-            x = self.db.status["tractoring"]
+            x = obj.db.status["tractoring"]
             obj_x = search_object(x)[0]
             obj_x.db.status["tractored"] = 0
             obj.db.status["tractoring"] = 0
         obj.db.status["active"] = 0
         obj.db.status["time"] = obj.db.move["time"]
         obj.db.status["autopilot"] = 0
-        iterate.up_cochranes(self)
-        iterate.up_empire(self)
-        iterate.up_vectors(self)
-        iterate.up_resolution(self)
-        iterate.up_signature(self)
-        iterate.up_visibility(self)
+        iterate.up_cochranes(obj)
+        iterate.up_empire(obj)
+        iterate.up_vectors(obj)
+        iterate.up_resolution(obj)
+        iterate.up_signature(obj)
+        iterate.up_visibility(obj)
         return 1
     return 0
     
@@ -185,20 +185,19 @@ def do_set_active(self,obj):
         obj.db.tract["active"] = 0
         obj.db.tract["lock"] = 0
         if (obj.db.status["tractoring"]):
-            x = self.db.status["tractoring"]
+            x = obj.db.status["tractoring"]
             obj_x = search_object(x)[0]
             obj_x.db.status["tractored"] = 0
             obj.db.status["tractoring"] = 0
         obj.db.status["active"] = 1
         obj.db.status["time"] = obj.db.move["time"]
         obj.db.status["autopilot"] = 0
-        iterate.up_cochranes(self)
-        iterate.up_empire(self)
-        iterate.up_vectors(self)
-        iterate.up_resolution(self)
-        iterate.up_signature(self)
-        iterate.up_visibility(self)
-        do_space_db_write(self,obj)
+        iterate.up_cochranes(obj)
+        iterate.up_empire(obj)
+        iterate.up_vectors(obj)
+        iterate.up_resolution(obj)
+        iterate.up_signature(obj)
+        iterate.up_visibility(obj)
         return 1
     return 0
     
