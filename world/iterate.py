@@ -280,114 +280,114 @@ def up_missile_io(self):
         
 def up_autopilot(self):
     r = utils.xyz2range(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"],self.db.coords["xd"],self.db.coords["yd"],self.db.coords["zd"])
-    s = 99
-    a = self.db.status["autopilot"]
+    speed = 99
+    autopilot = self.db.status["autopilot"]
     
     if(r < 1.0):
-        s = 0
-        a = 0
+        speed = 0
+        autopilot = 0
         alerts.console_message(self,["helm"],alerts.ansi_notify("Autopilot destination reached"))
     elif(r < 2):
-        s = 0.01
-        a = 1
+        speed = 0.01
+        autopilot = 1
     elif(r < 4):
-        s = 0.02
-        a = 2
+        speed = 0.02
+        autopilot = 2
     elif(r < 8):
-        s = 0.04
-        a = 3
+        speed = 0.04
+        autopilot = 3
     elif(r < 16):
-        s = 0.08
-        a = 4
+        speed = 0.08
+        autopilot = 4
     elif(r < 32):
-        s = 0.16
-        a = 5
+        speed = 0.16
+        autopilot = 5
     elif(r < 64):
-        s = 0.32
-        a = 6
+        speed = 0.32
+        autopilot = 6
     elif(r < 128):
-        s = 0.64
-        a = 7
+        speed = 0.64
+        autopilot = 7
     else:
         r /= self.db.move["cochranes"] * constants.LIGHTSPEED
         if (r < 1.0):
-            s = 0.999
-            a = 8
+            speed = 0.999
+            autopilot = 8
         elif(r < 10.0):
-            s = math.pow(r / int(r),0.3)
-            a = 9
+            speed = math.pow(r / int(r),0.3)
+            autopilot = 9
         elif(r < 20.0):
-            s = 1.2
-            a = 10
+            speed = 1.2
+            autopilot = 10
         elif(r < 40.0):
-            s = 1.5
-            a = 11
+            speed = 1.5
+            autopilot = 11
         elif(r < 80.0):
-            s = 1.9
-            a = 12
+            speed = 1.9
+            autopilot = 12
         elif(r < 160.0):
-            s = 2.3
-            a = 13
+            speed = 2.3
+            autopilot = 13
             
         elif(r < 320.0):
-            s = 2.8
-            a = 14
+            speed = 2.8
+            autopilot = 14
         elif(r < 640.0):
-            s = 3.5
-            a = 15
+            speed = 3.5
+            autopilot = 15
         elif(r < 1280.0):
-            s = 4.3
-            a = 16
+            speed = 4.3
+            autopilot = 16
         elif(r < 2560.0):
-            s = 5,2
-            a = 17
+            speed = 5,2
+            autopilot = 17
         elif(r < 5120.0):
-            s = 6.5
-            a = 18
+            speed = 6.5
+            autopilot = 18
         elif(r < 10240.0):
-            s = 8.0
-            a = 19
+            speed = 8.0
+            autopilot = 19
         elif(r < 20480.0):
-            s = 9.8
-            a = 20
+            speed = 9.8
+            autopilot = 20
         elif(r < 40960.0):
-            s = 12.1
-            a = 21
+            speed = 12.1
+            autopilot = 21
         elif(r < 81920.0):
-            s = 14.9
-            a = 22
+            speed = 14.9
+            autopilot = 22
         elif(r < 163840.0):
-            s = 18.4
-            a = 23
+            speed = 18.4
+            autopilot = 23
         elif(r < 327680.0):
-            s = 22.6
-            a = 24
+            speed = 22.6
+            autopilot = 24
         elif(r < 655360.0):
-            s = 27.9
-            a = 25
+            speed = 27.9
+            autopilot = 25
         elif(r < 1310720.0):
-            s = 34.3
-            a = 26
+            speed = 34.3
+            autopilot = 26
         elif(r < 2621440.0):
-            s = 42.2
-            a = 27
+            speed = 42.2
+            autopilot = 27
         elif(r < 5242880.0):
-            s = 52.0
-            a = 28
+            speed = 52.0
+            autopilot = 28
         elif(r < 10485760.0):
-            s = 64.0
-            a = 29
+            speed = 64.0
+            autopilot = 29
     
-    if(self.db.status["autopilot"] != a):
-        self.db.status["autopilot"] = a
+    if(self.db.status["autopilot"] != autopilot):
+        self.db.status["autopilot"] = autopilot
         self.db.course["yaw_in"] = utils.xy2bearing(self.db.coords["xd"] - self.db.coords["x"],self.db.coords["yd"] - self.db.coords["y"])
         self.db.course["pitch_in"] = utils.xyz2elevation(self.db.coords["xd"] - self.db.coords["x"],self.db.coords["yd"] - self.db.coords["y"],self.db.coords["zd"] - self.db.coords["z"])
-        if(self.db.move["in"] > s):
-            if (s >=1.0 and s > self.db.engine["warp_cruise"]):
-                s = self.db.engine["warp_cruise"]
-            if (s < 1.0 and s > self.db.engine["impulse_cruise"]):
-                s = self.db.engine["impulse_cruise"]
-            self.db.move["in"] = s
+        if(self.db.move["in"] > speed):
+            if (speed >=1.0 and speed > self.db.engine["warp_cruise"]):
+                speed = self.db.engine["warp_cruise"]
+            if (speed < 1.0 and speed > self.db.engine["impulse_cruise"]):
+                speed = self.db.engine["impulse_cruise"]
+            self.db.move["in"] = speed
 
 def up_speed_io(self):
     if (self.db.move["ratio"] <= 0.0):
@@ -439,7 +439,7 @@ def up_speed_io(self):
             elif(self.db.move["in"] <= 0.0):
                 self.db.move["out"] = 0.0
                 alerts.speed_stop(self)
-                slerts.ship_exit_warp(self)
+                alerts.ship_exit_warp(self)
                 
             elif(self.db.move["out"] > 0.0 and self.db.move["out"] < 1.0):
                 if (self.db.move["in"] > 0.0):
