@@ -339,7 +339,7 @@ def up_autopilot(self):
             speed = 4.3
             autopilot = 16
         elif(r < 2560.0):
-            speed = 5,2
+            speed = 5.2
             autopilot = 17
         elif(r < 5120.0):
             speed = 6.5
