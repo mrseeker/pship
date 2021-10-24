@@ -193,7 +193,7 @@ def sdb2true_speed(obj):
 def contact2sdb(obj,c):
     for i in range(int(obj.db.sensor["contacts"])):
         if (c == obj.db.slist["num"][i]):
-            return search_object(obj.db.slist["key"][i])
+            return search_object(obj.db.slist["key"][i])[0]
             break
     return constants.SENSOR_FAIL
 
