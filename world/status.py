@@ -14,7 +14,7 @@ def sensor_report(self,contact):
     elif(errors.error_on_contact(self,obj,obj_contact)):
         return 0
     else:
-        i = contact2slist(obj,contact)
+        i = utils.contact2slist(obj,contact)
         buffer = "|b|h--[|yDetailed Sensor Report|b]-----------------------------------------------------|w|n\n"
         buffer += format.type(obj_contact)
         buffer += format.resolution(obj.db.slist["lev"][i])
@@ -23,7 +23,7 @@ def sensor_report(self,contact):
             buffer += format.name(obj_contact)
             buffer += format.cargo_cap(obj_contact)
             buffer += "\n"
-            if ((obj.db.structure["type"] == constants.type_name[1] or obj.db.structure["type"] == constants.type_name[2]) and (obj.db.structure["has_docking_bay"] == 1 or obj.db.structure["has_landing_pad"] == 1)):
+            if (obj.db.structure["type"] < 3 and (obj.db.structure["has_docking_bay"] == 1 or obj.db.structure["has_landing_pad"] == 1)):
                 if (obj.db.structure["has_docking_bay"] == 1):
                     buffer += format.docking_doors(obj)
                 if (obj.db.structure["has_landing_pad"] == 1):

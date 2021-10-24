@@ -164,7 +164,7 @@ def transmit_message(self,freq,range,code,message,language="default"):
     space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
-            if(obj.db.structure["type"] is not None):
+            if(obj.db.structure["type"] != 0):
                 if(obj.db.location == self.db.location):
                     if(self.name != obj.name):
                         if(utils.sdb2range(self,obj) < range):
@@ -203,7 +203,7 @@ def do_space_notify_one(self,console,text):
     space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
-            if(obj.db.structure["type"] is not None):
+            if(obj.db.structure["type"] != 0):
                 if(obj.db.location == self.db.location):
                     if(self.name != obj.name):
                         contact = utils.sdb2contact(obj,self)
@@ -214,7 +214,7 @@ def do_space_notify_two(self,obj2,console,text):
     space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
-            if(obj.db.structure["type"] is not None):
+            if(obj.db.structure["type"] != 0):
                 if(obj.db.location == self.db.location):
                     if(self.name != obj.name and obj2.name != obj.name):
                         contact1 = utils.sdb2contact(obj,self)
@@ -244,7 +244,7 @@ def border_cross(self, type):
         space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
         for obj in space_obj:
             if(obj.db.status["active"]):
-                if(obj.db.structure["type"] is not None):
+                if(obj.db.structure["type"] != 0):
                     if(obj.db.space == self.db.space):
                         if(obj.db.empire == self.db.empire):
                             if (obj.name != self.name):

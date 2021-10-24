@@ -770,7 +770,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 self.db.sensor["counter"] = 1
             temp_num[i] = self.db.sensor["counter"]
             obj_x = search_object(temp_sdb[i])[0]
-            alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn("New sensor contact ("+str(temp_num[i]) + "): " + str(obj_x.db.structure["type"])))
+            alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn("New sensor contact ("+str(temp_num[i]) + "): " + str(constants.type_name[obj_x.db.structure["type"]])))
     for i in range(contacts):
         lose = 0
         for j in range(contacts):
@@ -779,7 +779,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 break
         if (lose > 0):
             obj_x = search_object(self.db.slist["key"][i])[0]
-            alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(obj_x.db.structure["type"]) + " contact lost: " + str(obj_x.db.name)))
+            alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.db.name)))
             if (self.db.trans["s_lock"] == self.db.slist["key"][i]):
                 alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.db.name)))
                 self.db.trans.s_lock = 0
@@ -825,7 +825,7 @@ def up_sensor_list(self):
     temp_lev = [0]* constants.MAX_SENSOR_CONTACTS
     
     for obj in objects:
-        if (self.db.location == obj.db.location and self.db.space == obj.db.space and obj.db.structure["type"] and self.key != obj.key):
+        if (self.db.location == obj.db.location and self.db.space == obj.db.space and obj.db.structure["type"] > 0 and self.key != obj.key):
             x = math.fabs(self.db.coords["x"] - obj.db.coords["x"])
             if (x > limit):
                 continue
@@ -870,13 +870,13 @@ def do_space_db_iterate():
     count = 0
     
     for obj in objects:
-        if (obj.db.status["active"] and obj.db.structure["type"] is not None):
+        if (obj.db.status["active"] and obj.db.structure["type"] > 0):
             count = count + 1
             now = gametime.gametime(absolute=True)
             obj.db.move["dt"] = now - obj.db.move["time"]
             obj.db.move["time"] = now
             if (obj.db.move["dt"] > 0.0):
-                if (obj.db.structure["type"] == constants.SHIP_ATTR_NAME):
+                if (obj.db.structure["type"] == 1):
                     if(obj.db.move["time"] - obj.db.status["time"] > 3600):
                         if(obj.db.main["in"] > 0.0):
                             setter.do_set_main_reactor(obj,0.0,obj)
