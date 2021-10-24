@@ -183,3 +183,22 @@ def unparse_arc(value):
 
 def unparse_shield(value):
     return constants.shield_name[value]
+    
+def unparse_identity(obj1,obj2):
+    if (obj1.name == obj2.name):
+        return obj1.name
+    if (obj1.db.location == obj2.name):
+        return obj2.name
+    if (obj1.name = obj2.db.location):
+        return obj2.name
+    
+    slist = utils.sdb2slist(obj1,obj2)
+    if (slist == constants.SENSOR_FAIL):
+        return "unknown contact"
+    else:
+        if(obj1.slist["lev"][slist] >= 0.5 and not obj2.db.cloak["active"]):
+            return obj2.name + " (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
+        elif(obj1.slist["lev"][slist] >= 0.25 and not obj2.db.cloak["active"]):
+            return unparse_class(obj2) + " class (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
+        else:
+            return "contact (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"

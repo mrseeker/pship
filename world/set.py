@@ -1,7 +1,7 @@
 """
 Sets the variables
 """
-from world import alerts,constants,iterate, errors,utils,balance
+from world import alerts,constants,iterate, errors,utils,balance,unparse
 from evennia.utils.search import search_object
 from evennia import gametime
 import math
@@ -499,8 +499,6 @@ def do_set_autopilot (self, obj, flag):
         alerts.notify(self,alerts.ansi_red(obj.name + " is still connected."))
     elif(not obj.db.engine["warp_exist"] and not obj.db.engine["impulse_exist"]):
         alerts.notify(self,alerts.ansi_red(obj.name + " cannot be maneuvered."))
-    elif(obj.db.status["docked"] == 1):
-        alerts.notify(self,alerts.ansi_red(obj.name + " is in dock."))
     elif(obj.db.status["autopilot"] > 0):
         if (flag == 1):
             alerts.notify(self,alerts.ansi_red("Autopilot is already engaged."))
@@ -516,5 +514,33 @@ def do_set_autopilot (self, obj, flag):
         else:
             obj.db.status["autopilot"] = 100
             alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Autopilot engaged"))
+            return 1
+    return 0
+    
+def so_set_intercept(self, obj, contact):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif (obj.db.status["docked"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is in dock."))
+    elif(obj.db.status["landed"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is on a landing pad."))
+    elif(obj.db.status["connected"] == 1):
+        alerts.notify(self,alerts.ansi_red(obj.name + " is still connected."))
+    elif(not obj.db.engine["warp_exist"] and not obj.db.engine["impulse_exist"]):
+        alerts.notify(self,alerts.ansi_red(obj.name + " cannot be maneuvered."))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if (errors.error_on_contact(self,obj,obj_x)):
+            return 0
+        else:
+            obj.db.coords["xd"] = obj_x.db.coords["x"]
+            obj.db.coords["yd"] = obj_x.db.coords["y"]
+            obj.db.coords["zd"] = obj_x.db.coords["z"]
+            obj.db.coords["yaw_in"] = utils.sdb2bearing(obj,obj_x)
+            obj.db.coords["pitch_in"] = utils.sdb2elevation(obj,obj_x)
+            if (obj.db.course["roll_in"] != 0):
+                alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"],obj.db.coords["roll_in"])
+            else:
+                alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"])
             return 1
     return 0
