@@ -89,7 +89,7 @@ def unparse_movement(obj):
     elif(math.fabs(obj.db.move["out"]) >= 1.0):
         return "Warp " + "{:.0f}".format(obj.db.move["out"])
     else:
-        return "{:.3f% Impulse}".format(obj.db.move["out"] * 100)
+        return "{:.3f}".format(obj.db.move["out"] * 100) + "% Impulse"
 
 def unparse_velocity(obj):
     if (obj.db.status["tractored"]):
