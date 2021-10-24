@@ -2,11 +2,12 @@ from world import unparse, utils
 
 def l_line():
     return '|b-------------------------------------------------------------------------------|w\n'
-def l_end
+
+def l_end():
     return '|b|h-------------------------------------------------------------------------------|w|n\n'
 
 def name(obj):
-    return f'|c{"Name":16}:|w {obj.name):<20}'
+    return f'|c{"Name":16}:|w {obj.name:<20}'
 
 def type(obj):
     return f'|c{"Type":16}:|w {unparse.unparse_type(obj):<20}'

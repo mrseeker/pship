@@ -44,7 +44,7 @@ class CmdIdent(default_cmds.MuxCommand):
         if not self.args:
             self.caller.msg("You did not enter any contacts")
         elif(len(self.args) == 1):
-            status.sensor_report(caller,int(self.args[0]))
+            status.sensor_report(self,int(self.args[0]))
         else:
             self.caller.msg("Wrong amount of arguments")
 
