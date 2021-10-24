@@ -23,11 +23,11 @@ def sensor_report(self,contact):
             buffer += format.name(obj_contact)
             buffer += format.cargo_cap(obj_contact)
             buffer += "\n"
-            if (obj.db.structure["type"] < 3 and (obj.db.structure["has_docking_bay"] == 1 or obj.db.structure["has_landing_pad"] == 1)):
-                if (obj.db.structure["has_docking_bay"] == 1):
-                    buffer += format.docking_doors(obj)
-                if (obj.db.structure["has_landing_pad"] == 1):
-                    buffer += format.landing_doors(obj)
+            if (obj_contact.db.structure["type"] < 3 and (obj_contact.db.structure["has_docking_bay"] == 1 or obj_contact.db.structure["has_landing_pad"] == 1)):
+                if (obj_contact.db.structure["has_docking_bay"] == 1):
+                    buffer += format.docking_doors(obj_contact)
+                if (obj_contact.db.structure["has_landing_pad"] == 1):
+                    buffer += format.landing_doors(obj_contact)
                 buffer += "\n"
         if (obj.db.slist["lev"][i] > 0.25 and not obj_contact.db.cloak["active"]):
             buffer += format.ship_class(obj_contact)
