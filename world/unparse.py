@@ -149,9 +149,9 @@ def unparse_cargo(value):
 def unparse_contact(obj, obj2):
     if (obj == obj2):
         return obj.name
-    if (obj.location == obj2):
+    if (obj.db.location == obj2):
         return obj2.name
-    if (obj == obj2.location):
+    if (obj == obj2.db.location):
         return obj2.name
         
     slist = utils.sdb2list(obj,obj2)
@@ -189,7 +189,7 @@ def unparse_identity(obj1,obj2):
         return obj1.name
     if (obj1.db.location == obj2.name):
         return obj2.name
-    if (obj1.name = obj2.db.location):
+    if (obj1.name == obj2.db.location):
         return obj2.name
     
     slist = utils.sdb2slist(obj1,obj2)
