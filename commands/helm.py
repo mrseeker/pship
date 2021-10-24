@@ -361,3 +361,24 @@ class CmdAutopilot(default_cmds.MuxCommand):
         if(errors.error_on_console(self.caller,obj)):
             return 0
         setter.do_set_autopilot(self.caller,obj,int(self.args[0]))
+        
+class CmdSpeed(default_cmds.MuxCommand):
+    """
+    Sets the warp speed
+    
+    Usage: speed <warp>
+    
+    Command list:
+    None
+    """
+    
+    key = "speed"
+    help_category = "Helm"
+    
+    def func(self):
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+        setter.do_set_speed(self.caller,obj,float(self.args[0]))
