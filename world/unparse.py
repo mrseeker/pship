@@ -24,6 +24,9 @@ def unparse_power(value):
 def unparse_class(obj):
     return str(obj.__class__.__name__)
 
+def unparse_type(obj):
+    return str(obj.db.type)
+
 def unparse_percent(value):
    return "{:.0f}".format(value * 100) + "%"
 
@@ -82,6 +85,36 @@ def unparse_course(obj):
         return "{:.2f}".format(obj.db.course["yaw_out"]) + " " + "{:.2f}".format(obj.db.course["pitch_out"]) + "{:.2f}".format(self.db.course["roll_out"])
     else:
         return "{:.3f}".format(obj.db.course["yaw_out"]) + " " + "{:.3f}".format(obj.db.course["pitch_out"])
+
+def unparse_speed(value):
+    
+    if (value > 0.0):
+        if (value >= 100.0):
+            return (f'w{value:5.1f}')
+        elif(value >= 10.0):
+            return (f'w{value:5.2f}')
+        elif(value >= 1.0):
+            return (f'w{value:5.3f}')
+        elif(value >= 0.1):
+            return (f'{value*100:5.2f}i')
+        else:
+            return (f'{value*100:5.3f}i')
+    elif(value < 0.0):
+        if (value <= -100.0):
+            return (f'w{value:5.0f}')
+        elif(value <= -10.0):
+            return (f'w{value:5.1f}')
+        elif(value <= -1.0):
+            return (f'w{value:5.2f}')
+        elif(value <= -0.1):
+            return (f'{value*100:5.1f}i')
+        else:
+            return (f'{value*100:5.2f}i')
+    else:
+        return "None"
+
+def unparse_bearing(obj1, obj2):
+    return f'{utils.sdb2bearing(obj1,obj2):.3f} {utils.sdb2elevation(obj1,obj2):.3f}'
 
 def unparse_movement(obj):
     if (obj.db.move["out"] == 0.0):

@@ -6,6 +6,14 @@ PARSEC = 3085659622.014257
 LIGHTYEAR = 946057498.117920
 LIGHTSPEED = 29.979246
 
+CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter","general","bridge"]
+damage_name = ["No Damage","Patched Damage","Minor Damage","Light Damage","Moderate Damage","Heavy Damage","Severe Damage","Inoperative","Destroyed"]
+shield_name = ["Forward shield","Starboard shield","Aft shield","Port shield","Dorsal shield","Ventral shield"]
+cloak_name = ["Other","Cloak"]
+quadrant_name = ["Alpha","Beta","Delta","Gamma"]
+system_name = ["Superstructure","Fusion Reactor","Batteries","Beam Weapon","Cloaking Device","EW Systems","Impulse Drive","LR Sensors","M/A Reactor","Missile Weapon","Shield","SR Sensors","Tractor Beams","Transporters","Warp Drive"]
+type_name = ["None","Ship","Base","Planet","Anomaly","Star","Asteroid","Debris","Computer-Core","Corpse","Player","Other"]
+
 SENSOR_FAIL = -100
 VACANCY_FAIL = -101
 BAD_SDB_FAIL = -102
@@ -103,7 +111,7 @@ CLASS_ATTR_NAME = "class"
 CONSOLE_ATTR_NAME = "consoles"
 CONSOLE_USER_ATTR_NAME = "user"
 EMPIRE_ATTR_NAME = "beacon"
-SHIP_ATTR_NAME = "ship"
+SHIP_ATTR_NAME = type_name[1]
 
 ALLOCATE_ATTR_NAME = "allocate"
 ALLOCATE_DATA_NUMBER = 21
@@ -194,11 +202,5 @@ STATUS_DATA_NUMBER = 10
 IFF_ATTR_NAME = "iff"
 IFF_DATA_NUMBER = 1
 
-CONSOLE_LIST = ["security","helm","engineering","operation","science","damage","communication","tactical","transporter","monitor","fighter","general","bridge"]
-damage_name = ["No Damage","Patched Damage","Minor Damage","Light Damage","Moderate Damage","Heavy Damage","Severe Damage","Inoperative","Destroyed"]
-shield_name = ["Forward shield","Starboard shield","Aft shield","Port shield","Dorsal shield","Ventral shield"]
-cloak_name = ["Other","Cloak"]
-quadrant_name = ["Alpha","Beta","Delta","Gamma"]
-system_name = ["Superstructure","Fusion Reactor","Batteries","Beam Weapon","Cloaking Device","EW Systems","Impulse Drive","LR Sensors","M/A Reactor","Missile Weapon","Shield","SR Sensors","Tractor Beams","Transporters","Warp Drive"]
 MAX_SHIELD_NAME = len(shield_name)
 MAX_QUADRANT_NAME = len(quadrant_name)

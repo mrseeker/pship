@@ -41,8 +41,8 @@ class Ship(Room):
         self.db.main = {"exist":1,"in":0,"out":0,"gw":0,"damage":1.0}
         self.db.aux = {"exist":1,"gw":0,"in":0,"out":0,"damage":1.0}
         self.db.batt = {"exist":1,"in":0,"out":0,"gw":1.0,"damage":1.0}
-        self.db.structure = {"superstructure":0.0,"type":constants.SHIP_ATTR_NAME,"displacement":0, "repair":0.0,"max_repair":0.0}
-        self.db.status = {"active":0,"tractored":0,"tractoring":0,"crippled":0,"docked":0,"connected":0,"landed":0,"time":0,"autopilot":0}
+        self.db.structure = {"superstructure":0.0,"type":constants.SHIP_ATTR_NAME,"displacement":0, "repair":0.0,"max_repair":0.0,"cargo_hold":0,"has_docking_bay":0,"has_landing_pad":0}
+        self.db.status = {"active":0,"tractored":0,"tractoring":0,"crippled":0,"docked":0,"connected":0,"landed":0,"time":0,"autopilot":0,"open_docking":0,"open_landing":0}
         self.db.fuel = {"antimatter":0,"deuterium":0,"reserves":0}
         self.db.beam = {"exist":1,"in":0.0,"out":0.0,"banks":0}
         self.db.missile = {"exist":1,"tubes":0,"in":0.0,"out":0.0}
