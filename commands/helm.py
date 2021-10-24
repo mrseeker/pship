@@ -362,7 +362,7 @@ class CmdAutopilot(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        if (len(self.args) == 1)
+        if (len(self.args) == 1):
             setter.do_set_autopilot(self.caller,obj,int(self.args[0]))
         else:
             print("Current autopilot setting: " + obj.db.status["autopilot"])
@@ -386,7 +386,8 @@ class CmdSpeed(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        setter.do_set_speed(self.caller,obj,float(self.args[0]))
+        if (len(self.args) == 1):
+            setter.do_set_speed(self.caller,obj,float(self.args[0]))
 
 class CmdIntercept(default_cmds.MuxCommand):
     """
@@ -407,4 +408,5 @@ class CmdIntercept(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
         if(errors.error_on_console(self.caller,obj)):
             return 0
-        setter.do_set_intercept(self.caller,obj,int(self.args[0]))
+        if (len(self.args) == 1):
+            setter.do_set_intercept(self.caller,obj,int(self.args[0]))

@@ -539,8 +539,8 @@ def so_set_intercept(self, obj, contact):
             obj.db.coords["yaw_in"] = utils.sdb2bearing(obj,obj_x)
             obj.db.coords["pitch_in"] = utils.sdb2elevation(obj,obj_x)
             if (obj.db.course["roll_in"] != 0):
-                alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"],obj.db.coords["roll_in"])
+                alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"],obj.db.coords["roll_in"])))
             else:
-                alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"])
+                alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"])))
             return 1
     return 0
