@@ -517,7 +517,7 @@ def do_set_autopilot (self, obj, flag):
             return 1
     return 0
     
-def so_set_intercept(self, obj, contact):
+def do_set_intercept(self, obj, contact):
     if (errors.error_on_console(self,obj)):
         return 0
     elif (obj.db.status["docked"] == 1):
