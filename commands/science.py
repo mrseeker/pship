@@ -66,8 +66,6 @@ class CmdEmpire(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
             
         if not self.args:
-            self.caller.msg("You did not enter any contacts")
-        elif(len(self.args) == 0):
             status.do_border_report(self)
         else:
             self.caller.msg("Wrong amount of arguments")

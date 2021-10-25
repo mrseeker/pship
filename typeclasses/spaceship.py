@@ -32,7 +32,7 @@ class Ship(Room):
         
         self.db.alloc = {"version":1,"helm":0.0,"tactical":0.0,"operations":0.0,"shield":[0.0]*constants.MAX_SHIELD_NAME,"shields":0.0,"beams":0.0,"missiles":0.0,"sensors":0.0,"transporters":0.0,"tractors":0.0,"miscellaneous":0.0,"ecm":0.0,"eccm":0.0,"movement":0.0,"cloak":0.0}
         self.db.power = {"version":1,"total":0.0,"main":0.0,"aux":0.0,"batt":0.0}
-        self.db.sensor = {"version":1,"ew_damage":1.0,"ew_exist":1,"ew_active":0,"lrs_exist":1,"lrs_active":0,"lrs_signature":1.0,"lrs_resolution":1.0,"lrs_damage":1.0,"srs_active":0,"srs_exist":1,"srs_damage":1.0,"srs_signature":1.0,"srs_resolution":1.0,"counter":0,"contacts":0.,"visibility":1.0}
+        self.db.sensor = {"version":1,"ew_damage":1.0,"ew_exist":1,"ew_active":0,"lrs_exist":1,"lrs_active":0,"lrs_signature":1.0,"lrs_resolution":1.0,"lrs_damage":1.0,"srs_active":0,"srs_exist":1,"srs_damage":1.0,"srs_signature":1.0,"srs_resolution":1.0,"counter":0,"contacts":0.0,"visibility":1.0}
         self.db.tech = {"cloak":1,"stealth":1,"main_max":1.0,"aux_max":1.0,"fuel":1,"sensors":1,"ly_range":1}
         self.db.engine = {"version":1,"impulse_damage":1.0,"warp_damage":1.0,"warp_max":0.0,"impulse_max":0.0,"warp_exist":1,"impulse_exist":1,"warp_cruise":0.0,"impulse_cruise":0.0}
         self.db.cloak = {"damage":1.0,"exist":1,"version":1,"active":0,"cost":0,"freq":0.0}
@@ -41,7 +41,7 @@ class Ship(Room):
         self.db.main = {"exist":1,"in":0,"out":0,"gw":0,"damage":1.0}
         self.db.aux = {"exist":1,"gw":0,"in":0,"out":0,"damage":1.0}
         self.db.batt = {"exist":1,"in":0,"out":0,"gw":1.0,"damage":1.0}
-        self.db.structure = {"superstructure":0.0,"type":1,"displacement":0, "repair":0.0,"max_repair":0.0,"cargo_hold":0,"has_docking_bay":0,"has_landing_pad":0}
+        self.db.structure = {"superstructure":0.0,"type":1,"displacement":1, "repair":0.0,"max_repair":0.0,"cargo_hold":0,"has_docking_bay":0,"has_landing_pad":0}
         self.db.status = {"active":0,"tractored":0,"tractoring":0,"crippled":0,"docked":0,"connected":0,"landed":0,"time":0,"autopilot":0,"open_docking":0,"open_landing":0}
         self.db.fuel = {"antimatter":0,"deuterium":0,"reserves":0}
         self.db.beam = {"exist":1,"in":0.0,"out":0.0,"banks":0}
