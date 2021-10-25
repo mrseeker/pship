@@ -1,5 +1,5 @@
 """
-Handles all engine-related commands
+Handles all tactical-related commands
 """
 
 from evennia import default_cmds

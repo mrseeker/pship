@@ -9,14 +9,14 @@ class Empire(Object):
         super().at_object_creation()
         self.db.desc = "This is a beacon used to indicate empires"
         self.db.type = constants.EMPIRE_ATTR_NAME
-        self.tags.add(constants.EMPIRE_ATTR_NAME,category="space_object")
+        self.tags.add(tag=constants.EMPIRE_ATTR_NAME,category="space_object")
         self.db.sdesc = "Default Empire"
         self.db.location = 0
         self.db.space = 0
         self.db.radius = 1
         self.db.active = 0
         self.db.coords = {"x":0.0,"y":0.0,"z":0.0}
-        
+        self.db.structure = {"type":11}
 
     def get_display_name(self,looker, **kwargs):
        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
