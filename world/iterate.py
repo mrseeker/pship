@@ -870,7 +870,7 @@ def do_space_db_iterate():
     count = 0
     
     for obj in objects:
-        if (obj.db.status["active"] and obj.db.structure["type"] > 0):
+        if (obj.db.status["active"] == 1 and obj.db.structure["type"] > 0):
             count = count + 1
             now = gametime.gametime(absolute=True)
             obj.db.move["dt"] = now - obj.db.move["time"]
