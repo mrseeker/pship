@@ -240,18 +240,19 @@ def border_cross(self, type):
     #Check if we are actually moving, and not creating ships
     if (utils.sdb2true_speed(self) == 0.0):
         return
-    if (self.move["out"] != 0.0):
+    if (self.db.move["out"] != 0.0):
         space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
         for obj in space_obj:
-            if(obj.db.status["active"]):
+            if(obj.db.status["active"] == 1):
                 if(obj.db.structure["type"] != 0):
                     if(obj.db.space == self.db.space):
                         if(obj.db.empire == self.db.empire):
                             if (obj.name != self.name):
                                 if (utils.sdb2range(self,obj) < constants.MAX_NOTIFICATION_DISTANCE):
-                                    if (type):
-                                        do_console_notify(self, ansi_notify(self.name + " crosses the border."))
-
+                                    if (type == 1):
+                                        do_console_notify(obj, ["helm","science","security"], ansi_notify(f'Inbound border crossing reported at {utils.su2pc(self.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(self.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(self.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
+                                    else:
+                                        do_console_notify(obj, ["helm","science","security"], ansi_notify(f'Outbound border crossing reported at {utils.su2pc(self.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(self.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(self.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
 def report_eng_power(obj):
     table = evtable.EvTable("|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bEngineering Allocation Report|n\n"
