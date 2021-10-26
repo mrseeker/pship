@@ -237,7 +237,7 @@ def up_empire(self):
     best_range = sys.maxsize
     best_empire = ""
     for obj in space_obj:
-        if(obj.db.status["active"]):
+        if(obj.db.status["active"] == 1):
             if (obj.db.space != 0 and self.db.space != obj.db.space):
                 continue
             dx = (obj.db.coords["x"] - self.db.coords["x"]) / constants.PARSEC
@@ -247,7 +247,7 @@ def up_empire(self):
             inside_range = math.fabs(range - (obj.db.radius * obj.db.radius))
             
             if (range <= (obj.db.radius * obj.db.radius)): #object in radius
-                if (best_empire <= 0 or inside_range < best_range): #closer to center than previous best
+                if (best_empire == "" or inside_range < best_range): #closer to center than previous best
                     best_range = range
                     best_empire = obj.name
     if (self.db.move["empire"] != best_empire):
@@ -255,15 +255,16 @@ def up_empire(self):
             same = 0
             if (self.db.move["empire"] == best_empire):
                 same = 1
-            if (not same):
+            if (same == 0):
                 alerts.exit_empire(self)
                 if(random.randint(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
                     alerts.border_cross(self,0)
-        self.db.move["empire"] = best_empire
         if (self.db.move["empire"] == ""):
+            self.db.move["empire"] = best_empire
             alerts.enter_empire(self)
             if(random.randint(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
                 alerts.border_cross(self,1)
+        self.db.move["empire"] = best_empire
     
 def up_missile_io(self):
     if (self.db.missile["out"] > self.db.missile["in"]):

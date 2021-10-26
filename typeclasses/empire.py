@@ -10,7 +10,7 @@ class Empire(Ship):
         self.db.desc = "This is a beacon used to indicate empires"
         self.db.type = constants.EMPIRE_ATTR_NAME
         self.tags.add(tag=constants.EMPIRE_ATTR_NAME,category="space_object")
-        self.tags.remove(category="space_object",tag=constants.SHIP_ATTR_NAME)
+        self.tags.remove(constants.SHIP_ATTR_NAME,category="space_object")
         self.db.sdesc = "Default Empire"
         self.db.location = 0
         self.db.space = 0

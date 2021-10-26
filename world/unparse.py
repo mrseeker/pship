@@ -76,7 +76,7 @@ def unparse_empire(obj):
     else:
         empire = search_object(obj.db.move["empire"])[0]
         if(empire is not None):
-            return empire[0].db.sdesc
+            return empire.db.sdesc
         else:
             return "#-1 BAD TERRITORY"
 

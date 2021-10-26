@@ -69,7 +69,7 @@ def do_border_report(self):
                 range = utils.xyz2range(obj.db.coords["x"],obj.db.coords["y"],obj.db.coords["z"],empire.db.coords["x"],empire.db.coords["y"],empire.db.coords["z"]) / constants.PARSEC
                 if (math.fabs(range - empire.db.radius) >= 100.0):
                     continue
-                buffer += f'{empire.name:>20}'
+                buffer += f'{empire.db.sdesc:>20}'
                 if (range > empire.db.radius):
                     buffer += f'{int(utils.xy2bearing((empire.db.coords["x"] - obj.db.coords["x"]),(empire.db.coords["y"] - obj.db.coords["y"]))):3d} {int(utils.xyz2elevation((empire.db.coords["x"] - obj.db.coords["x"]),(empire.db.coords["y"] - obj.db.coords["y"]),(empire.db.coords["z"] - obj.db.coords["z"]))):>3d}  {unparse.unparse_range((range - empire.db.radius) * constants.PARSEC):>7s}  Outside  '
                 else:
