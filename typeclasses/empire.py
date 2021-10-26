@@ -1,10 +1,10 @@
 """
 This holds all the information for an empire. The physical representation of this empire is a beacon
 """
-from typeclasses.spaceship import Ship
+from typeclasses.objects import space_object
 from world import constants
 
-class Empire(Ship):
+class Empire(space_object):
     def at_object_creation(self):
         super().at_object_creation()
         self.db.desc = "This is a beacon used to indicate empires"
@@ -12,8 +12,6 @@ class Empire(Ship):
         self.tags.add(tag=constants.EMPIRE_ATTR_NAME,category="space_object")
         self.tags.remove(constants.SHIP_ATTR_NAME,category="space_object")
         self.db.sdesc = "Default Empire"
-        self.db.location = 0
-        self.db.space = 0
         self.db.radius = 1
         self.db.structure["type"] = 11
 
