@@ -1,5 +1,6 @@
 from world import alerts, errors, unparse, constants, format, utils
 from evennia.utils.search import search_object, search_tag
+from evennia.utils import evtable
 import math
 
 #Gives detailed sensor information
@@ -84,3 +85,176 @@ def do_border_report(self):
         buffer += "\n"
         buffer += format.l_end()
         alerts.notify(self.caller,buffer)
+        
+def contact_flags(self,obj):
+    fp = ""
+    if(obj.db.status["active"]):
+        fp += 'A'
+    if(obj.db.move["in"] != obj.db.move["out"]):
+        fp += 'a'
+    if(obj.db.beam["banks"] > 0):
+        for i in range(obj.db.beam["banks"]):
+            if(obj.db.blist["lock"][i] == self.name):
+                fp += 'B'
+            elif(obj.db.blist["active"][i] > 0):
+                fp += 'b'
+    if(obj.db.cloak["active"]):
+        fp += 'C'
+    if(obj.db.status["connected"]):
+        fp += 'c'
+    if(obj.db.status["docked"]):
+        fp += 'd'
+    if((obj.db.power["total"] * obj.db.alloc["sensors"] > 0.0) and obj.db.sensor["ew_active"] > 0):
+        fp += 'E'
+    if(obj.db.power["total"] != 0.0):
+        fp += 'e'
+    if(obj.db.status["landed"] == 1):
+        fp += 'l'
+    if(obj.db.missile["tubes"] > 0):
+        for i in range(obj.db.missile["tubes"]):
+            if(obj.db.mlist["lock"][i] == self.name):
+                fp += 'M'
+            elif(obj.db.mlist["active"][i] > 0):
+                fp += 'm'
+    if(self.db.shield["exist"]):
+        for i in range(constants.MAX_SHIELD_NAME):
+            if(obj.db.shield[i]["active"] * obj.db.alloc["shield"][i] * obj.db.power["total"] * obj.db.shield[i]["damage"] > 0.0):
+                fp += 'S'
+                break
+    if(obj.db.status["tractoring"] == 1):
+        fp += 'T'
+    if(obj.db.status["tractored"] == 1):
+        fp += 't'
+    if(obj.db.status["crippled"] == 1):
+        fp += 'X'
+    return fp
+    
+def contact_line(obj_x,contact):
+    obj = search_object(obj_x.db.slist["key"][contact])[0]
+    level = obj.db.slist["lev"][contact] * 100.0
+    
+    if (level < 0.0):
+        level = 0.0
+    elif(level > 100.0):
+        level = 100.0
+    
+    arc1 = unparse.unparse_arc(utils.sdb2arc(obj_x,obj))
+    arc2 = unparse.unparse_arc(utils.sdb2arc(obj,obj_x))
+    
+    buffer = ""
+    
+    if(obj_x.db.iff["frequency"] == obj.db.iff["frequency"]):
+        friendly = "|g*"
+    else:
+        friendly = "|r*"
+    if (obj.db.cloak["active"]):
+        cloak = "(cloaked)"
+    else:
+        if (level < 50.0):
+            cloak = f'{unparse.unparse_class(obj):16} {contact_flags(obj_x,obj):>6}'
+        else:
+            cloak = f'{obj.name} {contact_flags(obj_x,obj):>6}'
+    
+    if (level < 25):
+        #buffer += f'|c{obj_x.db.slist["num"][contact]:3d}|w {unparse.unparse_type(obj):>4} {level:3.0f} {utils.sdb2bearing(obj_x,obj):3.0f} {utils.sdb2elevation(obj_x, obj):<3.0f} {unparse.unparse_range(utils.sdb2range(obj_x,obj)):7} {arc1:>5} {obj.db.course["yaw_out"]:3.0f} {obj.db.course["pitch_out"]:>3.0f} {unparse.unparse_speed(obj.db.move["out"]):6s} {arc2:>5s} |h{friendly}|n\n'
+        buffer = [f'|c{obj_x.db.slist["num"][contact]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'|h{friendly}|n']
+    else:
+        buffer = [f'|c{obj_x.db.slist["num"][contact]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'|h{friendly}|n',f'{cloak}']
+    return buffer
+    
+def do_sensor_contacts(self, a):
+    obj_x = search_object(self.caller.location)[0]
+    obj = search_object(obj_x.db.ship)[0]
+    if (isinstance(a,int)):
+        contact = utils.contact2slist(obj,a)
+        x = 0
+    else:
+        contact = constants.SENSOR_FAIL
+        x = a[0].lower()
+    ctype = 0
+    if(x == 'a'):
+        ctype = 4
+    elif(x == 'b'):
+        ctype = 2
+    elif(x == 'p'):
+        ctype = 3
+    elif(x == 's'):
+        x = a[1].lower()
+        if(x == 'h'):
+            ctype = 1
+        elif(x == 't'):
+            ctype = 5
+        else:
+            ctype = 0
+    else:
+        ctype = 0
+    if(errors.error_on_console(self.caller,obj)):
+        return 0
+    elif(obj.db.sensor["contacts"] == 0):
+        buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
+        buffer += format.course(obj)
+        buffer += format.speed(obj)
+        buffer += "\n"
+        buffer += format.location(obj)
+        buffer += format.velocity(obj)
+        buffer += "\n"
+        buffer += format.l_end()
+        alerts.notify(self.caller, buffer)
+        return 1
+    elif(ctype > 0):
+        buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
+        
+        #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
+        #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
+        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
+        for contact in range(obj.db.sensor["contacts"]):
+            obj_contact = search_object(obj.db.slist["key"][contact])[0]
+            if(obj_contact.db.structure["type"] == ctype):
+                #buffer += contact_line(obj,contact)
+                table.add_row(args=contact_line(obj,contact))
+        buffer += str(table)
+        buffer += format.l_line()
+        buffer += format.course(obj)
+        buffer += format.speed(obj)
+        buffer += "\n"
+        buffer += format.location(obj)
+        buffer += format.velocity(obj)
+        buffer += "\n"
+        buffer += format.l_end()
+        alerts.notify(self.caller, buffer)
+        return 1
+    elif(contact != constants.SENSOR_FAIL):
+        buffer = ""
+        #buffer = "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
+        #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
+        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
+        table.add_row(args=contact_line(obj,contact))
+        #buffer += contact_line(obj,contact)
+        buffer += str(table)
+        alerts.notify(self.caller, buffer)
+        return 1
+    else:
+        buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
+        
+        #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
+        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
+        for ctype in range(1,len(constants.type_name)):
+            first = 1
+            for contact in range(obj.db.sensor["contacts"]):
+                if(first):
+                    #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
+                    first = 0
+                #buffer += contact_line(obj,contact)
+                table.add_row(args=contact_line(obj,contact))
+        buffer += str(table)
+        buffer += format.l_line()
+        buffer += format.course(obj)
+        buffer += format.speed(obj)
+        buffer += "\n"
+        buffer += format.location(obj)
+        buffer += format.velocity(obj)
+        buffer += "\n"
+        buffer += format.l_end()
+        alerts.notify(self.caller, buffer)
+        return 1
+    return 0

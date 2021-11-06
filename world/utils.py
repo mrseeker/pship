@@ -129,8 +129,8 @@ def sdb2arc(obj1,obj2):
         firing_arc = 63
     else:
         v1 = (x * obj1.db.course["d"][0][0] + y * obj1.db.course["d"][0][1] + z * obj1.db.course["d"][0][2]) / r / math.sqrt(obj1.db.course["d"][0][0] * obj1.db.course["d"][0][0] + obj1.db.course["d"][0][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][0][2] * obj1.db.course["d"][0][2])
-        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / math.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
-        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / math.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
+        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / math.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][1][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
+        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / math.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][2][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
         if (v1 > 1.0):
             v1 = 1.0
         elif(v1 < -1.0):
