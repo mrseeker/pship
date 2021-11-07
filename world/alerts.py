@@ -4,6 +4,7 @@ All the alerts go here!
 from evennia.utils.search import search_object,search_tag
 from world import constants,utils,unparse
 from evennia.utils import evtable
+from evennia.contrib import rplanguage
 import base64
 
 def ansi_warn(text):
@@ -156,7 +157,7 @@ def decrypt_message(key,message):
 
 
 def transmit_message(self,freq,range,code,message,language="default"):
-    if (freq < constants.MIN_COMMS_FREQUENCY or freq > MAX_COMMS_FREQUENCY):
+    if (freq < constants.MIN_COMMS_FREQUENCY or freq > constants.MAX_COMMS_FREQUENCY):
         console_message(self,["communication"],ansi_red("#-1 BAD FREQUENCY VALUE"))
     if (range <= 0):
         console_message(self,["communication"],ansi_red("#-1 BAD RANGE VALUE"))

@@ -2,7 +2,7 @@
 Iterates the world and it's settings
 """
 
-from world import constants, alerts, utils, balance
+from world import constants, alerts, utils, balance, damage
 from world import set as setter
 from evennia.utils.search import search_tag,search_object
 from evennia import gametime
@@ -72,7 +72,7 @@ def up_main_damage(self):
         if (self.db.main["damage"] <= -1.0):
             self.db.main["damage"] = -1.0
             alerts.all_console_notify(self,alerts.ansi_warn("Impulse Drive core breach."))
-            damage_structure(self,db.power["main"] * (random(0,100)+1.0))
+            damage.damage_structure(self.db.power["main"] * (random(0,100)+1.0))
             self.db.main["in"] = 0.0
             self.db.main["out"] = 0.0
             self.db.power["main"] = 0.0
@@ -88,12 +88,12 @@ def up_aux_damage(self):
         if (self.db.aux["damage"] <= -1.0):
             self.db.aux["damage"] = -1.0
             alerts.all_console_notify(self,alerts.ansi_warn("fusion reactor core breach."))
-            damage_structure(self,db.power["aux"] * (random(0,100)+1.0))
+            damage.damage_structure(self.db.power["aux"] * (random(0,100)+1.0))
             self.db.aux["in"] = 0.0
             self.db.aux["out"] = 0.0
             self.db.power["aux"] = 0.0
             self.db.power["version"] = 1
-            
+
 def up_fuel(self):
     mloss = self.db.main["out"] * self.db.main["out"] * self.db.main["gw"] * 100.0 / self.db.tech["fuel"] * self.db.move["dt"]
     aloss = self.db.aux["out"] * self.db.aux["out"] * self.db.aux["gw"] * 100.0 / self.db.tech["fuel"] * self.db.move["dt"]

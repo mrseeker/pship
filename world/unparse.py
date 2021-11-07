@@ -82,7 +82,7 @@ def unparse_empire(obj):
 
 def unparse_course(obj):
     if (obj.db.course["roll_out"] != 0.0):
-        return "{:.2f}".format(obj.db.course["yaw_out"]) + " " + "{:.2f}".format(obj.db.course["pitch_out"]) + "{:.2f}".format(self.db.course["roll_out"])
+        return "{:.2f}".format(obj.db.course["yaw_out"]) + " " + "{:.2f}".format(obj.db.course["pitch_out"]) + "{:.2f}".format(obj.db.course["roll_out"])
     else:
         return "{:.3f}".format(obj.db.course["yaw_out"]) + " " + "{:.3f}".format(obj.db.course["pitch_out"])
 
@@ -197,6 +197,9 @@ def unparse_contact(obj, obj2):
             return unparse_class(obj2) + " class (" + unparse_integer(utils.sdb2contact(obj, obj2)) + ")"
         else:
             return "contact (" + unparse_integer(utils.sdb2contact(obj, obj2)) + ")"
+
+def unparse_integer(value):
+    return (int(value))
 
 def unparse_arc(value):
     buffer = ""

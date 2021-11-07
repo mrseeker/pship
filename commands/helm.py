@@ -161,7 +161,7 @@ class CmdStatus(default_cmds.MuxCommand):
                 if (not obj.db.cloak["active"]):
                     table.add_row("|cRating:|n",unparse.unparse_power(obj.db.cloak["cost"]),unparse.unparse_power(obj.db.alloc["cloak"] * obj.db.power["total"]))
                 else:
-                    table.add_row(unparse.unparse_power(obj.db.alloc["cloak"] * obj.db.total["power"]),unparse_unparse_percent(obj.db.alloc["cloak"] * obj.db.power["total"] / obj.db.cloak["cost"]),"Cloaked")
+                    table.add_row(unparse.unparse_power(obj.db.alloc["cloak"] * obj.db.total["power"]),unparse.unparse_percent(obj.db.alloc["cloak"] * obj.db.power["total"] / obj.db.cloak["cost"]),"Cloaked")
                 table.add_row("")
             if (obj.db.shield["exist"]):
                 for i in range(constants.MAX_SHIELD_NAME):
