@@ -35,6 +35,7 @@ class space_room(Room):
         self.db.location = 0
         self.db.space = 0
         self.db.language = "default"
+        self.db.cost = 0
         self.tags.add(category="space_object",tag=constants.type_name[0])
         self.db.coords = {"x":0.0,"y":0.0,"z":0.0,"xo":0.0,"yo":0.0,"zo":0.0,"xd":0.0,"yd":0.0,"zd":0.0}
         self.db.move = {"time":0,"dt":0,"in":0.0,"out":0.0,"ratio":1.0,"cochranes":0.0,"v":0.0,"empire":"","quadrant":0}
