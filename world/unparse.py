@@ -191,9 +191,9 @@ def unparse_contact(obj, obj2):
     if (slist == constants.SENSOR_FAIL):
         return "unknown contact"
     else:
-        if (obj.db.slist["lev"][slist] >= 0.5 and not obj.db.cloak["active"]):
+        if (obj.db.slist[slist]["lev"] >= 0.5 and not obj.db.cloak["active"]):
             return  obj2.name + " (" + unparse_integer(utils.sdb2contact(obj, obj2)) + ")"
-        elif(obj.db.slist["lev"][slist] >= 0.25 and not obj.db.cloak["active"]):
+        elif(obj.db.slist[slist]["lev"] >= 0.25 and not obj.db.cloak["active"]):
             return unparse_class(obj2) + " class (" + unparse_integer(utils.sdb2contact(obj, obj2)) + ")"
         else:
             return "contact (" + unparse_integer(utils.sdb2contact(obj, obj2)) + ")"

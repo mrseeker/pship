@@ -20,9 +20,9 @@ def sensor_report(self,contact):
         i = utils.contact2slist(obj,contact)
         buffer = "|b|h--[|yDetailed Sensor Report|b]-----------------------------------------------------|w|n\n"
         buffer += format.type(obj_contact)
-        buffer += format.resolution(obj.db.slist["lev"][i])
+        buffer += format.resolution(obj.db.slist[i]["lev"])
         buffer += "\n"
-        if (obj.db.slist["lev"][i] > 0.5 and not obj_contact.db.cloak["active"]):
+        if (obj.db.slist[i]["lev"] > 0.5 and not obj_contact.db.cloak["active"]):
             buffer += format.name(obj_contact)
             buffer += format.cargo_cap(obj_contact)
             buffer += "\n"
@@ -32,7 +32,7 @@ def sensor_report(self,contact):
                 if (obj_contact.db.structure["has_landing_pad"] == 1):
                     buffer += format.landing_doors(obj_contact)
                 buffer += "\n"
-        if (obj.db.slist["lev"][i] > 0.25 and not obj_contact.db.cloak["active"]):
+        if (obj.db.slist[i]["lev"] > 0.25 and not obj_contact.db.cloak["active"]):
             buffer += format.ship_class(obj_contact)
             buffer += format.displacement(obj_contact)
             buffer += "\n"
@@ -130,8 +130,8 @@ def contact_flags(self,obj):
     return fp
     
 def contact_line(obj_x,contact):
-    obj = search_object(obj_x.db.slist["key"][contact])[0]
-    level = obj.db.slist["lev"][contact] * 100.0
+    obj = search_object(obj_x.db.slist[contact]["key"])[0]
+    level = obj.db.slist[contact]["lev"] * 100.0
     
     if (level < 0.0):
         level = 0.0
@@ -156,10 +156,9 @@ def contact_line(obj_x,contact):
             cloak = f'{obj.name} {contact_flags(obj_x,obj):>6}'
     
     if (level < 25):
-        #buffer += f'|c{obj_x.db.slist["num"][contact]:3d}|w {unparse.unparse_type(obj):>4} {level:3.0f} {utils.sdb2bearing(obj_x,obj):3.0f} {utils.sdb2elevation(obj_x, obj):<3.0f} {unparse.unparse_range(utils.sdb2range(obj_x,obj)):7} {arc1:>5} {obj.db.course["yaw_out"]:3.0f} {obj.db.course["pitch_out"]:>3.0f} {unparse.unparse_speed(obj.db.move["out"]):6s} {arc2:>5s} |h{friendly}|n\n'
-        buffer = [f'|c{obj_x.db.slist["num"][contact]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'|h{friendly}|n']
+        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'|h{friendly}|n']
     else:
-        buffer = [f'|c{obj_x.db.slist["num"][contact]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'|h{friendly}|n',f'{cloak}']
+        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'|h{friendly}|n',f'{cloak}']
     return buffer
     
 def do_sensor_contacts(self, a):
@@ -208,7 +207,7 @@ def do_sensor_contacts(self, a):
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
         table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
         for contact in range(obj.db.sensor["contacts"]):
-            obj_contact = search_object(obj.db.slist["key"][contact])[0]
+            obj_contact = search_object(obj.db.slist[contact]["key"])[0]
             if(obj_contact.db.structure["type"] == ctype):
                 #buffer += contact_line(obj,contact)
                 table.add_row(args=contact_line(obj,contact))

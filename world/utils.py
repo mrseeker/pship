@@ -15,7 +15,7 @@ def SpaceObj(x):
         return constants.SHIP_ATTR_NAME
     elif (obj.type == constants.MISSILE_ATTR_NAME):
         return constants.MISSILE_ATTR_NAME
-    elif (obj.type == CONSOLE_USER_ATTR_NAME):
+    elif (obj.type == constants.CONSOLE_USER_ATTR_NAME):
         return constants.CONSOLE_USER_ATTR_NAME
     return constants.SPACE_ATTR_NAME
 
@@ -192,29 +192,29 @@ def sdb2true_speed(obj):
 
 def contact2sdb(obj,c):
     for i in range(int(obj.db.sensor["contacts"])):
-        if (c == obj.db.slist["num"][i]):
-            return search_object(obj.db.slist["key"][i])[0]
+        if (c == obj.db.slist[i]["num"]):
+            return search_object(obj.db.slist[i]["key"])[0]
             break
     return constants.SENSOR_FAIL
 
 
 def sdb2contact(obj,s):
     for i in range(int(obj.db.sensor["contacts"])):
-        if (s.name == obj.db.slist["key"][i]):
-            return (obj.db.slist["num"][i])
+        if (s.name == obj.db.slist[i]["key"]):
+            return (obj.db.slist[i]["num"])
             break
     return constants.SENSOR_FAIL
 
 def contact2slist(obj,c):
     for i in range(int(obj.db.sensor["contacts"])):
-        if (c == obj.db.slist["num"][i]):
+        if (c == obj.db.slist[i]["num"]):
             return i
             break
     return constants.SENSOR_FAIL
 
 def sdb2slist(obj,s):
     for i in range(int(obj.db.sensor["contacts"])):
-        if (s == obj.db.slist["key"][i]):
+        if (s == obj.db.slist[i]["key"]):
             return i
             break
     return constants.SENSOR_FAIL
@@ -269,11 +269,11 @@ def arc_check(contact, weapon):
     if (((x & 16) or (x & 32)) and ((x & 1) or (x & 4)) and ((x & 2) or (x & 8))):
         return x
     else:
-        return ARC_FAIL
+        return constants.ARC_FAIL
 
 def get_empty_sdb():
 #NOT IMPLEMENTED!
-    return VACANCY_FAIL    
+    return constants.VACANCY_FAIL    
 
 def sdb2max_antimatter(obj):
     return obj.db.move["ratio"] * obj.db.tech["ly_range"] * 320000000.0
@@ -320,7 +320,7 @@ def sdb2max_impulse(x):
         return 0.0
     if (obj.db.status["tractoring"]):
         obj_tractoring = search_object(obj.db.status["tractoring"])[0]
-        a *= (obj.db.structure["displacement"] + obj_tractoring.structure.displacement + 0.1) / (ob.dbj.structure["displacement"] + 0.1)
+        a *= (obj.db.structure["displacement"] + obj_tractoring.structure.displacement + 0.1) / (obj.db.structure["displacement"] + 0.1)
     elif(obj.db.status["tractored"]):
         obj_tractored = search_object(obj.db.status["tractored"])[0]
         a *= (obj.db.structure.displacement + obj_tractored.db.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
@@ -429,6 +429,9 @@ def sdb2angular(n1, n2):
     obj1 = search_object(n1)[0]
     obj2 = search_object(n2)[0]
     
+    a = [0.0,0.0,0.0]
+    b = [0.0,0.0,0.0]
+
     a[0] = obj2.db.coords["x"] - obj1.db.coords["x"]
     a[1] = obj2.db.coords["y"] - obj1.db.coords["y"]
     a[2] = obj2.db.coords["z"] - obj1.db.coords["z"]
