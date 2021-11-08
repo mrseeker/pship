@@ -796,16 +796,16 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 obj_x.db.engine["version"] = 1
             flag = 0
             for j in range(self.db.beam["banks"]):
-                if (self.db.blist["lock"][j] == self.db.slist[i]["key"]):
+                if (self.db.blist[j]["lock"] == self.db.slist[i]["key"]):
                     flag = 1
-                    self.db.blist["lock"][j] = 0
+                    self.db.blist[j]["lock"] = 0
             if (flag > 0):
                 alerts.console_message(self,["tactical"],alerts.ansi_warn("Phaser Array lock lost on " + str(obj_x.db.name)))
             flag = 0
             for j in range(self.db.missile["tubes"]):
-                if (self.db.mlist["lock"][j] == self.db.slist[i]["key"]):
+                if (self.db.mlist[j]["lock"] == self.db.slist[i]["key"]):
                     flag = 1
-                    self.db.mlist["lock"][j] = 0
+                    self.db.mlist[j]["lock"] = 0
             if (flag > 0):
                 alerts.console_message(self,["tactical"],alerts.ansi_warn("Missile lock lost on " + str(obj_x.db.name)))
                 

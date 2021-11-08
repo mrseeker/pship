@@ -38,13 +38,13 @@ def damage_structure(obj, damage):
         obj.db.beam["in"] = 0.0
         obj.db.beam["out"] = 0.0
         for i in range(obj.db.beam["banks"]):
-            obj.db.blist["lock"][i] = 0
-            obj.db.blist["active"][i] = 0
+            obj.db.blist[i]["lock"] = 0
+            obj.db.blist[i]["active"] = 0
         obj.db.missile["in"] = 0.0
         obj.db.missile["out"] = 0.0
         for i in range(obj.db.missile["tubes"]):
-            obj.db.mlist["lock"][i] = 0
-            obj.db.mlist["active"][i] = 0
+            obj.db.mlist[i]["lock"] = 0
+            obj.db.mlist[i]["active"] = 0
         obj.db.batt["in"] = 0.0
         obj.db.batt["out"] = 0.0
         obj.db.move["in"] = 0.0

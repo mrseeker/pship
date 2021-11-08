@@ -84,13 +84,13 @@ def do_set_inactive(self,obj):
         obj.db.beam["in"] = 0.0
         obj.db.beam["out"] = 0.0
         for i in range(obj.db.beam["banks"]):
-            obj.db.blist["lock"][i] = 0
-            obj.db.blist["active"][i] = 0
+            obj.db.blist[i]["lock"] = 0
+            obj.db.blist[i]["active"] = 0
         obj.db.missile["in"] = 0.0
         obj.db.missile["out"] = 0.0
         for i in range(obj.db.missile["tubes"]):
-            obj.db.mlist["lock"][i] = 0
-            obj.db.mlist["active"][i] = 0
+            obj.db.mlist[i]["lock"] = 0
+            obj.db.mlist[i]["active"] = 0
         obj.db.main["in"] = 0.0
         obj.db.main["out"] = 0.0
         obj.db.batt["in"] = 0.0
@@ -150,13 +150,13 @@ def do_set_active(self,obj):
         obj.db.beam["in"] = 0.0
         obj.db.beam["out"] = 0.0
         for i in range(obj.db.beam["banks"]):
-            obj.db.blist["lock"][i] = 0
-            obj.db.blist["active"][i] = 0
+            obj.db.blist[i]["lock"] = 0
+            obj.db.blist[i]["active"] = 0
         obj.db.missile["in"] = 0.0
         obj.db.missile["out"] = 0.0
         for i in range(obj.db.missile["tubes"]):
-            obj.db.mlist["lock"][i] = 0
-            obj.db.mlist["active"][i] = 0
+            obj.db.mlist[i]["lock"] = 0
+            obj.db.mlist[i]["active"] = 0
         obj.db.main["in"] = 0.0
         obj.db.main["out"] = 0.0
         obj.db.batt["in"] = 0.0
@@ -392,10 +392,10 @@ def do_set_cloak(self,active,obj):
                     alerts.console_message(self,["helm","operation"],alerts.ansi_cmd(self.name,"Tractor beams offline"))
                 if(obj.db.beam["exist"]):
                     for i in range(obj.db.beam["banks"]):
-                        obj.db.blist["lock"][i] = 0
+                        obj.db.blist[i]["lock"] = 0
                 if(obj.db.missile["exist"]):
                     for i in range(obj.db.missile["tubes"]):
-                        obj.db.mlist["lock"][i] = 0
+                        obj.db.mlist[i]["lock"] = 0
                 if (obj.db.shield["exist"]):
                     flag = 0
                     buffer = ""

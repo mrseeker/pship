@@ -112,9 +112,9 @@ def contact_flags(self,obj):
         fp += 'l'
     if(obj.db.missile["tubes"] > 0):
         for i in range(obj.db.missile["tubes"]):
-            if(obj.db.mlist["lock"][i] == self.name):
+            if(obj.db.mlist[i]["lock"] == self.name):
                 fp += 'M'
-            elif(obj.db.mlist["active"][i] > 0):
+            elif(obj.db.mlist[i]["active"] > 0):
                 fp += 'm'
     if(self.db.shield["exist"]):
         for i in range(constants.MAX_SHIELD_NAME):
