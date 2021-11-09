@@ -22,7 +22,7 @@ def unparse_power(value):
     return buffer
 
 def unparse_class(obj):
-    return str(obj.__class__.__name__)
+    return str(obj.__class__.__name__).replace("_"," ")
 
 def unparse_type(obj):
     return str(obj.db.type)
