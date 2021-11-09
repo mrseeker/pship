@@ -87,7 +87,7 @@ class CmdStatus_Fighter(default_cmds.MuxCommand):
                 buffer += "|c"+unparse.unparse_shield(i)+"|n " + "{:.5s}".format(unparse.unparse_percent(obj.db.shield[i]["damage"])) + " " + unparse.unparse_damage(obj.db.shield[i]["damage"])+"\n"
                 d = utils.sdb2dissipation(obj,i)
                 if (not obj.db.shield[i]["active"] or not d):
-                    buffer+= "|cRating:|n "+ "{:.15s}".format(unparse.unparse_power(obj.db.shield[i]["maximum"]/obj.db.shield[i]["ratio"])) + " " + "{:.15s}".format(unparse.unparse_power(obj.db.shield[i]["maximum"]))+ " "+ ":.15s".format(unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]))+"\n"
+                    buffer+= "|cRating:|n "+ "{:.15s}".format(unparse.unparse_power(obj.db.shield["maximum"]/obj.db.shield["ratio"])) + " " + "{:.15s}".format(unparse.unparse_power(obj.db.shield["maximum"]))+ " "+ ":.15s".format(unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]))+"\n"
                 else:
                     buffer += "{:.15s}".format(unparse.unparse_power(d)) + " " + "{:.5s}".format(unparse.unparse_percent(1.0 - (1.0 / d)))+ " " + alerts.ansi_red_scale(obj.db.shield[i]["damage"], 20) + "\n"
                 if (i < constants.MAX_SHIELD_NAME -1):

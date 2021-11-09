@@ -38,6 +38,9 @@ class Generic_Ship(Ship):
         self.db.tract = {"cost":1,"freq":1.0,"exist":1,"active":0,"damage":1.0,"lock":0}
         self.db.trans = {"cost":1,"freq":1.0,"exist":1,"active":0,"damage":1.0,"d_lock":0,"s_lock":0}
         self.db.shield = {"ratio":3.0,"maximum":18,"freq":1.0,"exist":1,0:{"active":0,"damage":1.0},1:{"active":0,"damage":1.0},2:{"active":0,"damage":1.0},3:{"active":0,"damage":1.0},4:{"active":0,"damage":1.0},5:{"active":0,"damage":1.0}}
+        self.db.main["exist"] = 1
+        self.db.aux["exist"] = 1
+        self.db.batt["exist"] = 1
 
 class Fighter(Ship):
     """

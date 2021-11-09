@@ -278,7 +278,7 @@ def do_set_lrs(self,active,obj):
         alerts.notify(self,alerts.ansi_red("Long-range sensors are inoperative."))
     else:
         if (active):
-            if(obj.db.sensor.lrs_active):
+            if(obj.db.sensor["lrs_active"]):
                 alerts.notify(self,alerts.ansi_red("Long-range sensors are already online."))
             else:
                 obj.db.sensor["lrs_active"] = 1
@@ -286,7 +286,7 @@ def do_set_lrs(self,active,obj):
                 alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"Long-range sensors online"))
                 return 1
         else:
-            if(not obj.db.sensor.lrs_active):
+            if(not obj.db.sensor["lrs_active"]):
                 alerts.notify(self,alerts.ansi_red("Long-range sensors are already offline."))
             else:
                 obj.db.sensor["lrs_active"] = 0
