@@ -94,9 +94,9 @@ def contact_flags(self,obj):
         fp += 'a'
     if(obj.db.beam["banks"] > 0):
         for i in range(obj.db.beam["banks"]):
-            if(obj.db.blist["lock"][i] == self.name):
+            if(obj.db.blist[i]["lock"] == self.name):
                 fp += 'B'
-            elif(obj.db.blist["active"][i] > 0):
+            elif(obj.db.blist[i]["active"] > 0):
                 fp += 'b'
     if(obj.db.cloak["active"]):
         fp += 'C'
