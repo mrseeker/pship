@@ -211,7 +211,7 @@ def do_sensor_contacts(self, a):
             if(obj_contact.db.structure["type"] == ctype):
                 #buffer += contact_line(obj,contact)
                 table.add_row(args=contact_line(obj,contact))
-        buffer += str(table)
+        buffer += str(table) +  "\n"
         buffer += format.l_line()
         buffer += format.course(obj)
         buffer += format.speed(obj)
@@ -245,7 +245,7 @@ def do_sensor_contacts(self, a):
                     first = 0
                 #buffer += contact_line(obj,contact)
                 table.add_row(args=contact_line(obj,contact))
-        buffer += str(table)
+        buffer += str(table) +  "\n"
         buffer += format.l_line()
         buffer += format.course(obj)
         buffer += format.speed(obj)
