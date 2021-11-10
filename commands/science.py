@@ -30,7 +30,7 @@ class CmdIdent(default_cmds.MuxCommand):
     """
 
     key = "identify"
-    alias = "ident"
+    aliases = ["ident"]
     help_category = "Science"
     
     def func(self):
@@ -41,8 +41,10 @@ class CmdIdent(default_cmds.MuxCommand):
             
         if not self.args:
             self.caller.msg("You did not enter any contacts")
+        elif(len(self.args) == 1):
+            status.sensor_report(self,int(self.args[0]))
         else:
-            status.sensor_report(self,self.args)
+            self.caller.msg("Wrong amount of arguments")
 
 class CmdEmpire(default_cmds.MuxCommand):
     """
@@ -81,7 +83,6 @@ class CmdSensorReport(default_cmds.MuxCommand):
     """
 
     key = "report"
-    alias = "report"
     help_category = "Science"
     
     def func(self):
