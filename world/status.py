@@ -205,7 +205,7 @@ def do_sensor_contacts(self, a):
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
+        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|b-")
         for contact in range(obj.db.sensor["contacts"]):
             obj_contact = search_object(obj.db.slist[contact]["key"])[0]
             if(obj_contact.db.structure["type"] == ctype):
@@ -226,7 +226,7 @@ def do_sensor_contacts(self, a):
         buffer = ""
         #buffer = "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
+        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|b-")
         table.add_row(args=contact_line(obj,contact))
         #buffer += contact_line(obj,contact)
         buffer += str(table)
@@ -236,7 +236,7 @@ def do_sensor_contacts(self, a):
         buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header")
+        table = evtable.EvTable("###","Type","Res","Bearing","Range","Arcs","Heading","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|b-")
         for ctype in range(1,len(constants.type_name)):
             first = 1
             for contact in range(obj.db.sensor["contacts"]):
