@@ -71,45 +71,37 @@ class CmdCloak(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
             
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+        elif(not obj.db.cloak["exist"]):
+            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no cloaking device."))
+            return 0
+        elif(obj.db.cloak["damage"] <= 0.0):
+            alerts.notify(self.caller,alerts.ansi_red("Cloaking device is inoperative."))
+            return 0
+        
         if not self.args:
-            self.caller.msg("You did not enter any commands.")
+            self.caller.msg("You did not enter any commands.")    
         elif(self.args == "status"):
-            if(errors.error_on_console(self.caller,obj)):
-                return 0
-            elif(not obj.db.cloak["exist"]):
-                alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no cloaking device."))
-            elif(obj.db.cloak["damage"] <= 0.0):
-                alerts.notify(self.caller,alerts.ansi_red("Cloaking device is inoperative."))
+            buffer = "Cloaking status:\n"
+            buffer += "Active: "
+            if(obj.db.cloak["active"]):
+                buffer += alerts.ansi_green("YES\n")
             else:
-                buffer = "Cloaking status:\n"
-                buffer += "Active: "
-                if(obj.db.cloak["active"]):
-                    buffer += alerts.ansi_green("YES\n")
-                else:
-                    buffer += alerts.ansi_red("NO\n")
-                buffer += "Power: "
-                if(obj.db.alloc["cloak"] * obj.db.power["total"] < obj.db.cloak["cost"]):
-                    buffer += alerts.ansi_red("Insufficient\n")
-                else:
-                    buffer += alerts.ansi_green("OK\n")
-                buffer += "Cost: " + str(obj.db.cloak["cost"])
-                self.caller.msg(buffer)
+                buffer += alerts.ansi_red("NO\n")
+            buffer += "Power: "
+            if(obj.db.alloc["cloak"] * obj.db.power["total"] < obj.db.cloak["cost"]):
+                buffer += alerts.ansi_red("Insufficient\n")
+            else:
+                buffer += alerts.ansi_green("OK\n")
+            buffer += "Cost: " + str(obj.db.cloak["cost"])
+            self.caller.msg(buffer)
         elif(self.args == "on"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning on cloak...")
-                setter.do_set_cloak(obj,1,obj)
+            self.caller.msg("Turning on cloak...")
+            setter.do_set_cloak(obj,1,obj)
         elif(self.args == "off"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning off cloak...")
-                setter.do_set_cloak(obj,0,obj)
+            self.caller.msg("Turning off cloak...")
+            setter.do_set_cloak(obj,0,obj)
 
 class CmdSrs(default_cmds.MuxCommand):
     """
@@ -135,36 +127,34 @@ class CmdSrs(default_cmds.MuxCommand):
             
         if not self.args:
             self.caller.msg("You did not enter any commands.")
+        elif(errors.error_on_console(self.caller,obj)):
+            return 0
+        elif(not obj.db.sensor["srs_exist"]):
+            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Short-range sensors."))
+            return 0
+        elif(obj.db.sensor["srs_damage"] <= 0.0):
+            alerts.notify(self.caller,alerts.ansi_red("Short-range sensors are inoperative."))
+            return 0
+            
         elif(self.args == "status"):
-            if(errors.error_on_console(self.caller,obj)):
-                return 0
-            elif(not obj.db.sensor["srs_exist"]):
-                alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Short-range sensors."))
-            elif(obj.db.sensor["srs_damage"] <= 0.0):
-                alerts.notify(self.caller,alerts.ansi_red("Short-range sensors are inoperative."))
+    
+            buffer = "SRS status:\n"
+            buffer += "Active: "
+            if(obj.db.sensor["srs_active"]):
+                buffer += alerts.ansi_green("YES\n")
             else:
-                buffer = "SRS status:\n"
-                buffer += "Active: "
-                if(obj.db.sensor["srs_active"]):
-                    buffer += alerts.ansi_green("YES\n")
-                else:
-                    buffer += alerts.ansi_red("NO\n")
-                buffer += "Power: "
-                if(obj.db.alloc["sensors"] * obj.db.power["total"] > 0):
-                    buffer += alerts.ansi_red("Insufficient\n")
-                else:
-                    buffer += alerts.ansi_green("OK\n")
-                buffer += "SRS signature: " + str(obj.db.sensor["srs_signature"]) + "\n"
-                buffer += "SRS resolution: " + str(obj.db.sensor["srs_resolution"])
-                self.caller.msg(buffer)
+                buffer += alerts.ansi_red("NO\n")
+            buffer += "Power: "
+            if(obj.db.alloc["sensors"] * obj.db.power["total"] > 0):
+                buffer += alerts.ansi_red("Insufficient\n")
+            else:
+                buffer += alerts.ansi_green("OK\n")
+            buffer += "SRS signature: " + str(obj.db.sensor["srs_signature"]) + "\n"
+            buffer += "SRS resolution: " + str(obj.db.sensor["srs_resolution"])
+            self.caller.msg(buffer)
         elif(self.args == "on"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning on Short-range sensors...")
-                setter.do_set_srs(obj,1,obj)
+            self.caller.msg("Turning on Short-range sensors...")
+            setter.do_set_srs(obj,1,obj)
         elif(self.args == "off"):
             if (obj.db.structure["type"] == 0):
                 alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
@@ -198,44 +188,36 @@ class CmdLrs(default_cmds.MuxCommand):
             
         if not self.args:
             self.caller.msg("You did not enter any commands.")
+        elif(errors.error_on_console(self.caller,obj)):
+            return 0  
+        elif(not obj.db.sensor["lrs_exist"]):
+            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Long-range sensors."))
+            return 0
+        elif(obj.db.sensor["lrs_damage"] <= 0.0):
+            alerts.notify(self.caller,alerts.ansi_red("Long-range sensors are inoperative."))
+            return 0
+    
         elif(self.args == "status"):
-            if(errors.error_on_console(self.caller,obj)):
-                return 0
-            elif(not obj.db.sensor["lrs_exist"]):
-                alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Long-range sensors."))
-            elif(obj.db.sensor["lrs_damage"] <= 0.0):
-                alerts.notify(self.caller,alerts.ansi_red("Long-range sensors are inoperative."))
+            buffer = "LRS status:\n"
+            buffer += "Active: "
+            if(obj.db.sensor["lrs_active"]):
+                buffer += alerts.ansi_green("YES\n")
             else:
-                buffer = "LRS status:\n"
-                buffer += "Active: "
-                if(obj.db.sensor["lrs_active"]):
-                    buffer += alerts.ansi_green("YES\n")
-                else:
-                    buffer += alerts.ansi_red("NO\n")
-                buffer += "Power: "
-                if(obj.db.alloc["sensors"] * obj.db.power["total"] > 0):
-                    buffer += alerts.ansi_red("Insufficient\n")
-                else:
-                    buffer += alerts.ansi_green("OK\n")
-                buffer += "LRS signature: " + str(obj.db.sensor["lrs_signature"]) + "\n"
-                buffer += "LRS resolution: " + str(obj.db.sensor["lrs_resolution"])
-                self.caller.msg(buffer)
+                buffer += alerts.ansi_red("NO\n")
+            buffer += "Power: "
+            if(obj.db.alloc["sensors"] * obj.db.power["total"] > 0):
+                buffer += alerts.ansi_red("Insufficient\n")
+            else:
+                buffer += alerts.ansi_green("OK\n")
+            buffer += "LRS signature: " + str(obj.db.sensor["lrs_signature"]) + "\n"
+            buffer += "LRS resolution: " + str(obj.db.sensor["lrs_resolution"])
+            self.caller.msg(buffer)
         elif(self.args == "on"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning on Long-range sensors...")
-                setter.do_set_lrs(obj,1,obj)
+            self.caller.msg("Turning on Long-range sensors...")
+            setter.do_set_lrs(obj,1,obj)
         elif(self.args == "off"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning off Long-range sensors...")
-                setter.do_set_lrs(obj,0,obj)
+            self.caller.msg("Turning off Long-range sensors...")
+            setter.do_set_lrs(obj,0,obj)
 
 class CmdEW(default_cmds.MuxCommand):
     """
@@ -261,39 +243,31 @@ class CmdEW(default_cmds.MuxCommand):
             
         if not self.args:
             self.caller.msg("You did not enter any commands.")
-        elif(self.args == "status"):
-            if(errors.error_on_console(self.caller,obj)):
+        elif(errors.error_on_console(self.caller,obj)):
                 return 0
-            elif(not obj.db.sensor["ew_exist"]):
-                alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Electronic Warfare systems."))
-            elif(obj.db.sensor["ew_damage"] <= 0.0):
-                alerts.notify(self.caller,alerts.ansi_red("Electronic Warfare systems are inoperative."))
+        elif(not obj.db.sensor["ew_exist"]):
+            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Electronic Warfare systems."))
+            return 0
+        elif(obj.db.sensor["ew_damage"] <= 0.0):
+            alerts.notify(self.caller,alerts.ansi_red("Electronic Warfare systems are inoperative."))
+            return 0
+        
+        elif(self.args == "status"):
+            buffer = "EW status:\n"
+            buffer += "Active: "
+            if(obj.db.sensor["ew_active"]):
+                buffer += alerts.ansi_green("YES\n")
             else:
-                buffer = "EW status:\n"
-                buffer += "Active: "
-                if(obj.db.sensor["ew_active"]):
-                    buffer += alerts.ansi_green("YES\n")
-                else:
-                    buffer += alerts.ansi_red("NO\n")
-                buffer += "Power: "
-                if(obj.db.alloc["sensors"] * obj.db.power["total"] > 0):
-                    buffer += alerts.ansi_red("Insufficient\n")
-                else:
-                    buffer += alerts.ansi_green("OK\n")
-                self.caller.msg(buffer)
+                buffer += alerts.ansi_red("NO\n")
+            buffer += "Power: "
+            if(obj.db.alloc["sensors"] * obj.db.power["total"] > 0):
+                buffer += alerts.ansi_red("Insufficient\n")
+            else:
+                buffer += alerts.ansi_green("OK\n")
+            self.caller.msg(buffer)
         elif(self.args == "on"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning on Electronic Warfare systems...")
-                setter.do_set_ew(obj,1,obj)
+            self.caller.msg("Turning on Electronic Warfare systems...")
+            setter.do_set_ew(obj,1,obj)
         elif(self.args == "off"):
-            if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
-            elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
-            else:
-                self.caller.msg("Turning off Electronic Warfare systems...")
-                setter.do_set_ew(obj,0,obj)
+            self.caller.msg("Turning off Electronic Warfare systems...")
+            setter.do_set_ew(obj,0,obj)
