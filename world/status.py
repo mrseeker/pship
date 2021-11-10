@@ -164,7 +164,7 @@ def contact_line(obj_x,contact):
     if (level < 25):
         buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',"","",f'|h{friendly}|n']
     else:
-        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'{cloak}'f'{classname}',f'{contact_flag}',f'|h{friendly}|n']
+        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'{cloak}',f'{classname}',f'{contact_flag}',f'|h{friendly}|n']
     return buffer
     
 def do_sensor_contacts(self, a):
@@ -216,8 +216,9 @@ def do_sensor_contacts(self, a):
             obj_contact = search_object(obj.db.slist[contact]["key"])[0]
             if(obj_contact.db.structure["type"] == ctype):
                 #buffer += contact_line(obj,contact)
-                table.add_row(args=contact_line(obj,contact))
-        buffer += str(table) +  "\n"
+                table.add_row(*contact_line(obj,contact))
+        buffer += str(table)
+        buffer += "\n"
         buffer += format.l_line()
         buffer += format.course(obj)
         buffer += format.speed(obj)
@@ -250,8 +251,9 @@ def do_sensor_contacts(self, a):
                     #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
                     first = 0
                 #buffer += contact_line(obj,contact)
-                table.add_row(args=contact_line(obj,contact))
-        buffer += str(table) +  "\n"
+                table.add_row(*contact_line(obj,contact))
+        buffer += str(table)
+        buffer += "\n"
         buffer += format.l_line()
         buffer += format.course(obj)
         buffer += format.speed(obj)
