@@ -231,6 +231,8 @@ def create_ship_layout(self):
             ship_console.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         if(console == "helm"):
             ship_console.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
+        if(console == "science"):
+            ship_console.cmdset.add("commands.science.ScienceCmdSet", persistent=True)
         ship_console.tags.add(category=self.key,tag=console)
         exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
         exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)
