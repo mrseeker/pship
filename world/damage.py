@@ -10,7 +10,7 @@ def damage_structure(obj, damage):
         obj.db.structure["superstructure"] = -obj.db.structure["max_structure"]
     alerts.console_message(obj,["damage","engineering"],alerts.ansi_alert("|c" + constants.system_name[0] + "|w: "+unparse.unparse_percent(obj.db.structure["superstructure"]/obj.db.structure["max_structure"])+ " " + unparse.unparse_damage(obj.db.structure["superstructure"]/obj.db.structure["max_structure"])))
     if (obj.db.structure["superstructure"] <= -obj.db.structure["max_structure"]) and (s > -obj.db.structure["max_structure"]):
-        alerts.do_ship_notify(obj,"|h|*|r" + format.name(obj) + " explodes into white hot vapor|n")
+        alerts.do_ship_notify(obj,"|*|r" + format.name(obj) + " explodes into white hot vapor|n")
         alerts.do_space_notify_one(obj,["helm","tactical","science"], "has been destroyed")
         obj.db.space = -1
         obj.db.status["active"] = 0
@@ -19,7 +19,7 @@ def damage_structure(obj, damage):
         for obj_x in objects:
             if (obj_x.db.location == obj.db.name):
                 if (obj_x.db.structure["type"] > 0):
-                    alerts.do_ship_notify(obj_x,"|h|*|r" + format.name(obj) + " explodes into white hot vapor. Goodbye!|n")
+                    alerts.do_ship_notify(obj_x,"|*|r" + format.name(obj) + " explodes into white hot vapor. Goodbye!|n")
                     obj_x.space = -1                    
                     obj_x.db.status["active"] = 0
                     obj_x.db.status["crippled"] = 2

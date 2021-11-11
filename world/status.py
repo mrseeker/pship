@@ -18,7 +18,7 @@ def sensor_report(self,contact):
         return 0
     else:
         i = utils.contact2slist(obj,contact)
-        buffer = "|b|h--[|yDetailed Sensor Report|b]-----------------------------------------------------|w|n\n"
+        buffer = "|b--[|yDetailed Sensor Report|b]-----------------------------------------------------|w|n\n"
         buffer += format.type(obj_contact)
         buffer += format.resolution(obj.db.slist[i]["lev"])
         buffer += "\n"
@@ -64,7 +64,7 @@ def do_border_report(self):
     elif(obj.db.sensor["lrs_active"] == 0):
         self.caller.msg(alerts.ansi_red("Long-range sensors are inactive."))
     else:
-        buffer = "|b|h--[|yBorder Report|b]--------------------------------------------------------------|n\n|cEmpire               Bearing  Range   Status   Center Coordinates|w\n|b-------------------- ------- ------- -------- ---------------------------------|w\n"
+        buffer = "|b--[|yBorder Report|b]--------------------------------------------------------------|n\n|cEmpire               Bearing  Range   Status   Center Coordinates|w\n|b-------------------- ------- ------- -------- ---------------------------------|w\n"
         for empire in search_tag(constants.EMPIRE_ATTR_NAME,category="space_object"):
             if (empire is not None):
                 range = utils.xyz2range(obj.db.coords["x"],obj.db.coords["y"],obj.db.coords["z"],empire.db.coords["x"],empire.db.coords["y"],empire.db.coords["z"]) / constants.PARSEC
@@ -162,9 +162,9 @@ def contact_line(obj_x,contact):
             contact_flag = f'{contact_flags(obj_x,obj):>6}'
     
     if (level < 25):
-        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',"","",f'|h{friendly}|n']
+        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',"","",f'{friendly}|n']
     else:
-        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'{cloak}',f'{classname}',f'{contact_flag}',f'|h{friendly}|n']
+        buffer = [f'|c{obj_x.db.slist[contact]["num"]:3d}',f'{unparse.unparse_type(obj):4}',f'{level:3.0f}',f'{utils.sdb2bearing(obj_x,obj):3.0f}',f'{utils.sdb2elevation(obj_x, obj):<3.0f}',f'{unparse.unparse_range(utils.sdb2range(obj_x,obj)):7}',f'{arc1:5}',f'{obj.db.course["yaw_out"]:3.0f}',f'{obj.db.course["pitch_out"]:3.0f}',f'{unparse.unparse_speed(obj.db.move["out"]):6s}',f'{arc2:5s}',f'{cloak}',f'{classname}',f'{contact_flag}',f'{friendly}|n']
     return buffer
     
 def do_sensor_contacts(self, a):
@@ -196,7 +196,7 @@ def do_sensor_contacts(self, a):
     if(errors.error_on_console(self.caller,obj)):
         return 0
     elif(obj.db.sensor["contacts"] == 0):
-        buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
+        buffer = "|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
         buffer += format.course(obj)
         buffer += format.speed(obj)
         buffer += "\n"
@@ -207,7 +207,7 @@ def do_sensor_contacts(self, a):
         alerts.notify(self.caller, buffer)
         return 1
     elif(ctype > 0):
-        buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
+        buffer = "|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
@@ -240,7 +240,7 @@ def do_sensor_contacts(self, a):
         alerts.notify(self.caller, buffer)
         return 1
     else:
-        buffer = "|h|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
+        buffer = "|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Heading","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="-")

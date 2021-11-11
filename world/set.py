@@ -220,7 +220,7 @@ def do_set_main_reactor(self,level,obj):
         else:
             obj.db.main["in"] = level
         if (obj.db.main["in"] > obj.db.main["damage"]):
-            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|H")))
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|n")))
         else:
             alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"M/A reactor set at " + "{:10.3f}".format(obj.db.main["in"] * 100.0)))
         return 1
@@ -243,7 +243,7 @@ def do_set_aux_reactor(self,level,obj):
         else:
             obj.db.aux["in"] = level
         if (obj.db.aux["in"] > obj.db.aux["damage"]):
-            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|H")))
+            alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0) + alerts.ansi_blink(" |rOVERLOAD|n")))
         else:
             alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.name,"Fusion reactor set at " + "{:10.3f}".format(obj.db.aux["in"] * 100.0)))
         return 1
