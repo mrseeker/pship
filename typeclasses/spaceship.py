@@ -17,7 +17,7 @@ class Ship(space_room):
         super().at_object_creation()
         self.db.desc = "This is the bridge of " + self.key
         self.db.type = constants.SHIP_ATTR_NAME
-        self.tags.add(category="space_object",tag=constants.SHIP_ATTR_NAME)
+        self.tags.add(constants.SHIP_ATTR_NAME,category="space_object")
         self.tags.remove(constants.type_name[0],category="space_object")
         self.db.sdesc = "Bridge"
         self.db.structure["type"] = 1
@@ -71,7 +71,7 @@ class Test(Ship):
                 ship_console.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
             if(console == "helm"):
                 ship_console.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
-            ship_console.tags.add(category=self.key,tag=console)
+            ship_console.tags.add(console,category=self.key)
             exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
             exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)
         
@@ -81,7 +81,7 @@ class Test(Ship):
 class Console(Room):
     def at_object_creation(self):
         super().at_object_creation()
-        self.tags.add(category="console",tag="general")
+        self.tags.add("general",category="console")
         self.db.type=constants.CONSOLE_ATTR_NAME
         self.db.sdesc = "Console"
         self.db.ship=""
