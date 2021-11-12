@@ -544,3 +544,189 @@ def do_set_intercept(self, obj, contact):
                 alerts.console_message(self,["helm"],alerts.ansi_cmd(self.name,"Intercept course to {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x), obj.db.coords["yaw_in"], obj.db.coords["pitch_in"])))
             return 1
     return 0
+
+def do_set_refuel(self, obj, receiver,type,tons):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    
+    if(type[0].lower() == "a"):
+        type = 1
+    elif(type[0].lower() == "d"):
+        type = 2
+    elif(type[0].lower() == "r"):
+        type = 3
+    else:
+        type = 0
+    
+    if (type == 0):
+        alerts.notify(self,alerts.ansi_red("That is not a valid fuel type."))
+        return 0
+    elif (tons <= 0.0):
+        alerts.notify(self,alerts.ansi_red("That is not a valid fuel amount."))
+        return 0    
+    elif (utils.sdb2contact(receiver) == constants.SENSOR_FAIL):
+        alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
+        return 0
+    elif (receiver.db.location is not obj.name):
+        alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
+        return 0
+    elif (receiver.db.status["connected"] != 0):
+        alerts.notify(self,alerts.ansi_red(receiver.name + " is not connected"))
+        return 0
+    elif(type == 1):
+        amount = tons * 1000000.0
+        available = obj.db.fuel["antimatter"]
+        capacity = utils.sdb2max_antimatter(receiver) - receiver.db.fuel["antimatter"]
+        if (amount > available):
+            alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of antimatter available".format(obj.name,available / 1000000)))
+        elif(capacity <= 0):
+            alerts.notify(self,alerts.ansi_red(" {:s} has no antimatter capacity".format(receiver.name)))
+        elif(amount > capacity):
+            alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of antimatter capacity".format(receiver.name,capacity / 1000000)))
+        else:
+            receiver.db.fuel["antimatter"] += amount
+            obj.db.fuel["antimatter"] -= amount
+            alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter transferred to {:s}".format(amount,receiver.name)))
+            alerts.console_message(receiver,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter transferred from {:s}".format(amount,obj.name)))
+            return 1
+    elif(type == 2):
+        amount = tons * 1000000.0
+        available = obj.db.fuel["deuterium"]
+        capacity = utils.sdb2max_deuterium(receiver) - receiver.db.fuel["deuterium"]
+        if (amount > available):
+            alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of deuterium available".format(obj.name,available / 1000000)))
+        elif(capacity <= 0):
+            alerts.notify(self,alerts.ansi_red(" {:s} has no deuterium capacity".format(receiver.name)))
+        elif(amount > capacity):
+            alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of deuterium capacity".format(receiver.name,capacity / 1000000)))
+        else:
+            receiver.db.fuel["deuterium"] += amount
+            obj.db.fuel["deuterium"] -= amount
+            alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium transferred to {:s}".format(amount,receiver.name)))
+            alerts.console_message(receiver,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium transferred from {:s}".format(amount,obj.name)))
+            return 1
+    elif(type == 3):
+        amount = tons * 3600.0
+        available = obj.db.fuel["reserves"]
+        capacity = utils.sdb2max_reserves(receiver) - receiver.db.fuel["reserves"]
+        if (amount > available):
+            alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} GW hours of reserve available".format(obj.name,available / 3600.0)))
+        elif(capacity <= 0):
+            alerts.notify(self,alerts.ansi_red(" {:s} has no reserve capacity".format(receiver.name)))
+        elif(amount > capacity):
+            alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} GW hours of reserve capacity".format(receiver.name,capacity / 3600.0)))
+        else:
+            receiver.db.fuel["reserves"] += amount
+            obj.db.fuel["reserves"] -= amount
+            alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves transferred to {:s}".format(amount,receiver.name)))
+            alerts.console_message(receiver,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves transferred from {:s}".format(amount,obj.name)))
+            return 1
+    return 0
+
+def do_set_defuel(self, obj, receiver,type,tons):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    
+    if(type[0].lower() == "a"):
+        type = 1
+    elif(type[0].lower() == "d"):
+        type = 2
+    elif(type[0].lower() == "r"):
+        type = 3
+    else:
+        type = 0
+    
+    if (type == 0):
+        alerts.notify(self,alerts.ansi_red("That is not a valid fuel type."))
+        return 0
+    elif (tons <= 0.0):
+        alerts.notify(self,alerts.ansi_red("That is not a valid fuel amount."))
+        return 0    
+    if (obj is not None):
+        if (utils.sdb2contact(receiver) == constants.SENSOR_FAIL):
+            alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
+            return 0
+        elif (receiver.db.location is not obj.name):
+            alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
+            return 0
+        elif (receiver.db.status["connected"] != 0):
+            alerts.notify(self,alerts.ansi_red(receiver.name + " is not connected"))
+            return 0
+        elif(type == 1):
+            amount = tons * 1000000.0
+            available = obj.db.fuel["antimatter"]
+            capacity = utils.sdb2max_antimatter(receiver) - receiver.db.fuel["antimatter"]
+            if (amount > available):
+                alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of antimatter available".format(obj.name,available / 1000000)))
+            elif(capacity <= 0):
+                alerts.notify(self,alerts.ansi_red(" {:s} has no antimatter capacity".format(receiver.name)))
+            elif(amount > capacity):
+                alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of antimatter capacity".format(receiver.name,capacity / 1000000)))
+            else:
+                receiver.db.fuel["antimatter"] += amount
+                obj.db.fuel["antimatter"] -= amount
+                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter transferred to {:s}".format(amount,receiver.name)))
+                alerts.console_message(receiver,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter transferred from {:s}".format(amount,obj.name)))
+                return 1
+        elif(type == 2):
+            amount = tons * 1000000.0
+            available = obj.db.fuel["deuterium"]
+            capacity = utils.sdb2max_deuterium(receiver) - receiver.db.fuel["deuterium"]
+            if (amount > available):
+                alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of deuterium available".format(obj.name,available / 1000000)))
+            elif(capacity <= 0):
+                alerts.notify(self,alerts.ansi_red(" {:s} has no deuterium capacity".format(receiver.name)))
+            elif(amount > capacity):
+                alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} tons of deuterium capacity".format(receiver.name,capacity / 1000000)))
+            else:
+                receiver.db.fuel["deuterium"] += amount
+                obj.db.fuel["deuterium"] -= amount
+                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium transferred to {:s}".format(amount,receiver.name)))
+                alerts.console_message(receiver,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium transferred from {:s}".format(amount,obj.name)))
+                return 1
+        elif(type == 3):
+            amount = tons * 3600.0
+            available = obj.db.fuel["reserves"]
+            capacity = utils.sdb2max_reserves(receiver) - receiver.db.fuel["reserves"]
+            if (amount > available):
+                alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} GW hours of reserve available".format(obj.name,available / 3600.0)))
+            elif(capacity <= 0):
+                alerts.notify(self,alerts.ansi_red(" {:s} has no reserve capacity".format(receiver.name)))
+            elif(amount > capacity):
+                alerts.notify(self,alerts.ansi_red(" {:s} has only {:f} GW hours of reserve capacity".format(receiver.name,capacity / 3600.0)))
+            else:
+                receiver.db.fuel["reserves"] += amount
+                obj.db.fuel["reserves"] -= amount
+                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves transferred to {:s}".format(amount,receiver.name)))
+                alerts.console_message(receiver,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves transferred from {:s}".format(amount,obj.name)))
+                return 1
+        return 0
+    else:
+        #dumping...
+        if(type == 1):
+            amount = tons * 1000000.0
+            available = obj.db.fuel["antimatter"]
+            if (amount > available):
+                amount = available
+            else:
+                obj.db.fuel["antimatter"] -= amount
+                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter dumped into space".format(amount)))
+                return 1
+        elif(type == 2):
+            amount = tons * 1000000.0
+            available = obj.db.fuel["deuterium"]
+            if (amount > available):
+                amount = available
+            else:
+                obj.db.fuel["deuterium"] -= amount
+                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium dumped into space".format(amount)))
+        elif(type == 3):
+            amount = tons * 3600.0
+            available = obj.db.fuel["reserves"]
+            if (amount > available):
+                amount = available
+            else:
+                obj.db.fuel["reserves"] -= amount
+                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves dumped into space".format(amount)))
+                return 1
+    return 0

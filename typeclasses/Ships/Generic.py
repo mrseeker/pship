@@ -220,7 +220,7 @@ class Super_Cruiser_II(Generic_Ship):
 def create_ship_layout(self):
     #create the ship layout here
     self.cmdset.add("commands.bridge.BridgeCmdSet", persistent=True)
-    for console in ["helm","engineering","tactical","science","security"]:
+    for console in ["helm","engineering","tactical","science","security","operation"]:
         ship_console = create_object(Console,key=self.key + "-"+ console)
         ship_console.db.sdesc = console
         ship_console.db.ship = self.key
@@ -233,6 +233,8 @@ def create_ship_layout(self):
             ship_console.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
         if(console == "science"):
             ship_console.cmdset.add("commands.science.ScienceCmdSet", persistent=True)
+        if(console == "operation"):
+            ship_console.cmdset.add("commands.operation.OperationCmdSet", persistent=True)
         ship_console.tags.add(console,category=self.key)
         exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
         exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)

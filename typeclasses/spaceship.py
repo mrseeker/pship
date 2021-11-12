@@ -60,7 +60,7 @@ class Test(Ship):
     def at_object_creation(self):
         super().at_object_creation()
         self.cmdset.add("commands.bridge.BridgeCmdSet", persistent=True)
-        for console in ["helm","engineering","tactical","science","security"]:
+        for console in ["helm","engineering","tactical","science","security","operation"]:
             ship_console = create_object(Console,key=self.key + "-"+ console)
             ship_console.db.sdesc = console
             ship_console.db.ship = self.key
@@ -71,6 +71,8 @@ class Test(Ship):
                 ship_console.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
             if(console == "helm"):
                 ship_console.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
+            if(console == "operation"):
+                ship_console.cmdset.add("commands.operation.OperationCmdSet", persistent=True)
             ship_console.tags.add(console,category=self.key)
             exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
             exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)
