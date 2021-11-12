@@ -71,8 +71,8 @@ class CmdDeFuel(default_cmds.MuxCommand):
         if(errors.error_on_console(self.caller,obj)):
                 return 0
         if(len(self.args) == 2):
-            setter.do_set_refuel(self,obj,None,self.args[0],int(self.args[1]))
+            setter.do_set_defuel(self,obj,None,self.args[0],int(self.args[1]))
         if(len(self.args) == 3):
-            setter.do_set_refuel(self,obj,receiver,self.args[1],int(self.args[2]))
+            setter.do_set_defuel(self,obj,receiver,self.args[1],int(self.args[2]))
         else:
             self.caller.msg("Command not found: " + str(self.args))
