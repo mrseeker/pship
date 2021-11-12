@@ -708,25 +708,22 @@ def do_set_defuel(self, obj, receiver,type,tons):
             available = obj.db.fuel["antimatter"]
             if (amount > available):
                 amount = available
-            else:
-                obj.db.fuel["antimatter"] -= amount
-                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter dumped into space".format(amount)))
-                return 1
+            obj.db.fuel["antimatter"] -= amount
+            alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of antimatter dumped into space".format(amount)))
+            return 1
         elif(type == 2):
             amount = tons * 1000000.0
             available = obj.db.fuel["deuterium"]
             if (amount > available):
                 amount = available
-            else:
-                obj.db.fuel["deuterium"] -= amount
-                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium dumped into space".format(amount)))
+            obj.db.fuel["deuterium"] -= amount
+            alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} tons of deuterium dumped into space".format(amount)))
         elif(type == 3):
             amount = tons * 3600.0
             available = obj.db.fuel["reserves"]
             if (amount > available):
                 amount = available
-            else:
-                obj.db.fuel["reserves"] -= amount
-                alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves dumped into space".format(amount)))
-                return 1
+            obj.db.fuel["reserves"] -= amount
+            alerts.console_message(obj,["engineering","operation"],alerts.ansi_cmd("{:f} GW hours of reserves dumped into space".format(amount)))
+            return 1
     return 0
