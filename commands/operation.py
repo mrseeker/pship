@@ -34,7 +34,7 @@ class CmdReFuel(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
         receiver = search_object(self.args[0])
-        if receiver is not None:
+        if len(receiver) > 0:
             receiver = receiver[0]
         if(errors.error_on_console(self.caller,obj)):
                 return 0
@@ -63,7 +63,7 @@ class CmdDeFuel(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
         receiver = search_object(self.args[0])
-        if receiver is not None:
+        if len(receiver) > 0:
             receiver = receiver[0]
         elif (obj == receiver):
             #transferring it to itself...
