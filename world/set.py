@@ -564,7 +564,7 @@ def do_set_refuel(self, obj, receiver,type,tons):
     elif (tons <= 0.0):
         alerts.notify(self,alerts.ansi_red("That is not a valid fuel amount."))
         return 0    
-    elif (utils.sdb2contact(receiver) == constants.SENSOR_FAIL):
+    elif (utils.sdb2contact(obj,receiver) == constants.SENSOR_FAIL):
         alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
         return 0
     elif (receiver.db.location is not obj.name):
@@ -643,7 +643,7 @@ def do_set_defuel(self, obj, receiver,type,tons):
         alerts.notify(self,alerts.ansi_red("That is not a valid fuel amount."))
         return 0    
     if (obj is not None):
-        if (utils.sdb2contact(receiver) == constants.SENSOR_FAIL):
+        if (utils.sdb2contact(obj,receiver) == constants.SENSOR_FAIL):
             alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
             return 0
         elif (receiver.db.location is not obj.name):
