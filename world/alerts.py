@@ -1,6 +1,7 @@
 """
 All the alerts go here!
 """
+from evennia.utils.logger import log_msg
 from evennia.utils.search import search_object,search_tag
 from world import constants,utils,unparse
 from evennia.utils import evtable
@@ -317,6 +318,10 @@ def report_sensor_power(obj):
     console_message(obj,["engineering","science","tactical"], buffer + str(table)+"|n")
     return 1
 
+def write_spacelog(self,obj,text):
+    log_msg("SPACE {:s} - {:s} : {:s}".format(self.name,obj.name,text))
+    return 1
+
 def pitch(self):
     #TODO
     console_message(self,["helm"],"New pitch set")
@@ -412,4 +417,14 @@ def main_overload(self):
 def aux_overload(self):
     #TODO
     console_message(self,["engineering"],"Aux overload!")
+    return 1
+
+def ship_hurt(self):
+    #TODO
+    console_message(self,["engineering"],"Ship has pain!")
+    return 1
+
+def ship_hit(self):
+    #TODO
+    console_message(self,["engineering"],"Ship got hit!")
     return 1

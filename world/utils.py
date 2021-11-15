@@ -3,8 +3,9 @@ Utilities to get things going
 
 """
 
+import random
 from evennia.utils.search import search_object
-from world import constants
+from world import constants,iterate
 import math
 
 #Space objects and others
@@ -465,3 +466,349 @@ def sdb2eccm_srs(obj):
         return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
     else:
         return 1.0
+
+def debug_space(obj):
+    """
+    This is a script to clean up any issues with an object. 
+    """
+    bug = 1
+
+    #objects
+    if(obj.db.structure["type"] <= 0):
+        obj.db.structure["type"] = 0
+        bug = 0
+    
+    #location
+    obj_x = search_object(obj.db.location)
+    if (len(obj_x) >0):
+        obj_x = obj_x[0]
+        if(obj.db.location == obj_x.name):
+            obj_x.db.location = obj.name
+
+    #main
+    if(obj.db.main["exist"] != 1 or obj.db.main["gw"] <= 0):
+        obj.db.main["damage"] = 0.0
+        obj.db.main["exist"] = 0
+        obj.db.main["gw"] = 0.0
+        obj.db.main["in"] = 0.0
+        obj.db.main["out"] = 0.0
+        obj.db.power["main"] = 0.0
+    
+    #aux
+    if(obj.db.aux["exist"] != 1 or obj.db.aux["gw"] <= 0):
+        obj.db.aux["damage"] = 0.0
+        obj.db.aux["exist"] = 0
+        obj.db.aux["gw"] = 0.0
+        obj.db.aux["in"] = 0.0
+        obj.db.aux["out"] = 0.0
+        obj.db.power["aux"] = 0.0
+    
+    #batt
+    if(obj.db.batt["exist"] != 1 or obj.db.batt["gw"] <= 0):
+        obj.db.batt["damage"] = 0.0
+        obj.db.batt["exist"] = 0
+        obj.db.batt["gw"] = 0.0
+        obj.db.batt["in"] = 0.0
+        obj.db.batt["out"] = 0.0
+        obj.db.fuel["reserves"] = 0.0
+        obj.db.power["batt"] = 0.0
+    
+    #allocate
+    if(obj.db.main["exist"] == 0 or obj.db.aux["exist"] == 0 or obj.db.batt["exist"] == 0):
+        obj.db.alloc["helm"] = 0.0
+        obj.db.alloc["tactical"] = 0.0
+        obj.db.alloc["operations"] = 0.0
+        obj.db.alloc["movement"] = 0.0
+        obj.db.alloc["shields"] = 0.0
+        for i in range(constants.MAX_SHIELD_NAME):
+            obj.db.alloc["shield"][i] = 0.0
+        obj.db.alloc["cloak"] = 0.0
+        obj.db.alloc["beams"] = 0.0
+        obj.db.alloc["missiles"] = 0.0
+        obj.db.alloc["sensors"] = 0.0
+        obj.db.alloc["ecm"] = 0.0
+        obj.db.alloc["eccm"] = 0.0
+        obj.db.alloc["transporters"] = 0.0
+        obj.db.alloc["tractors"] = 0.0
+        obj.db.alloc["miscellaneous"] = 0.0
+        obj.db.power["total"] = 0.0
+        obj.db.beam["in"] = 0.0
+        obj.db.beam["out"] = 0.0
+        obj.db.missile["in"] = 0.0
+        obj.db.missile["out"] = 0.0
+    
+    #beam
+    if(obj.db.beam["exist"] != 1 or obj.db.beam["banks"] <= 0):
+        obj.db.beam["banks"] = 0
+        obj.db.beam["exist"] = 0
+        obj.db.beam["freq"] = 0.0
+        obj.db.beam["in"] = 0.0
+        obj.db.beam["out"] = 0.0
+        for i in range(constants.MAX_BEAM_BANKS):
+            obj.db.blist[i]["name"] = 0
+            obj.db.blist[i]["damage"] = 0.0
+            obj.db.blist[i]["bonus"] = 0
+            obj.db.blist[i]["cost"] = 0
+            obj.db.blist[i]["range"] = 0
+            obj.db.blist[i]["arcs"] = 0
+            obj.db.blist[i]["active"] = 0
+            obj.db.blist[i]["lock"] = 0
+            obj.db.blist[i]["load"] = 0
+            obj.db.blist[i]["recycle"] = 0
+    else:
+        if(obj.db.beam["in"] < 0.0):
+            obj.db.beam["in"] = 0.0
+            bug = 0
+        if(obj.db.beam["out"] < 0.0):
+            obj.db.beam["out"] = 0.0
+            bug = 0
+        if(obj.db.beam["banks"] > constants.MAX_BEAM_BANKS):
+            obj.db.beam["banks"] = constants.MAX_BEAM_BANKS
+            bug = 0
+        if(obj.db.beam["freq"] <= 1.0 or obj.db.beam["freq"] > 1000.0):
+            obj.db.beam["freq"] = random.random() * 10000 / 100.0
+            bug = 0
+        for i in range(constants.MAX_BEAM_BANKS):
+            if((obj.db.blist[i]["arcs"] & 1) == 0 and (obj.db.blist[i]["arcs"] & 4) == 0):
+                obj.db.blist[i] += 5
+            if((obj.db.blist[i]["arcs"] & 2) == 0 and (obj.db.blist[i]["arcs"] & 8) == 0):
+                obj.db.blist[i] += 10
+            if((obj.db.blist[i]["arcs"] & 16) == 0 and (obj.db.blist[i]["arcs"] & 32) == 0):
+                obj.db.blist[i] += 48
+            if(obj.db.blist[i]["recycle"] < 1):
+                obj.db.blist[i]["recycle"] = 1
+            if(obj.db.beam["banks"] == 0):
+                bug = 0
+
+    #missile
+    if(obj.db.missile["exist"] != 1 or obj.db.missile["tubes"] <= 0):
+        obj.db.missile["tubes"] = 0
+        obj.db.missile["exist"] = 0
+        obj.db.missile["freq"] = 0.0
+        obj.db.missile["in"] = 0.0
+        obj.db.missile["out"] = 0.0
+        for i in range(constants.MAX_BEAM_BANKS):
+            obj.db.mlist[i]["name"] = 0
+            obj.db.mlist[i]["damage"] = 0.0
+            obj.db.mlist[i]["warhead"] = 0
+            obj.db.mlist[i]["cost"] = 0
+            obj.db.mlist[i]["range"] = 0
+            obj.db.mlist[i]["arcs"] = 0
+            obj.db.mlist[i]["active"] = 0
+            obj.db.mlist[i]["lock"] = 0
+            obj.db.mlist[i]["load"] = 0
+            obj.db.mlist[i]["recycle"] = 0
+    else:
+        if(obj.db.missile["in"] < 0.0):
+            obj.db.missile["in"] = 0.0
+            bug = 0
+        if(obj.db.missile["out"] < 0.0):
+            obj.db.missile["out"] = 0.0
+            bug = 0
+        if(obj.db.missile["tubes"] > constants.MAX_MISSILE_TUBES):
+            obj.db.missile["tubes"] = constants.MAX_MISSILE_TUBES
+            bug = 0
+        if(obj.db.missile["freq"] <= 1.0 or obj.db.missile["freq"] > 1000.0):
+            obj.db.missile["freq"] = random.random() * 10000 / 100.0
+            bug = 0
+        for i in range(constants.MAX_MISSILE_TUBES):
+            if((obj.db.mlist[i]["arcs"] & 1) == 0 and (obj.db.mlist[i]["arcs"] & 4) == 0):
+                obj.db.mlist[i] += 5
+            if((obj.db.mlist[i]["arcs"] & 2) == 0 and (obj.db.mlist[i]["arcs"] & 8) == 0):
+                obj.db.mlist[i] += 10
+            if((obj.db.mlist[i]["arcs"] & 16) == 0 and (obj.db.mlist[i]["arcs"] & 32) == 0):
+                obj.db.mlist[i] += 48
+            if(obj.db.mlist[i]["recycle"] < 1):
+                obj.db.mlist[i]["recycle"] = 1
+            if(obj.db.missile["tubes"] == 0):
+                bug = 0
+    #engine
+    if(obj.db.engine["impulse_exist"] != 1):
+        obj.db.engine["impulse_exist"] = 0
+        obj.db.engine["impulse_damage"] = 0.0
+        obj.db.engine["impulse_max"] = 0.0
+        obj.db.engine["impulse_cruise"] = 0.0
+    
+    if(obj.db.engine["warp_exist"] != 1):
+        obj.db.engine["warp_exist"] = 0
+        obj.db.engine["warp_damage"] = 0.0
+        obj.db.engine["warp_max"] = 0.0
+        obj.db.engine["warp_cruise"] = 0.0
+
+    if(obj.db.engine["warp_exist"] != 1 and obj.db.engine["impulse_exist"] != 1):
+        obj.db.move["in"] = 0.0
+        obj.db.move["out"] = 0.0
+    
+    #structure
+    if(obj.db.structure["displacement"] < 0):
+        obj.db.structure["displacement"] = 1
+        bug = 0
+    if(obj.db.structure["cargo_hold"] > obj.db.structure["displacement"]):
+        obj.db.structure["cargo_hold"] = obj.db.structure["displacement"]
+        bug = 0
+    elif(obj.db.structure["cargo_hold"] < 0):
+        obj.db.structure["cargo_hold"] = 0
+        bug = 0
+    if(obj.db.structure["max_structure"] <= 0):
+        obj.db.structure["max_structure"] = 1
+        bug = 0
+    if(obj.db.structure["superstructure"] > obj.db.structure["max_structure"]):
+        obj.db.structure["superstructure"] = obj.db.structure["max_structure"]
+        bug = 0
+    if(obj.db.structure["max_repair"] < 0):
+        obj.db.structure["max_repair"] = 0
+        bug = 0
+    if(obj.db.structure["repair"] > obj.db.structure["max_repair"]):
+        obj.db.structure["repair"] = obj.db.structure["max_repair"]
+        bug = 0
+    if (obj.db.structure["repair"] < 0.0):
+        obj.db.structure["repair"] = 0.0
+        bug = 0
+    
+    #sensor
+    if(obj.db.sensor["lrs_exist"] != 1):
+        obj.db.sensor["lrs_active"] = 0
+        obj.db.sensor["lrs_exist"] = 0
+        obj.db.sensor["lrs_damage"] = 0.0
+        obj.db.sensor["lrs_resolution"] = 0.0
+
+    if(obj.db.sensor["srs_exist"] != 1):
+        obj.db.sensor["srs_active"] = 0
+        obj.db.sensor["srs_exist"] = 0
+        obj.db.sensor["srs_damage"] = 0.0
+        obj.db.sensor["srs_resolution"] = 0.0
+
+    if(obj.db.sensor["ew_exist"] != 1):
+        obj.db.sensor["ew_active"] = 0
+        obj.db.sensor["ew_exist"] = 0
+        obj.db.sensor["ew_damage"] = 0.0
+        
+    if(obj.db.sensor["srs_exist"] == 0 and obj.db.sensor["lrs_exist"] == 0):
+        obj.db.sensor["contacts"] = 0
+        obj.db.sensor["counter"] = 0
+        for i in range(constants.MAX_SENSOR_CONTACTS):
+            obj.db.slist[i]["key"] = 0
+            obj.db.slist[i]["num"] = 0
+            obj.db.slist[i]["lev"] = 0
+    
+    #shield
+    if(obj.db.shield["exist"] != 1 or obj.db.shield["ratio"] <= 0.0 or obj.db.shield["maximum"] <= 0):
+        obj.db.shield["exist"] = 0
+        obj.db.shield["ratio"] = 0
+        obj.db.shield["maximum"] = 0
+        obj.db.shield["freq"] = 0.0
+        for i in range(constants.MAX_SHIELD_NAME):
+            obj.db.shield[i]["damage"] = 0.0
+            obj.db.shield[i]["active"] = 0
+    
+    #tech
+    if(obj.db.tech["firing"] <= 0.0):
+        obj.db.tech["firing"] = 1.0
+        bug = 0
+    if(obj.db.tech["fuel"] <= 0.0):
+        obj.db.tech["fuel"] = 1.0
+        bug = 0
+    if(obj.db.tech["stealth"] <= 0.0):
+        obj.db.tech["stealth"] = 1.0
+        bug = 0
+    if(obj.db.tech["cloak"] <= 0.0):
+        obj.db.tech["cloak"] = 1.0
+        bug = 0
+    if(obj.db.tech["sensors"] <= 0.0):
+        obj.db.tech["sensors"] = 1.0
+        bug = 0
+    if(obj.db.tech["main_max"] <= 0.0):
+        obj.db.tech["main_max"] = 1.0
+        bug = 0
+    if (obj.db.tech["aux_max"] <= 0.0):
+        obj.db.tech["aux_max"] = 1.0
+        bug = 0
+    if (obj.db.tech["armor"] <= 0.0):
+        obj.db.tech["armor"] = 1.0
+        bug = 0
+    
+    #move
+    if(obj.db.move["ratio"] <= 0.0):
+        obj.db.move["ratio"] = 1.0
+        bug = 0
+    
+    #cloak
+    if(obj.db.cloak["exist"] != 0 or obj.db.cloak["cost"] <= 0):
+        obj.db.cloak["exist"] = 0
+        obj.db.cloak["cost"] = 0
+        obj.db.cloak["damage"] = 0
+        obj.db.cloak["freq"] = 0.0
+        obj.db.cloak["active"] = 0
+    else:
+        if(obj.db.cloak["freq"] <= 1.0 or obj.db.cloak["freq"] >= 1000.0):
+            obj.db.cloak["freq"] = random.random() * 10000 / 100.0
+            bug = 0
+    
+    #trans
+    if(obj.db.trans["exist"] != 1):
+        obj.db.trans["cost"] = 0
+        obj.db.trans["damage"] = 0.0
+        obj.db.trans["freq"] = 0.0
+        obj.db.trans["exist"] = 0
+        obj.db.trans["d_lock"] = 0
+        obj.db.trans["s_lock"] = 0
+    else:
+        if(obj.db.trans["freq"] <= 1.0 or obj.db.trans["freq"] >= 1000.0):
+            obj.db.trans["freq"] = random.random() * 10000 / 100.0
+            bug = 0
+    
+    #if(obj.db.trans["d_lock"] != 0):
+    #    if(obj.db.trans["d_lock"] != obj.name):
+    #        if(sdb2contact(self,obj.db.trans["d_lock"]) == constants.SENSOR_FAIL):
+    #            obj.db.trans["d_lock"] = 0
+    #
+    #if(obj.db.trans["s_lock"] != 0):
+    #    if(obj.db.trans["s_lock"] != obj.name):
+    #        if(sdb2contact(self,obj.db.trans["s_lock"]) == constants.SENSOR_FAIL):
+    #            obj.db.trans["s_lock"] = 0
+            
+    #tract
+    if(obj.db.tract["exist"]!= 1):
+        obj.db.tract["cost"] = 0
+        obj.db.tract["damage"] = 0
+        obj.db.tract["freq"] = 0.0
+        obj.db.tract["active"] = 0
+        obj.db.tract["exist"] = 0
+        obj.db.tract["lock"] = 0
+        obj.db.status["tractoring"] = 0
+    else:
+        if(obj.db.tract["freq"] <= 1.0 or obj.db.tract["freq"] >= 1000.0):
+            obj.db.tract["freq"] = random.random() * 10000 / 100.0
+            bug = 0
+    
+    #fuel
+    if(obj.db.fuel["antimatter"] < 0.0):
+        obj.db.fuel["antimatter"] = 0.0
+    if(obj.db.fuel["deuterium"] < 0.0):
+        obj.db.fuel["deuterium"] = 0.0
+    if(obj.db.fuel["reserves"] < 0.0):
+        obj.db.fuel["reserves"] = 0.0
+    if(obj.db.fuel["antimatter"] > sdb2max_antimatter(obj)):
+        obj.db.fuel["antimatter"] = sdb2max_antimatter(obj)
+    if(obj.db.fuel["deuterium"] > sdb2max_deuterium(obj)):
+        obj.db.fuel["deuterium"] = sdb2max_deuterium(obj)
+    if(obj.db.fuel["reserves"] > sdb2max_reserves(obj)):
+        obj.db.fuel["reserves"] = sdb2max_reserves(obj)
+    
+    #status
+    if(obj.db.structure["superstructure"] <= - obj.db.structure["max_structure"]):
+        obj.db.status["crippled"] = 2
+    elif(obj.db.structure["superstructure"] <= 0.0):
+        obj.db.status["crippled"] = 1
+    else:
+        obj.db.status["crippled"] = 0
+    
+    iterate.up_cochranes(obj)
+    iterate.up_turn_rate(obj)
+    iterate.up_vectors(obj)
+    iterate.up_empire(obj)
+    iterate.up_quadrant(obj)
+    iterate.up_resolution(obj)
+    iterate.up_signature(obj)
+    iterate.up_visibility(obj)
+    return bug
