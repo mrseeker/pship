@@ -861,7 +861,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 if(obj_x.ndb.d0 > fire_range and obj.db.blist[i]["name"] != 19): #mass driver cludge
                     dmg_b[i] *= (1.0 - (obj_x.ndb.d0 - fire_range) / (18.0 * fire_range))
                 buff_x[obj_x.ndb.i1] += "B{:d}:|r{:d}|n".format(i+1,int(dmg_b[i] + 0.5))
-                if(obj_x.ndb.i5 != 0):
+                if(obj_x.ndb.i5 == 0):
                     obj_x.ndb.i5 += 1
             else:
                 buff_x[obj_x.ndb.i1] += "B{:d}:--|n".format(i+1)
