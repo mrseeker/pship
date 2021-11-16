@@ -1195,7 +1195,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                     if (obj_x.db.structure["superstructure"] <= -ss):
                         #killed message here
                         continue
-                    if (pdmg > 0.0 and obj_x.structure["superstructure"] <= 0.0):
+                    if (pdmg > 0.0 and obj_x.db.structure["superstructure"] <= 0.0):
                         for j in range(obj.db.beam["banks"]):
                             if (obj.blist[j]["lock"] == obj_x.name):
                                 obj.blist[j]["lock"] = 0
