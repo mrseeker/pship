@@ -1032,7 +1032,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                     alerts.write_spacelog(self,obj,"LOG: Fired and hit, Beam {:.6f} GHz, Missile {:.6f} GHz".format(obj.db.beam["freq"],obj.db.missile["freq"]))
                 else:
                     alerts.do_space_notify_two(obj,obj_x,["helm","tactical","science"],"fires and misses")
-                if(obj_x.status["active"] and obj_x.status["crippled"] == 0):
+                if(obj_x.db.status["active"] == 1 and obj_x.status["crippled"] == 0):
                     alerts.console_message(obj_x,["helm","science","tactical"],"{:s} firing: {:s}".format(unparse.unparse_identity(obj_x,obj),buff_x[i]))
                     obj_x.ndb.i3 = utils.sdb2shield(obj_x,obj)
                     obj_x.ndb.d1 = utils.sdb2dissipation(obj_x,obj_x.ndb.i3)
