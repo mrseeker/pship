@@ -859,7 +859,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             if(random.randrange(0,101) < (100 * prob)):
                 dmg_b[i] = obj.db.blist[i]["cost"] + obj.db.blist[i]["bonus"]
                 if(obj_x.ndb.d0 > fire_range and obj.db.blist[i]["name"] != 19): #mass driver cludge
-                    dmg_b[i] *= (1.0 - (obj_x.ndb.i0 - fire_range) / (18.0 * fire_range))
+                    dmg_b[i] *= (1.0 - (obj_x.ndb.d0 - fire_range) / (18.0 * fire_range))
                 buff_x[obj_x.ndb.i1] += "B{:d}:|r{:d}|n".format(i+1,int(dmg_b[i] + 0.5))
                 if(obj_x.ndb.i5 != 0):
                     obj_x.ndb.i5 += 1
@@ -950,7 +950,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             if(random.randrange(0,101) < (100 * prob)):
                 dmg_m[i] = obj.db.mlist[i]["warhead"]
                 if(obj_x.ndb.d0 > fire_range and obj.db.mlist[i]["name"] == 3): #mass driver cludge
-                    dmg_m[i] *= (1.0 - (obj_x.ndb.i0 - fire_range) / (18.0 * fire_range))
+                    dmg_m[i] *= (1.0 - (obj_x.ndb.d0 - fire_range) / (18.0 * fire_range))
                 buff_x[obj_x.ndb.i1] += "M{:d}:|r{:d}|n".format(i+1,int(dmg_m[i] + 0.5))
                 if(obj_x.ndb.i5 != 0):
                     obj_x.ndb.i5 += 1
