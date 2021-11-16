@@ -776,7 +776,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
         return 0
     
     #check beam weapon list
-    if (weapon == 1 or (weapon == 0 and obj.db.beam["exist"])):
+    if (weapon == 1 or (weapon == 0 and obj.db.beam["exist"] == 1)):
         a = first
         b = last
         if (a < 1 or a > obj.db.beam["banks"]):
@@ -865,7 +865,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                     buff_x[obj_x.ndb.i1] += "B{:d}:--|n".format(i+1)
     
     #check missile weapon list
-    if (weapon == 2 or (weapon == 0 and obj.db.missile["exist"])):
+    if (weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1)):
         a = first
         b = last
         if (a < 1 or a > obj.db.missile["tubes"]):

@@ -271,7 +271,7 @@ class CmdFire(default_cmds.MuxCommand):
         if(errors.error_on_console(self.caller,obj)):
             return 0
         
-        if(len(self.args) == 0):
+        if(self.args[0] == ""):
             setter.do_set_fire(caller,obj,0,constants.MAX_BEAM_BANKS,0,0)
         elif(len(self.args) == 4):
             setter.do_set_fire(caller,obj,int(self.args[1]),int(self.args[2]),int(self.args[0]),int(self.args[3]))
