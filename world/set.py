@@ -972,6 +972,22 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 alerts.notify(self,alerts.ansi_red("No {:s}s have targets in range.".format(constants.system_name[3])))
             elif (is_b_load == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are recycled.".format(constants.system_name[3])))
+            for i in range(obj.db.sensor["contacts"]):
+                obj_x = search_object(obj.db.slist[i]["key"])
+                if (len(obj_x) > 0):
+                    obj_x = obj_x[0]
+                    if(obj_x.ndb.i0 == obj.name):
+                        obj_x.ndb.i0 = 0
+                        obj_x.ndb.i1 = 0
+                        obj_x.ndb.i2 = 0
+                        obj_x.ndb.i3 = 0
+                        obj_x.ndb.i4 = 0
+                        obj_x.ndb.i5 = 0
+                        obj_x.ndb.d0 = 0.0
+                        obj_x.ndb.d1 = 0.0
+                        obj_x.ndb.d2 = 0.0
+            return 0
+
         if (is_m_load == 0 and (weapon == 2 or weapon == 0)):    
             if (is_m_active == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are online.".format(constants.system_name[9])))
@@ -985,22 +1001,21 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 alerts.notify(self,alerts.ansi_red("No {:s}s have targets in range.".format(constants.system_name[9])))
             elif (is_m_load == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are recycled.".format(constants.system_name[9])))
-            
-        for i in range(obj.db.sensor["contacts"]):
-            obj_x = search_object(obj.db.slist[i]["key"])
-            if (len(obj_x) > 0):
-                obj_x = obj_x[0]
-                if(obj_x.ndb.i0 == obj.name):
-                    obj_x.ndb.i0 = 0
-                    obj_x.ndb.i1 = 0
-                    obj_x.ndb.i2 = 0
-                    obj_x.ndb.i3 = 0
-                    obj_x.ndb.i4 = 0
-                    obj_x.ndb.i5 = 0
-                    obj_x.ndb.d0 = 0.0
-                    obj_x.ndb.d1 = 0.0
-                    obj_x.ndb.d2 = 0.0
-        return 0
+            for i in range(obj.db.sensor["contacts"]):
+                obj_x = search_object(obj.db.slist[i]["key"])
+                if (len(obj_x) > 0):
+                    obj_x = obj_x[0]
+                    if(obj_x.ndb.i0 == obj.name):
+                        obj_x.ndb.i0 = 0
+                        obj_x.ndb.i1 = 0
+                        obj_x.ndb.i2 = 0
+                        obj_x.ndb.i3 = 0
+                        obj_x.ndb.i4 = 0
+                        obj_x.ndb.i5 = 0
+                        obj_x.ndb.d0 = 0.0
+                        obj_x.ndb.d1 = 0.0
+                        obj_x.ndb.d2 = 0.0
+            return 0
 
     #report firing messages
     flag = 0
