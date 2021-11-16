@@ -797,7 +797,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             if(obj.db.blist[i]["active"] == 0):
                 continue
             is_b_active += 1
-            obj_x = search_object(obj.db.blist[i]["lock"])
+            obj_x = search_object(obj.db.blist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
                 obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
