@@ -802,7 +802,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x = search_object(obj.db.blist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
-                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.name)   #slist number
                 obj_x.ndb.i2 = 0                            #firing arc
                 obj_x.ndb.i3 = 0                            #facing shield
                 obj_x.ndb.i4 = 0                            #multiple hit flag
@@ -813,7 +813,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             if (obj_x.ndb.i1 == constants.SENSOR_FAIL):
                 continue
             is_b_lock += 1
-            if (obj.db.beam["out"] < obj.db.beam["cost"]):
+            if (obj.db.beam["out"] < obj.db.blist[i]["cost"]):
                 continue
             is_b_arm += 1
             if (obj_x.ndb.i2 != 0):
@@ -843,7 +843,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 continue
             is_b_load += 1
             obj.db.blist[i]["load"] = gametime.gametime(absolute=True)
-            obj.db.beam["out"] -= obj.db.beam[i]["cost"]
+            obj.db.beam["out"] -= obj.db.blist[i]["cost"]
             prob = obj.db.slist[obj_x.ndb.i1]["lev"]
             prob *= obj.db.blist[i]["damage"] * obj.db.tech["firing"]
             if (obj_x.ndb.d0 > fire_range):
@@ -893,7 +893,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x = search_object(obj.db.mlist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
-                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.name)   #slist number
                 obj_x.ndb.i2 = 0                            #firing arc
                 obj_x.ndb.i3 = 0                            #facing shield
                 obj_x.ndb.i4 = 0                            #multiple hit flag
@@ -904,7 +904,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             if (obj_x.ndb.i1 == constants.SENSOR_FAIL):
                 continue
             is_m_lock += 1
-            if (obj.db.missile["out"] < obj.db.missile["cost"]):
+            if (obj.db.missile["out"] < obj.db.mlist[i]["cost"]):
                 continue
             is_m_arm += 1
             if (obj_x.ndb.i2 != 0):
@@ -934,7 +934,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 continue
             is_m_load += 1
             obj.db.mlist[i]["load"] = gametime.gametime(absolute=True)
-            obj.db.missile["out"] -= obj.db.missile[i]["cost"]
+            obj.db.missile["out"] -= obj.db.mlist[i]["cost"]
             prob = obj.db.slist[obj_x.ndb.i1]["lev"]
             prob *= obj.db.mlist[i]["damage"] * obj.db.tech["firing"]
             if (obj_x.ndb.d0 > fire_range):
@@ -987,7 +987,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are recycled.".format(constants.system_name[9])))
             
         for i in range(obj.db.sensor["contacts"]):
-            obj_x = search_object(obj.db.slist[i]["key"])[0]
+            obj_x = search_object(obj.db.slist[i]["key"])
             if (len(obj_x) > 0):
                 obj_x = obj_x[0]
                 if(obj_x.ndb.i0 == obj.name):
