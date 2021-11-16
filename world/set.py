@@ -818,7 +818,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             is_b_arm += 1
             if (obj_x.ndb.i2 == 0):
                 obj_x.ndb.i2 = utils.sdb2arc(obj,obj_x)
-            if(utils.arc_check(obj_x.ndb.i2,obj.db.blist[i]["arcs"] == constants.ARC_FAIL)):
+            if(utils.arc_check(obj_x.ndb.i2,obj.db.blist[i]["arcs"]) == constants.ARC_FAIL):
                 continue
             if(obj.db.status["tractored"] != 0):
                 if (obj.db.status["tractored"] != obj_x.name):
@@ -909,7 +909,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             is_m_arm += 1
             if (obj_x.ndb.i2 == 0):
                 obj_x.ndb.i2 = utils.sdb2arc(obj,obj_x)
-            if(utils.arc_check(obj_x.ndb.i2,obj.db.mlist[i]["arcs"] == constants.ARC_FAIL)):
+            if(utils.arc_check(obj_x.ndb.i2,obj.db.mlist[i]["arcs"]) == constants.ARC_FAIL):
                 continue
             if(obj.db.status["tractored"] != 0):
                 if (obj.db.status["tractored"] != obj_x.name):
