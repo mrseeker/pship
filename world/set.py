@@ -830,7 +830,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 fire_range = obj.db.blist[i]["range"]
             else:
                 fire_range = obj.db.blist[i]["range"] * constants.PARSEC / 10000.0
-            if(obj_x.db.d0 > fire_range * 10.0):
+            if(obj_x.ndb.d0 > fire_range * 10.0):
                 continue
             if(math.fabs(obj.db.move["out"]) >= 1.0 and math.fabs(obj_x.db.move["out"]) < 1.0):
                 if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
@@ -921,7 +921,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 fire_range = obj.db.mlist[i]["range"]
             else:
                 fire_range = obj.db.mlist[i]["range"] * constants.PARSEC / 10000.0
-            if(obj_x.db.d0 > fire_range * 10.0):
+            if(obj_x.ndb.d0 > fire_range * 10.0):
                 continue
             if(math.fabs(obj.db.move["out"]) >= 1.0 and math.fabs(obj_x.db.move["out"]) < 1.0):
                 if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
