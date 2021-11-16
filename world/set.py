@@ -797,7 +797,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             if(obj.db.blist[i]["active"] == 0):
                 continue
             is_b_active += 1
-            if (obj.db.mlist[i]["lock"] == 0):
+            if (obj.db.blist[i]["lock"] == 0):
                 continue
             obj_x = search_object(obj.db.blist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
