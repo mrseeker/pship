@@ -1213,7 +1213,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 if (d_system[2] > 0.0 and obj_x.db.batt["exist"] != 0):
                     damage.damage_batt(obj_x,d_system[2])
                 if (obj_x.db.beam["exist"] != 0):
-                    for j in obj_x.db.beam["banks"]:
+                    for j in range(obj_x.db.beam["banks"]):
                         if (d_beam[j] > 0.0):
                             damage.damage_beam(obj_x,j,d_beam[j])
                 if (d_system[4] > 0.0 and obj_x.db.cloak["exist"] != 0):
@@ -1225,7 +1225,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 if (d_system[7] > 0.0 and obj_x.db.sensor["lrs_exist"] != 0):
                     damage.damage_lrs(obj_x,d_system[7])
                 if (obj_x.db.missile["exist"] != 0):
-                    for j in obj_x.db.missile["tubes"]:
+                    for j in range(obj_x.db.missile["tubes"]):
                         if (d_missile[j] > 0.0):
                             damage.damage_missile(obj_x,j,d_missile[j])
                 if (d_system[11] > 0.0 and obj_x.db.sensor["srs_exist"] != 0):
