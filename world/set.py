@@ -789,81 +789,81 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 b = obj.db.beam["banks"] - 1
             if (b < a):
                 b = a
-            for i in range(obj.db.beam["banks"]):
-                dmg_b[i] = 0.0
-            for i in range(a,b+1):
-                if(obj.db.blist[i]["damage"] <= 0.0):
+        for i in range(obj.db.beam["banks"]):
+            dmg_b[i] = 0.0
+        for i in range(a,b+1):
+            if(obj.db.blist[i]["damage"] <= 0.0):
+                continue
+            if(obj.db.blist[i]["active"] == 0):
+                continue
+            is_b_active += 1
+            obj_x = search_object(obj.db.blist[i]["lock"])
+            if (obj_x.ndb.i0 != obj.name):
+                obj_x.ndb.i0 = obj.name                     #initial marker
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
+                obj_x.ndb.i2 = 0                            #firing arc
+                obj_x.ndb.i3 = 0                            #facing shield
+                obj_x.ndb.i4 = 0                            #multiple hit flag
+                obj_x.ndb.i5 = 0                            #hit flag of target
+                obj_x.ndb.d0 = 0.0                          #range to target & shield damage
+                obj_x.ndb.d1 = 0.0                          #target shield GW
+                obj_x.ndb.d2 = 0.0                          #internal damage
+            if (obj_x.ndb.i1 == constants.SENSOR_FAIL):
+                continue
+            is_b_lock += 1
+            if (obj.db.beam["out"] < obj.db.beam["cost"]):
+                continue
+            is_b_arm += 1
+            if (obj_x.ndb.i2 != 0):
+                obj_x.ndb.i2 = utils.sdb2arc(obj,obj_x)
+            if(utils.arc_check(obj_x.ndb.i2,obj.db.blist[i]["arcs"] == constants.ARC_FAIL)):
+                continue
+            if(obj.db.status["tractored"] != 0):
+                if (obj.db.status["tractored"] != obj_x.name):
                     continue
-                if(obj.db.blist[i]["active"] == 0):
+            is_b_arc +=1
+            if(obj_x.ndb.d0 == 0.0):
+                obj_x.ndb.d0 = utils.sdb2range(obj,obj_x)
+            if(math.fabs(obj.db.move["out"]) < 1.0):
+                fire_range = obj.db.blist[i]["range"]
+            else:
+                fire_range = obj.db.blist[i]["range"] * constants.PARSEC / 10000.0
+            if(obj_x.db.d0 > fire_range * 10.0):
+                continue
+            if(math.fabs(obj.db.move["out"]) >= 1.0 and math.fabs(obj_x.db.move["out"]) < 1.0):
+                if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
                     continue
-                is_b_active += 1
-                obj_x = search_object(obj.db.blist[i]["lock"])
-                if (obj_x.ndb.i0 != obj.name):
-                    obj_x.ndb.i0 = obj.name                     #initial marker
-                    obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
-                    obj_x.ndb.i2 = 0                            #firing arc
-                    obj_x.ndb.i3 = 0                            #facing shield
-                    obj_x.ndb.i4 = 0                            #multiple hit flag
-                    obj_x.ndb.i5 = 0                            #hit flag of target
-                    obj_x.ndb.d0 = 0.0                          #range to target & shield damage
-                    obj_x.ndb.d1 = 0.0                          #target shield GW
-                    obj_x.ndb.d2 = 0.0                          #internal damage
-                if (obj_x.ndb.i1 == constants.SENSOR_FAIL):
+            if(math.fabs(obj.db.move["out"]) < 1.0 and math.fabs(obj_x.db.move["out"]) >= 1.0):
+                if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
                     continue
-                is_b_lock += 1
-                if (obj.db.beam["out"] < obj.db.beam["cost"]):
-                    continue
-                is_b_arm += 1
-                if (obj_x.ndb.i2 != 0):
-                    obj_x.ndb.i2 = utils.sdb2arc(obj,obj_x)
-                if(utils.arc_check(obj_x.ndb.i2,obj.db.blist[i]["arcs"] == constants.ARC_FAIL)):
-                    continue
-                if(obj.db.status["tractored"] != 0):
-                    if (obj.db.status["tractored"] != obj_x.name):
-                        continue
-                is_b_arc +=1
-                if(obj_x.ndb.d0 == 0.0):
-                    obj_x.ndb.d0 = utils.sdb2range(obj,obj_x)
-                if(math.fabs(obj.db.move["out"]) < 1.0):
-                    fire_range = obj.db.blist[i]["range"]
-                else:
-                    fire_range = obj.db.blist[i]["range"] * constants.PARSEC / 10000.0
-                if(obj_x.db.d0 > fire_range * 10.0):
-                    continue
-                if(math.fabs(obj.db.move["out"]) >= 1.0 and math.fabs(obj_x.db.move["out"]) < 1.0):
-                    if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
-                        continue
-                if(math.fabs(obj.db.move["out"]) < 1.0 and math.fabs(obj_x.db.move["out"]) >= 1.0):
-                    if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
-                        continue
-                is_b_range += 1
-                if(obj.db.blist[i]["load"] + obj.db.blist[i]["recycle"] > gametime.gametime(absolute=True)):
-                    continue
-                is_b_load += 1
-                obj.db.blist[i]["load"] = gametime.gametime(absolute=True)
-                obj.db.beam["out"] -= obj.db.beam[i]["cost"]
-                prob = obj.db.slist[obj_x.ndb.i1]["lev"]
-                prob *= obj.db.blist[i]["damage"] * obj.db.tech["firing"]
-                if (obj_x.ndb.d0 > fire_range):
-                    prob *= 0.01 + 0.99 * fire_range / obj_x.ndb.d0
-                prob /= 1.0 + (utils.sdb2angular(obj,obj_x) * 10.0 * (1.0 + obj.db.move["ratio"] / obj_x.db.move["ratio"]))
-                if (prob > 1.0):
-                    prob = 1.0
-                elif (prob < 0.01):
-                    prob = 0.01
-                if(obj_x.ndb.i4 != 0):
-                    buff_x[obj_x.ndb.i1] += " "
-                obj_x.ndb.i4 += 1
-                if(random.randrange(0,101) < (100 * prob)):
-                    dmg_b[i] = obj.db.blist[i]["cost"] + obj.db.blist[i]["bonus"]
-                    if(obj_x.ndb.d0 > fire_range and obj.db.blist[i]["name"] != 19): #mass driver cludge
-                        dmg_b[i] *= (1.0 - (obj_x.ndb.i0 - fire_range) / (18.0 * fire_range))
-                    buff_x[obj_x.ndb.i1] += "B{:d}:|r{:d}|n".format(i+1,int(dmg_b[i] + 0.5))
-                    if(obj_x.ndb.i5 != 0):
-                        obj_x.ndb.i5 += 1
-                else:
-                    buff_x[obj_x.ndb.i1] += "B{:d}:--|n".format(i+1)
-    
+            is_b_range += 1
+            if(obj.db.blist[i]["load"] + obj.db.blist[i]["recycle"] > gametime.gametime(absolute=True)):
+                continue
+            is_b_load += 1
+            obj.db.blist[i]["load"] = gametime.gametime(absolute=True)
+            obj.db.beam["out"] -= obj.db.beam[i]["cost"]
+            prob = obj.db.slist[obj_x.ndb.i1]["lev"]
+            prob *= obj.db.blist[i]["damage"] * obj.db.tech["firing"]
+            if (obj_x.ndb.d0 > fire_range):
+                prob *= 0.01 + 0.99 * fire_range / obj_x.ndb.d0
+            prob /= 1.0 + (utils.sdb2angular(obj,obj_x) * 10.0 * (1.0 + obj.db.move["ratio"] / obj_x.db.move["ratio"]))
+            if (prob > 1.0):
+                prob = 1.0
+            elif (prob < 0.01):
+                prob = 0.01
+            if(obj_x.ndb.i4 != 0):
+                buff_x[obj_x.ndb.i1] += " "
+            obj_x.ndb.i4 += 1
+            if(random.randrange(0,101) < (100 * prob)):
+                dmg_b[i] = obj.db.blist[i]["cost"] + obj.db.blist[i]["bonus"]
+                if(obj_x.ndb.d0 > fire_range and obj.db.blist[i]["name"] != 19): #mass driver cludge
+                    dmg_b[i] *= (1.0 - (obj_x.ndb.i0 - fire_range) / (18.0 * fire_range))
+                buff_x[obj_x.ndb.i1] += "B{:d}:|r{:d}|n".format(i+1,int(dmg_b[i] + 0.5))
+                if(obj_x.ndb.i5 != 0):
+                    obj_x.ndb.i5 += 1
+            else:
+                buff_x[obj_x.ndb.i1] += "B{:d}:--|n".format(i+1)
+
     #check missile weapon list
     if (weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1)):
         a = first
@@ -878,81 +878,81 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 b = obj.db.missile["tubes"] - 1
             if (b < a):
                 b = a
-            for i in range(obj.db.missile["tubes"]):
-                dmg_m[i] = 0.0
-            for i in range(a,b+1):
-                if(obj.db.mlist[i]["damage"] <= 0.0):
+        for i in range(obj.db.missile["tubes"]):
+            dmg_m[i] = 0.0
+        for i in range(a,b+1):
+            if(obj.db.mlist[i]["damage"] <= 0.0):
+                continue
+            if(obj.db.mlist[i]["active"] == 0):
+                continue
+            is_m_active += 1
+            obj_x = search_object(obj.db.mlist[i]["lock"])
+            if (obj_x.ndb.i0 != obj.name):
+                obj_x.ndb.i0 = obj.name                     #initial marker
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
+                obj_x.ndb.i2 = 0                            #firing arc
+                obj_x.ndb.i3 = 0                            #facing shield
+                obj_x.ndb.i4 = 0                            #multiple hit flag
+                obj_x.ndb.i5 = 0                            #hit flag of target
+                obj_x.ndb.d0 = 0.0                          #range to target & shield damage
+                obj_x.ndb.d1 = 0.0                          #target shield GW
+                obj_x.ndb.d2 = 0.0                          #internal damage
+            if (obj_x.ndb.i1 == constants.SENSOR_FAIL):
+                continue
+            is_m_lock += 1
+            if (obj.db.missile["out"] < obj.db.missile["cost"]):
+                continue
+            is_m_arm += 1
+            if (obj_x.ndb.i2 != 0):
+                obj_x.ndb.i2 = utils.sdb2arc(obj,obj_x)
+            if(utils.arc_check(obj_x.ndb.i2,obj.db.mlist[i]["arcs"] == constants.ARC_FAIL)):
+                continue
+            if(obj.db.status["tractored"] != 0):
+                if (obj.db.status["tractored"] != obj_x.name):
                     continue
-                if(obj.db.mlist[i]["active"] == 0):
+            is_m_arc +=1
+            if(obj_x.ndb.d0 == 0.0):
+                obj_x.ndb.d0 = utils.sdb2range(obj,obj_x)
+            if(math.fabs(obj.db.move["out"]) < 1.0):
+                fire_range = obj.db.mlist[i]["range"]
+            else:
+                fire_range = obj.db.mlist[i]["range"] * constants.PARSEC / 10000.0
+            if(obj_x.db.d0 > fire_range * 10.0):
+                continue
+            if(math.fabs(obj.db.move["out"]) >= 1.0 and math.fabs(obj_x.db.move["out"]) < 1.0):
+                if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
                     continue
-                is_m_active += 1
-                obj_x = search_object(obj.db.mlist[i]["lock"])
-                if (obj_x.ndb.i0 != obj.name):
-                    obj_x.ndb.i0 = obj.name                     #initial marker
-                    obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
-                    obj_x.ndb.i2 = 0                            #firing arc
-                    obj_x.ndb.i3 = 0                            #facing shield
-                    obj_x.ndb.i4 = 0                            #multiple hit flag
-                    obj_x.ndb.i5 = 0                            #hit flag of target
-                    obj_x.ndb.d0 = 0.0                          #range to target & shield damage
-                    obj_x.ndb.d1 = 0.0                          #target shield GW
-                    obj_x.ndb.d2 = 0.0                          #internal damage
-                if (obj_x.ndb.i1 == constants.SENSOR_FAIL):
+            if(math.fabs(obj.db.move["out"]) < 1.0 and math.fabs(obj_x.db.move["out"]) >= 1.0):
+                if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
                     continue
-                is_m_lock += 1
-                if (obj.db.missile["out"] < obj.db.missile["cost"]):
-                    continue
-                is_m_arm += 1
-                if (obj_x.ndb.i2 != 0):
-                    obj_x.ndb.i2 = utils.sdb2arc(obj,obj_x)
-                if(utils.arc_check(obj_x.ndb.i2,obj.db.mlist[i]["arcs"] == constants.ARC_FAIL)):
-                    continue
-                if(obj.db.status["tractored"] != 0):
-                    if (obj.db.status["tractored"] != obj_x.name):
-                        continue
-                is_m_arc +=1
-                if(obj_x.ndb.d0 == 0.0):
-                    obj_x.ndb.d0 = utils.sdb2range(obj,obj_x)
-                if(math.fabs(obj.db.move["out"]) < 1.0):
-                    fire_range = obj.db.mlist[i]["range"]
-                else:
-                    fire_range = obj.db.mlist[i]["range"] * constants.PARSEC / 10000.0
-                if(obj_x.db.d0 > fire_range * 10.0):
-                    continue
-                if(math.fabs(obj.db.move["out"]) >= 1.0 and math.fabs(obj_x.db.move["out"]) < 1.0):
-                    if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
-                        continue
-                if(math.fabs(obj.db.move["out"]) < 1.0 and math.fabs(obj_x.db.move["out"]) >= 1.0):
-                    if(obj.db.status["tractoring"] != obj_x.name and obj.db.status["tractored"] != obj_x.name):
-                        continue
-                is_m_range += 1
-                if(obj.db.mlist[i]["load"] + obj.db.mlist[i]["recycle"] > gametime.gametime(absolute=True)):
-                    continue
-                is_m_load += 1
-                obj.db.mlist[i]["load"] = gametime.gametime(absolute=True)
-                obj.db.missile["out"] -= obj.db.missile[i]["cost"]
-                prob = obj.db.slist[obj_x.ndb.i1]["lev"]
-                prob *= obj.db.mlist[i]["damage"] * obj.db.tech["firing"]
-                if (obj_x.ndb.d0 > fire_range):
-                    prob *= 0.01 + 0.99 * fire_range / obj_x.ndb.d0
-                prob /= 1.0 + (utils.sdb2angular(obj,obj_x) * 10.0 * (1.0 + obj.db.move["ratio"] / obj_x.db.move["ratio"]))
-                if (prob > 1.0):
-                    prob = 1.0
-                elif (prob < 0.01):
-                    prob = 0.01
-                if(obj_x.ndb.i4 != 0):
-                    buff_x[obj_x.ndb.i1] += " "
-                obj_x.ndb.i4 += 1
-                if(random.randrange(0,101) < (100 * prob)):
-                    dmg_m[i] = obj.db.mlist[i]["warhead"]
-                    if(obj_x.ndb.d0 > fire_range and obj.db.mlist[i]["name"] == 3): #mass driver cludge
-                        dmg_m[i] *= (1.0 - (obj_x.ndb.i0 - fire_range) / (18.0 * fire_range))
-                    buff_x[obj_x.ndb.i1] += "M{:d}:|r{:d}|n".format(i+1,int(dmg_m[i] + 0.5))
-                    if(obj_x.ndb.i5 != 0):
-                        obj_x.ndb.i5 += 1
-                else:
-                    buff_x[obj_x.ndb.i1] += "M{:d}:--|n".format(i+1)
-    
+            is_m_range += 1
+            if(obj.db.mlist[i]["load"] + obj.db.mlist[i]["recycle"] > gametime.gametime(absolute=True)):
+                continue
+            is_m_load += 1
+            obj.db.mlist[i]["load"] = gametime.gametime(absolute=True)
+            obj.db.missile["out"] -= obj.db.missile[i]["cost"]
+            prob = obj.db.slist[obj_x.ndb.i1]["lev"]
+            prob *= obj.db.mlist[i]["damage"] * obj.db.tech["firing"]
+            if (obj_x.ndb.d0 > fire_range):
+                prob *= 0.01 + 0.99 * fire_range / obj_x.ndb.d0
+            prob /= 1.0 + (utils.sdb2angular(obj,obj_x) * 10.0 * (1.0 + obj.db.move["ratio"] / obj_x.db.move["ratio"]))
+            if (prob > 1.0):
+                prob = 1.0
+            elif (prob < 0.01):
+                prob = 0.01
+            if(obj_x.ndb.i4 != 0):
+                buff_x[obj_x.ndb.i1] += " "
+            obj_x.ndb.i4 += 1
+            if(random.randrange(0,101) < (100 * prob)):
+                dmg_m[i] = obj.db.mlist[i]["warhead"]
+                if(obj_x.ndb.d0 > fire_range and obj.db.mlist[i]["name"] == 3): #mass driver cludge
+                    dmg_m[i] *= (1.0 - (obj_x.ndb.i0 - fire_range) / (18.0 * fire_range))
+                buff_x[obj_x.ndb.i1] += "M{:d}:|r{:d}|n".format(i+1,int(dmg_m[i] + 0.5))
+                if(obj_x.ndb.i5 != 0):
+                    obj_x.ndb.i5 += 1
+            else:
+                buff_x[obj_x.ndb.i1] += "M{:d}:--|n".format(i+1)
+
     #report weapon status
     if (is_b_load == 0 or is_m_load == 0):
         if (is_b_load == 0 and (weapon == 1 or weapon == 0)):
