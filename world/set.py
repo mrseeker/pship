@@ -1044,45 +1044,53 @@ def do_set_fire(self,obj,first,last,weapon,mode):
     #compute damage
     if(weapon == 0 or weapon == 1):
         for i in range(obj.db.beam["banks"]):
-            obj_x = search_object(obj.db.blist[i]["lock"])[0]
-            if (obj_x.ndb.i0 == obj.name):
-                if(dmg_b[i] > 0):
-                    if(obj_x.db.shield["exist"] != 0):
-                        if(obj_x.ndb.d1 > 0.0):
-                            if(obj_x.db.shield["freq"] == obj.db.beam["freq"]):
-                                pdmg = dmg_b[i]
-                            else:
-                                pdmg = 0.0
-                            dmg_b[i] -= pdmg
-                            if (dmg_b[i] > 0.0):
-                                obj_x.ndb.d0 += dmg_b[i] / obj_x.ndb.d1 / 10.0
-                            dmg_b[i] /= obj_x.ndb.d1
-                            dmg_b[i] += pdmg
-                    #dmg_b[i] -= obj_x.db.tech["armor"]
-                    #dmg_b[i] /= obj_x.db.tech["armor"]
-                    if (dmg_b[i] > 0):
-                        obj_x.ndb.d2 += dmg_b[i]
-    
+            obj_x = search_object(obj.db.blist[i]["lock"])
+            if (len(obj_x) == 0):
+                continue
+            else:
+                obj_x = obj_x[0]
+                if (obj_x.ndb.i0 == obj.name):
+                    if(dmg_b[i] > 0):
+                        if(obj_x.db.shield["exist"] != 0):
+                            if(obj_x.ndb.d1 > 0.0):
+                                if(obj_x.db.shield["freq"] == obj.db.beam["freq"]):
+                                    pdmg = dmg_b[i]
+                                else:
+                                    pdmg = 0.0
+                                dmg_b[i] -= pdmg
+                                if (dmg_b[i] > 0.0):
+                                    obj_x.ndb.d0 += dmg_b[i] / obj_x.ndb.d1 / 10.0
+                                dmg_b[i] /= obj_x.ndb.d1
+                                dmg_b[i] += pdmg
+                        #dmg_b[i] -= obj_x.db.tech["armor"]
+                        #dmg_b[i] /= obj_x.db.tech["armor"]
+                        if (dmg_b[i] > 0):
+                            obj_x.ndb.d2 += dmg_b[i]
+        
     if(weapon == 0 or weapon == 2):
         for i in range(obj.db.missile["tubes"]):
-            obj_x = search_object(obj.db.mlist[i]["lock"])[0]
-            if (obj_x.ndb.i0 == obj.name):
-                if(dmg_m[i] > 0):
-                    if(obj_x.db.shield["exist"] != 0):
-                        if(obj_x.ndb.d1 > 0.0):
-                            if(obj_x.db.shield["freq"] == obj.db.missile["freq"]):
-                                pdmg = dmg_m[i]
-                            else:
-                                pdmg = 0.0
-                            dmg_m[i] -= pdmg
-                            if (dmg_m[i] > 0.0):
-                                obj_x.ndb.d0 += dmg_m[i] / obj_x.ndb.d1 / 10.0
-                            dmg_m[i] /= obj_x.ndb.d1
-                            dmg_m[i] += pdmg
-                    #dmg_m[i] -= obj_x.db.tech["armor"]
-                    #dmg_m[i] /= obj_x.db.tech["armor"]
-                    if (dmg_m[i] > 0):
-                        obj_x.ndb.d2 += dmg_m[i]
+            obj_x = search_object(obj.db.mlist[i]["lock"])
+            if (len(obj_x) == 0):
+                continue
+            else:
+                obj_x = obj_x[0]
+                if (obj_x.ndb.i0 == obj.name):
+                    if(dmg_m[i] > 0):
+                        if(obj_x.db.shield["exist"] != 0):
+                            if(obj_x.ndb.d1 > 0.0):
+                                if(obj_x.db.shield["freq"] == obj.db.missile["freq"]):
+                                    pdmg = dmg_m[i]
+                                else:
+                                    pdmg = 0.0
+                                dmg_m[i] -= pdmg
+                                if (dmg_m[i] > 0.0):
+                                    obj_x.ndb.d0 += dmg_m[i] / obj_x.ndb.d1 / 10.0
+                                dmg_m[i] /= obj_x.ndb.d1
+                                dmg_m[i] += pdmg
+                        #dmg_m[i] -= obj_x.db.tech["armor"]
+                        #dmg_m[i] /= obj_x.db.tech["armor"]
+                        if (dmg_m[i] > 0):
+                            obj_x.ndb.d2 += dmg_m[i]
 
     #assess damage
     for i in range(obj.db.sensor["contacts"]):
