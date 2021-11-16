@@ -4,7 +4,7 @@ Handles all tactical-related commands
 
 from evennia import default_cmds
 from commands import science
-from world import set as setter
+from world import constants, set as setter
 from world import alerts, errors, status
 from evennia import CmdSet, utils
 from evennia.utils.search import search_object
@@ -19,6 +19,7 @@ class TacticalCmdSet(CmdSet):
             self.add(CmdSrs())
             self.add(CmdLrs())
             self.add(CmdEW())
+            self.add(CmdFire())
             self.add(science.CmdIdent())
 
 class CmdCloak(default_cmds.MuxCommand):
@@ -244,3 +245,35 @@ class CmdEW(default_cmds.MuxCommand):
         elif(self.args == "off"):
             self.caller.msg("Turning off Electronic Warfare systems...")
             setter.do_set_ew(obj,0,obj)
+
+class CmdFire(default_cmds.MuxCommand):
+    """
+    Commands related to the Firing of the weapons.
+
+    Usage: fire <weapon> <first> <last> <location>
+    
+    Command list:
+    weapon - Type of weapon (0 = all, 1 = beam, 2 = missiles)
+    first - First beam/missile
+    last - Last beam/missile
+    location - Target location (0 = all, 1 = hull, 2 = engine, 3 = weapons, 4 = sensors, 5 = power)
+    """
+
+    key="fire"
+    alises=["shoot"]
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+        
+        if(len(self.args) == 0):
+            setter.do_set_fire(caller,obj,0,constants.MAX_BEAM_BANKS,0,0)
+        elif(len(self.args) == 4):
+            setter.do_set_fire(caller,obj,int(self.args[1]),int(self.args[2]),int(self.args[0]),int(self.args[3]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))

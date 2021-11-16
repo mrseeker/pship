@@ -776,7 +776,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
         return 0
     
     #check beam weapon list
-    if (weapon == 1 or (not weapon and obj.db.beam["exist"])):
+    if (weapon == 1 or (weapon == 0 and obj.db.beam["exist"])):
         a = first
         b = last
         if (a < 1 or a > obj.db.beam["banks"]):
@@ -865,7 +865,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                     buff_x[obj_x.ndb.i1] += "B{:d}:--|n".format(i+1)
     
     #check missile weapon list
-    if (weapon == 2 or (not weapon and obj.db.missile["exist"])):
+    if (weapon == 2 or (weapon == 0 and obj.db.missile["exist"])):
         a = first
         b = last
         if (a < 1 or a > obj.db.missile["tubes"]):
@@ -955,7 +955,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
     
     #report weapon status
     if (is_b_load == 0 or is_m_load == 0):
-        if (is_b_load == 0 and (weapon == 1 or not weapon)):
+        if (is_b_load == 0 and (weapon == 1 or weapon == 0)):
             if (is_b_active == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are online.".format(constants.system_name[3])))
             elif (is_b_lock == 0):
@@ -968,7 +968,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                 alerts.notify(self,alerts.ansi_red("No {:s}s have targets in range.".format(constants.system_name[3])))
             elif (is_b_load == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are recycled.".format(constants.system_name[3])))
-        if (is_m_load == 0 and (weapon == 2 or not weapon)):    
+        if (is_m_load == 0 and (weapon == 2 or weapon == 0)):    
             if (is_m_active == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are online.".format(constants.system_name[9])))
             elif (is_m_lock == 0):
@@ -1023,7 +1023,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
     alerts.console_message(obj,["helm","science","tactical"],buff_n)
 
     #compute damage
-    if(not weapon or weapon == 1):
+    if(weapon == 0 or weapon == 1):
         for i in range(obj.db.beam["banks"]):
             obj_x = search_object(obj.db.blist[i]["lock"])[0]
             if (obj_x.ndb.i0 == obj.name):
@@ -1044,7 +1044,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                     if (dmg_b[i] > 0):
                         obj_x.ndb.d2 += dmg_b[i]
     
-    if(not weapon or weapon == 2):
+    if(weapon == 0 or weapon == 2):
         for i in range(obj.db.missile["tubes"]):
             obj_x = search_object(obj.db.mlist[i]["lock"])[0]
             if (obj_x.ndb.i0 == obj.name):
