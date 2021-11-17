@@ -4,94 +4,94 @@ The world must be in balance, else we are having issues.
 
 from world import constants
 
-def balance_eng_power(self):
-    total = self.db.alloc["helm"] + self.db.alloc["tactical"] + self.db.alloc["operations"]
+def balance_eng_power(obj):
+    total = obj.db.alloc["helm"] + obj.db.alloc["tactical"] + obj.db.alloc["operations"]
     if (total > 0.0):
-        self.db.alloc["helm"] /= total
-        self.db.alloc["tactical"] /= total
-        self.db.alloc["operations"] /= total
+        obj.db.alloc["helm"] /= total
+        obj.db.alloc["tactical"] /= total
+        obj.db.alloc["operations"] /= total
     else:
-        self.db.alloc["helm"] = 0.0
-        self.db.alloc["tactical"] = 0.0
-        self.db.alloc["operations"] = 1.0
+        obj.db.alloc["helm"] = 0.0
+        obj.db.alloc["tactical"] = 0.0
+        obj.db.alloc["operations"] = 1.0
 
-def balance_helm_power(self):
-    if (self.db.alloc["helm"] > 0.0):
-        total = self.db.alloc["movement"] + self.db.alloc["shields"] + self.db.alloc["cloak"]
+def balance_helm_power(obj):
+    if (obj.db.alloc["helm"] > 0.0):
+        total = obj.db.alloc["movement"] + obj.db.alloc["shields"] + obj.db.alloc["cloak"]
         if (total > 0.0):
-            total /= self.db.alloc["helm"]
-            self.db.alloc["movement"] /= total
-            self.db.alloc["shields"] /= total
-            self.db.alloc["cloak"] /= total
+            total /= obj.db.alloc["helm"]
+            obj.db.alloc["movement"] /= total
+            obj.db.alloc["shields"] /= total
+            obj.db.alloc["cloak"] /= total
         else:
-            self.db.alloc["shields"] = self.db.alloc["helm"]
-            self.db.alloc["movement"] = 0.0
-            self.db.alloc["cloak"] = 0.0
+            obj.db.alloc["shields"] = obj.db.alloc["helm"]
+            obj.db.alloc["movement"] = 0.0
+            obj.db.alloc["cloak"] = 0.0
     else:
-        self.db.alloc["movement"] = 0.0
-        self.db.alloc["shields"] = 0.0
-        self.db.alloc["cloak"] = 0.0
+        obj.db.alloc["movement"] = 0.0
+        obj.db.alloc["shields"] = 0.0
+        obj.db.alloc["cloak"] = 0.0
 
-def balance_shield_power(self):
+def balance_shield_power(obj):
     total = 0.0
-    if(self.db.alloc["shields"] > 0.0):
+    if(obj.db.alloc["shields"] > 0.0):
         for i in range(constants.MAX_SHIELD_NAME):
-            total += self.db.alloc["shield"][i]
+            total += obj.db.alloc["shield"][i]
         if (total > 0.0):
-            total /= self.db.alloc["shields"]
+            total /= obj.db.alloc["shields"]
             for i in range(constants.MAX_SHIELD_NAME):
-                self.db.alloc["shield"][i] /= total
+                obj.db.alloc["shield"][i] /= total
         else:
             for i in range(constants.MAX_SHIELD_NAME):
-                self.db.alloc["shield"][i] = self.db.alloc["shields"] / constants.MAX_SHIELD_NAME
+                obj.db.alloc["shield"][i] = obj.db.alloc["shields"] / constants.MAX_SHIELD_NAME
     else:
         for i in range(constants.MAX_SHIELD_NAME):
-            self.db.alloc["shield"][i] = 0
+            obj.db.alloc["shield"][i] = 0
 
-def balance_tact_power(self):
-    if (self.db.alloc["tactical"] > 0.0):
-        total = self.db.alloc["beams"] + self.db.alloc["missiles"] + self.db.alloc["sensors"]
+def balance_tact_power(obj):
+    if (obj.db.alloc["tactical"] > 0.0):
+        total = obj.db.alloc["beams"] + obj.db.alloc["missiles"] + obj.db.alloc["sensors"]
         if (total > 0.0):
-            total /= self.db.alloc["tactical"]
-            self.db.alloc["beams"] /= total
-            self.db.alloc["missiles"] /= total
-            self.db.alloc["sensors"] /= total
+            total /= obj.db.alloc["tactical"]
+            obj.db.alloc["beams"] /= total
+            obj.db.alloc["missiles"] /= total
+            obj.db.alloc["sensors"] /= total
         else:
-            self.db.alloc["beams"] = 0
-            self.db.alloc["missiles"] = 0
-            self.db.alloc["sensors"] = self.db.alloc["tactical"]
+            obj.db.alloc["beams"] = 0
+            obj.db.alloc["missiles"] = 0
+            obj.db.alloc["sensors"] = obj.db.alloc["tactical"]
     else:
-        self.db.alloc["beams"] = 0.0
-        self.db.alloc["missiles"] = 0.0
-        self.db.alloc["sensors"] = 0.0
+        obj.db.alloc["beams"] = 0.0
+        obj.db.alloc["missiles"] = 0.0
+        obj.db.alloc["sensors"] = 0.0
 
-def balance_sensor_power(self):
-    if (self.db.alloc["sensors"] > 0.0):
-        total = self.db.alloc["ecm"] + self.db.alloc["eccm"]
+def balance_sensor_power(obj):
+    if (obj.db.alloc["sensors"] > 0.0):
+        total = obj.db.alloc["ecm"] + obj.db.alloc["eccm"]
         if (total > 0.0):
-            total /= self.db.alloc["sensors"]
-            self.db.alloc["ecm"] /= total
-            self.db.alloc["eccm"] /= total
+            total /= obj.db.alloc["sensors"]
+            obj.db.alloc["ecm"] /= total
+            obj.db.alloc["eccm"] /= total
         else:
-            self.db.alloc["ecm"] = self.db.alloc["sensors"] / 2.0
-            self.db.alloc["eccm"] = self.db.alloc["sensors"] / 2.0 
+            obj.db.alloc["ecm"] = obj.db.alloc["sensors"] / 2.0
+            obj.db.alloc["eccm"] = obj.db.alloc["sensors"] / 2.0 
     else:
-        self.db.alloc["ecm"] = 0.0
-        self.db.alloc["eccm"] = 0.0
+        obj.db.alloc["ecm"] = 0.0
+        obj.db.alloc["eccm"] = 0.0
 
-def balance_ops_power(self):
-    if (self.db.alloc["operations"] > 0.0):
-        total = self.db.alloc["transporters"] + self.db.alloc["tractors"] + self.db.alloc["miscellaneous"]
+def balance_ops_power(obj):
+    if (obj.db.alloc["operations"] > 0.0):
+        total = obj.db.alloc["transporters"] + obj.db.alloc["tractors"] + obj.db.alloc["miscellaneous"]
         if (total > 0.0):
-            total /= self.db.alloc["operations"]
-            self.db.alloc["transporters"] /= total
-            self.db.alloc["tractors"] /= total
-            self.db.alloc["miscellaneous"] /= total
+            total /= obj.db.alloc["operations"]
+            obj.db.alloc["transporters"] /= total
+            obj.db.alloc["tractors"] /= total
+            obj.db.alloc["miscellaneous"] /= total
         else:
-            self.db.alloc["transporters"] = 0.0
-            self.db.alloc["tractors"] = 0.0
-            self.db.alloc["miscellaneous"] = self.db.alloc["operations"]
+            obj.db.alloc["transporters"] = 0.0
+            obj.db.alloc["tractors"] = 0.0
+            obj.db.alloc["miscellaneous"] = obj.db.alloc["operations"]
     else:
-        self.db.alloc["transporters"] = 0.0
-        self.db.alloc["tractors"] = 0.0
-        self.db.alloc["miscellaneous"] = 0.0
+        obj.db.alloc["transporters"] = 0.0
+        obj.db.alloc["tractors"] = 0.0
+        obj.db.alloc["miscellaneous"] = 0.0
