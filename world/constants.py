@@ -13,6 +13,8 @@ cloak_name = ["Other","Cloak"]
 quadrant_name = ["Alpha","Beta","Delta","Gamma"]
 system_name = ["Superstructure","Fusion Reactor","Batteries","Beam Weapon","Cloaking Device","EW Systems","Impulse Drive","LR Sensors","M/A Reactor","Missile Weapon","Shield","SR Sensors","Tractor Beams","Transporters","Warp Drive"]
 type_name = ["None","Ship","Base","Planet","Anomaly","Star","Asteroid","Debris","Computer-Core","Corpse","Player","Other"]
+beam_name = ["Beam Weapon","Phase Cannon","Phaser Array","Particle Beam","Disruptor Cannon","Disruptor Array","Polarized Ion Cannon","Laser","Laser Accelerator","Oscillating Laser","Fusion Laser","Nadion Beam","Plasma Beam","Polaron Beam","Meson Beam","Antiproton Beam","Ion Beam","Fusion Cutter","Fusion Beam","Mass Driver","Phase Disruptor","Jolt Cannon","Death Ray"]
+missile_name = ["Missile Weapon","Fusion Torpedo","Photon Torpedo","Plasma Torpedo","Tri-cobalt Torpedo","Fusion Missile","Fission Missile","Missile","Torpedo","Propelled Explosive","Impact Cannon","Reactory Array","Neutron Torpedo","Proton Torpedo","FTL Wave Generator","Antimatter Torpedo","Ballistic Missile","Railgun","Destruct-o-matic"]
 
 SENSOR_FAIL = -100
 VACANCY_FAIL = -101
@@ -20,10 +22,12 @@ BAD_SDB_FAIL = -102
 ARC_FAIL = -103
 
 MAX_EMPIRE_NAME = 12
-MAX_SYSTEM_NAME = 19
-MAX_TYPE_NAME = 12
-MAX_BEAM_NAME = 22
-MAX_MISSILE_NAME = 18
+MAX_SYSTEM_NAME = len(system_name)
+MAX_TYPE_NAME = len(type_name)
+MAX_BEAM_NAME = len(beam_name)
+MAX_MISSILE_NAME = len(missile_name)
+MAX_SHIELD_NAME = len(shield_name)
+MAX_QUADRANT_NAME = len(quadrant_name)
 
 MIN_SPACE_OBJECTS = 1
 MAX_SPACE_OBJECTS = 1500
@@ -201,6 +205,3 @@ STATUS_DATA_NUMBER = 10
 
 IFF_ATTR_NAME = "iff"
 IFF_DATA_NUMBER = 1
-
-MAX_SHIELD_NAME = len(shield_name)
-MAX_QUADRANT_NAME = len(quadrant_name)

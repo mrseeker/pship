@@ -1,6 +1,8 @@
 """
 Sets the variables
 """
+from typeclasses.characters import Character
+from typeclasses.objects import Object
 from world import alerts,constants,iterate, errors,utils,balance,unparse,damage
 from evennia.utils.search import search_object
 from evennia import gametime
@@ -471,7 +473,6 @@ def do_set_helm_alloc (self, movement, shields, cloak, obj):
         obj.db.sensor["version"] = 1
         obj.db.cloak["version"] = 1
         return 1
-    return 0
     
 def do_set_shield_alloc (self, forward, starboard, aft, port, dorsal, ventral, obj):
     if (errors.error_on_console(self,obj)):
@@ -487,7 +488,31 @@ def do_set_shield_alloc (self, forward, starboard, aft, port, dorsal, ventral, o
         alerts.report_shield_power(obj)
         self.db.engine["version"] = 1
         return 1
-    return 0
+
+def do_set_tactical_alloc(self,obj,beams,missiles,sensors):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.alloc["beams"] = math.fabs(beams)
+        obj.db.alloc["missiles"] = math.fabs(missiles)
+        obj.db.alloc["sensors"] = math.fabs(sensors)
+        balance.balance_tact_power(obj)
+        balance.balance_sensor_power(obj)
+        alerts.report_tact_power(obj)
+        obj.db.sensor["version"] = 1
+        return 1    
+
+def do_set_sensor_alloc(self,obj,ecm,eccm):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    else:
+        obj.db.alloc["ecm"] = math.fabs(ecm)
+        obj.db.alloc["eccm"] = math.fabs(eccm)
+        balance.balance_sensor_power(obj)
+        alerts.report_sensor_power(obj)
+        obj.db.sensor["version"] = 1
+        return 1
+
 
 def do_set_autopilot (self, obj, flag):
     if (errors.error_on_console(self,obj)):
@@ -1246,3 +1271,292 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x.ndb.d1 = 0.0
             obj_x.ndb.d2 = 0.0    
     return 1    
+
+def do_set_weapon(self,obj,weapon,first, last,active):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(weapon == 1 and obj.db.beam["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no {:s}s.".format(obj.name,constants.system_name[3])))
+    elif(weapon == 2 and obj.db.missile["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no {:s}s.".format(obj.name,constants.system_name[9])))
+    elif(weapon == 0 and obj.db.missile["exist"] != 1 and obj.db.beam["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no weapons.".format(obj.name)))
+    
+    buffer = ""
+    flag_b = 0
+    flag_m = 0
+    if(weapon == 1 or (weapon == 0 and obj.db.beam["exist"] == 1)):
+        a = first
+        b = last
+        if (a < 1 or a > constants.MAX_BEAM_BANKS):
+            a = 0
+            b = constants.MAX_BEAM_BANKS - 1
+        else:
+            a -= 1
+            b -= 1
+            if(b >= constants.MAX_BEAM_BANKS):
+                b = constants.MAX_BEAM_BANKS - 1
+            if (b < a):
+                b = a
+        for i in range(a,b+1):
+            if(obj.db.blist[i]["damage"] <= 0.0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is inoperative.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(active == 1 and obj.db.blist[i]["active"] == 1):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already online.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(active == 0 and obj.db.blist[i]["active"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already offline.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(active == 1):
+                obj.db.blist[i]["lock"] = 0
+                obj.db.blist[i]["active"] = 1
+                obj.db.beam["in"] += obj.db.blist[i]["cost"] * 10.0
+                if(flag_b == 0):
+                    buffer += str(constants.system_name[3])
+                buffer += " "
+                buffer += unparse.unparse_integer(i + 1)
+                flag_b += 1
+            else:
+                obj.db.blist[i]["lock"] = 0
+                obj.db.blist[i]["active"] = 0
+                obj.db.beam["in"] -= obj.db.blist[i]["cost"] * 10.0
+                if(flag_b == 0):
+                    buffer += str(constants.system_name[3])
+                buffer += " "
+                buffer += unparse.unparse_integer(i+1)
+                flag_b += 1
+
+    if(weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1)):
+        a = first
+        b = last
+        if (a < 1 or a > constants.MAX_MISSILE_TUBES):
+            a = 0
+            b = constants.MAX_MISSILE_TUBES - 1
+        else:
+            a -= 1
+            b -= 1
+            if(b >= constants.MAX_MISSILE_TUBES):
+                b = constants.MAX_MISSILE_TUBES - 1
+            if (b < a):
+                b = a
+        for i in range(a,b+1):
+            if(obj.db.mlist[i]["damage"] <= 0.0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is inoperative.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(active == 1 and obj.db.mlist[i]["active"] == 1):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already online.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(active == 0 and obj.db.mlist[i]["active"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already offline.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(active == 1):
+                obj.db.mlist[i]["lock"] = 0
+                obj.db.mlist[i]["active"] = 1
+                obj.db.missile["in"] += obj.db.mlist[i]["cost"] * 10.0
+                if(flag_m == 0):
+                    buffer += str(constants.system_name[9])
+                buffer += " "
+                buffer += unparse.unparse_integer(i + 1)
+                flag_m += 1
+            else:
+                obj.db.mlist[i]["lock"] = 0
+                obj.db.mlist[i]["active"] = 0
+                obj.db.missile["in"] -= obj.db.mlist[i]["cost"] * 10.0
+                if(flag_m == 0):
+                    buffer += str(constants.system_name[9])
+                buffer += " "
+                buffer += unparse.unparse_integer(i+1)
+                flag_m += 1
+    
+    if(flag_m > 0 or flag_b > 0):
+        if(active == 1):
+            alerts.console_message(obj,["tactical"],"{:s} is online".format(buffer))
+        else:
+            alerts.console_message(obj,["tactical"],"{:s} is offline".format(buffer))
+    
+    return 1
+
+def do_lock_weapon(self,obj,contact,weapon,first,last):
+    flag_b = 0
+    flag_m = 0
+    flag_lock = 0
+
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(weapon == 1 and obj.db.beam["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no {:s}s.".format(obj.name,constants.system_name[3])))
+        return 0
+    elif(weapon == 2 and obj.db.missile["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no {:s}s.".format(obj.name,constants.system_name[9])))
+        return 0
+    elif(weapon == 0 and obj.db.missile["exist"] != 1 and obj.db.beam["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no weapons.".format(obj.name)))
+        return 0
+    elif(obj.db.status["docked"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+        return 0
+    elif(obj.db.status["landed"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+        return 0
+    elif(obj.db.cloak["active"] != 0 and obj.db.tech["cloak"] < 2.0):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot lock weapons while cloaked.".format(obj.name)))
+        return 0
+    
+    obj_x = utils.contact2sdb(obj,contact)
+    if(errors.error_on_contact(self,obj,obj_x)):
+        return 0
+    
+    for i in range(obj.db.beam["banks"]):
+        if(obj.db.blist[i]["lock"] == obj_x.name):
+            flag_lock += 1
+    
+    for i in range(obj.db.missile["tubes"]):
+        if(obj.db.mlist[i]["lock"] == obj_x.name):
+            flag_lock += 1
+    
+    buffer = ""
+    if(weapon == 1 or (weapon == 0 and obj.db.beam["exist"] == 1)):
+        a = first
+        b = last
+
+        if (a < 0 or a > obj.db.beam["banks"]):
+            a = 0
+            b = obj.db.beam["banks"] - 1
+        else:
+            a -= 1
+            b -= 1
+            if (b >= obj.db.beam["banks"]):
+                b = obj.db.beam["banks"] - 1
+            if (b < a):
+                b = a
+        for i in range(a,b+1):
+            if(obj.db.blist[i]["damage"] <= 0.0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is inoperative.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(obj.db.blist[i]["active"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is is not online.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(obj.db.blist[i]["lock"] > 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already locked.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            else:
+                obj.db.blist[i]["lock"] = obj_x.name
+                if(flag_b == 0):
+                    buffer += str(constants.system_name[3])
+                buffer += " "
+                buffer += unparse.unparse_integer(i + 1)
+                flag_b += 1
+    
+    if(weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1)):
+        a = first
+        b = last
+
+        if (a < 0 or a > obj.db.missile["tubes"]):
+            a = 0
+            b = obj.db.missile["tubes"] - 1
+        else:
+            a -= 1
+            b -= 1
+            if (b >= obj.db.missile["tubes"]):
+                b = obj.db.missile["tubes"] - 1
+            if (b < a):
+                b = a
+        for i in range(a,b+1):
+            if(obj.db.mlist[i]["damage"] <= 0.0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is inoperative.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(obj.db.mlist[i]["active"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is is not online.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(obj.db.mlist[i]["lock"] != 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already locked.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            else:
+                obj.db.mlist[i]["lock"] = obj_x.name
+                if(flag_m == 0):
+                    buffer += str(constants.system_name[9])
+                buffer += " "
+                buffer += unparse.unparse_integer(i + 1)
+                flag_m += 1
+    
+    if (flag_b > 0 or flag_m > 0):
+        alerts.console_message(obj,["tactical"],alerts.ansi_cmd(self,"{:s} locked on {:s}".format(buffer,unparse.unparse_identity(obj,obj_x))))
+        if(flag_lock == 0):
+            obj_y = utils.sdb2contact(obj_x,obj)
+            if (obj_y != constants.SENSOR_FAIL):
+                alerts.console_message(obj_x,["helm","tactical","science"],alerts.ansi_warn("|^Weapon lock from {:s} detected".format(unparse.unparse_identity(obj_x,obj))))
+    return 1
+
+def do_unlock_weapon(self,obj,weapon,first,last):
+    flag_b = 0
+    flag_m = 0
+    
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(weapon == 1 and obj.db.beam["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no {:s}s.".format(obj.name,constants.system_name[3])))
+        return 0
+    elif(weapon == 2 and obj.db.missile["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no {:s}s.".format(obj.name,constants.system_name[9])))
+        return 0
+    elif(weapon == 0 and obj.db.missile["exist"] != 1 and obj.db.beam["exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no weapons.".format(obj.name)))
+        return 0
+    elif(obj.db.status["docked"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+        return 0
+    elif(obj.db.status["landed"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+        return 0
+    
+    buffer = ""
+    if(weapon == 1 or (weapon == 0 and obj.db.beam["exist"] == 1)):
+        a = first
+        b = last
+
+        if (a < 0 or a > obj.db.beam["banks"]):
+            a = 0
+            b = obj.db.beam["banks"] - 1
+        else:
+            a -= 1
+            b -= 1
+            if (b >= obj.db.beam["banks"]):
+                b = obj.db.beam["banks"] - 1
+            if (b < a):
+                b = a
+        for i in range(a,b+1):
+            if(obj.db.blist[i]["damage"] <= 0.0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is inoperative.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(obj.db.blist[i]["active"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is is not online.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            elif(obj.db.blist[i]["lock"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already unlocked.".format(unparse.unparse_beam(obj.db.blist[i]["name"]),i + 1)))
+            else:
+                obj.db.blist[i]["lock"] = 0
+                if(flag_b == 0):
+                    buffer += str(constants.system_name[3])
+                buffer += " "
+                buffer += unparse.unparse_integer(i + 1)
+                flag_b += 1
+    
+    if(weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1)):
+        a = first
+        b = last
+
+        if (a < 0 or a > obj.db.missile["tubes"]):
+            a = 0
+            b = obj.db.missile["tubes"] - 1
+        else:
+            a -= 1
+            b -= 1
+            if (b >= obj.db.missile["tubes"]):
+                b = obj.db.missile["tubes"] - 1
+            if (b < a):
+                b = a
+        for i in range(a,b+1):
+            if(obj.db.mlist[i]["damage"] <= 0.0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is inoperative.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(obj.db.mlist[i]["active"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is is not online.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            elif(obj.db.mlist[i]["lock"] == 0):
+                alerts.notify(self,alerts.ansi_red("{:s} {:d} is already unlocked.".format(unparse.unparse_missile(obj.db.mlist[i]["name"]),i + 1)))
+            else:
+                obj.db.mlist[i]["lock"] = 0
+                if(flag_m == 0):
+                    buffer += str(constants.system_name[9])
+                buffer += " "
+                buffer += unparse.unparse_integer(i + 1)
+                flag_m += 1
+    
+    if (flag_b > 0 or flag_m > 0):
+        alerts.console_message(obj,["tactical"],alerts.ansi_cmd(self,"{:s} unlocked".format(buffer)))
+    return 1

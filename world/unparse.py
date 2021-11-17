@@ -238,3 +238,15 @@ def unparse_identity(obj1,obj2):
             return unparse_class(obj2) + " class (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
         else:
             return "contact (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
+
+def unparse_beam(value):
+    if(value < 0 or value > constants.MAX_BEAM_NAME):
+        return constants.beam_name[0]
+    else:
+        return constants.beam_name[value]
+
+def unparse_missile(value):
+    if(value < 0 or value > constants.MAX_MISSILE_NAME):
+        return constants.missile_name[0]
+    else:
+        return constants.missile_name[value]
