@@ -959,7 +959,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
 
     #report weapon status
     if (is_b_load == 0 or is_m_load == 0):
-        if (is_b_load == 0 and (weapon == 1 or weapon == 0)):
+        if (is_b_load == 0 and (weapon == 1 or (weapon == 0 and obj.db.beam["exist"] == 1))):
             if (is_b_active == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are online.".format(constants.system_name[3])))
             elif (is_b_lock == 0):
@@ -988,7 +988,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                         obj_x.ndb.d2 = 0.0
             return 0
 
-        if (is_m_load == 0 and (weapon == 2 or weapon == 0)):    
+        if (is_m_load == 0 and (weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1))):    
             if (is_m_active == 0):
                 alerts.notify(self,alerts.ansi_red("No {:s}s are online.".format(constants.system_name[9])))
             elif (is_m_lock == 0):
