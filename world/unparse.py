@@ -199,7 +199,7 @@ def unparse_contact(obj, obj2):
             return "contact (" + unparse_integer(utils.sdb2contact(obj, obj2)) + ")"
 
 def unparse_integer(value):
-    return (int(value))
+    return (str(value))
 
 def unparse_arc(value):
     buffer = ""
