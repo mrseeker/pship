@@ -1446,14 +1446,14 @@ def do_set_weapon(self,obj,weapon,first, last,active):
     if(weapon == 1 or (weapon == 0 and obj.db.beam["exist"] == 1)):
         a = first
         b = last
-        if (a < 1 or a > constants.MAX_BEAM_BANKS):
+        if (a < 1 or a > obj.db.beam["banks"]):
             a = 0
-            b = constants.MAX_BEAM_BANKS - 1
+            b = obj.db.beam["banks"] - 1
         else:
             a -= 1
             b -= 1
-            if(b >= constants.MAX_BEAM_BANKS):
-                b = constants.MAX_BEAM_BANKS - 1
+            if(b >= obj.db.beam["banks"]):
+                b = obj.db.beam["banks"] - 1
             if (b < a):
                 b = a
         for i in range(a,b+1):
@@ -1485,14 +1485,14 @@ def do_set_weapon(self,obj,weapon,first, last,active):
     if(weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1)):
         a = first
         b = last
-        if (a < 1 or a > constants.MAX_MISSILE_TUBES):
+        if (a < 1 or a > obj.db.missile["tubes"]):
             a = 0
-            b = constants.MAX_MISSILE_TUBES - 1
+            b = obj.db.missile["tubes"] - 1
         else:
             a -= 1
             b -= 1
-            if(b >= constants.MAX_MISSILE_TUBES):
-                b = constants.MAX_MISSILE_TUBES - 1
+            if(b >= obj.db.missile["tubes"]):
+                b = obj.db.missile["tubes"] - 1
             if (b < a):
                 b = a
         for i in range(a,b+1):
