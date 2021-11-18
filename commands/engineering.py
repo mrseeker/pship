@@ -118,11 +118,11 @@ class CmdAlloc(default_cmds.MuxCommand):
         if (self.args[0] == "HTO" and len(self.args) == 4):
             setter.do_set_eng_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
         elif (self.args[0] == "main" and len(self.args) == 2):
-            setter.do_set_main_reactor(self.caller,float(self.args[1]),obj)
+            setter.do_set_main_reactor(self.caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "aux" and len(self.args) == 2):
-            setter.do_set_aux_reactor(self.caller,float(self.args[1]),obj)
+            setter.do_set_aux_reactor(self.caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "batt" and len(self.args) == 2):
-            setter.do_set_battery(self.caller,float(self.args[1]),obj)
+            setter.do_set_battery(self.caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "status"):
             #Give a full report back
             buffer = "|y|[bTotal Allocation Report|n\n"
