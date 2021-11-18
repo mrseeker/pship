@@ -1,6 +1,7 @@
 """
 All the alerts go here!
 """
+import random
 from evennia.utils.logger import log_msg
 from evennia.utils.search import search_object,search_tag
 from world import constants,utils,unparse
@@ -322,56 +323,40 @@ def write_spacelog(self,obj,text):
     log_msg("SPACE {:s} - {:s} : {:s}".format(self.name,obj.name,text))
     return 1
 
-def pitch(self):
-    #TODO
-    console_message(self,["helm"],"New pitch set")
+def pitch(obj):
+    console_message(obj,["helm"],"Pitch now {:.3f} degrees".format(obj.db.course["pitch_out"]))
     return 1
 
-def roll(self):
-    #TODO
-    console_message(self,["helm"],"New roll set")
+def roll(obj):
+    console_message(obj,["helm"],"Roll now {:.3f} degrees".format(obj.db.course["roll_out"]))
     return 1
 
-def speed_warp(self):
-    #TODO
-    console_message(self,["helm"],"Speed enters warp")
+def speed_warp(obj):
+    console_message(obj,["engineering","helm"],ansi_alert("Speed now warp {:.6f}".format(obj.db.move["out"])))
     return 1
 
-def ship_enter_warp(self):
-    #TODO
-    console_message(self,["helm"],"Ship enters warp")
+def ship_enter_warp(obj):
+    do_ship_notify(obj,"{:s} shifts into warp.".format(obj.name))
     return 1
 
-def ship_exit_warp(self):
-    #TODO
-    console_message(self,["helm"],"Ship exits warp")
+def ship_exit_warp(obj):
+    do_ship_notify(obj,"{:s} drops out of warp.".format(obj.name))
     return 1
 
-
-def speed_exit_warp(self):
-    #TODO
-    console_message(self,["helm"],"Speed exits warp")
+def speed_stop(obj):
+    console_message(obj,["engineering","helm"],ansi_alert("Speed now full stop"))
     return 1
 
-def speed_stop(self):
-    #TODO
-    console_message(self,["helm"],"Speed has stopped")
+def enter_quadrant(obj):
+    console_message(obj,["helm"],ansi_alert("Entering {:s} quadrant".format(unparse.unparse_quadrant(obj))))
     return 1
 
-def enter_quadrant(self):
-    #TODO
-    console_message(self,["helm"],"Entering quadrant")
+def speed_impulse(obj):
+    console_message(obj,["helm"],ansi_alert("Speed now {:.3f}%% impulse".format(obj.db.move["out"] * 100.0)))
     return 1
 
-
-def speed_impulse(self):
-    #TODO
-    console_message(self,["helm"],"Speed enters impulse")
-    return 1
-
-def yaw(self):
-    #TODO
-    console_message(self,["helm"],"New yaw set")
+def yaw(obj):
+    console_message(obj,["helm"],"Yaw now {:.3f} degrees".format(obj.db.course["yaw_out"]))
     return 1
 
 def main_balance(obj):
@@ -386,45 +371,41 @@ def batt_balance(obj):
     console_message(obj,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(obj.db.batt["out"] * 100.0)))
     return 1
 
-def max_repair(self):
-    #TODO
-    console_message(self,["engineering"],"Maximum repairs")
+def max_repair(obj):
+    console_message(obj,["damage"],ansi_alert("Repair capacity maximized"))
     return 1
 
-def anti_runout(self):
-    #TODO
-    console_message(self,["engineering"],"Antimatter runout!")
+def anti_runout(obj):
+    console_message(obj,["engineering"],ansi_warn("ANTIMATTER DEPLETION: M/A reactor now offline"))
     return 1
 
-def deut_runout(self):
-    #TODO
-    console_message(self,["engineering"],"Deuterium runout!")
+def deut_runout(obj):
+    console_message(obj,["engineering"],ansi_warn("DEUTERIUM DEPLETION: All reactors now offline"))
     return 1
 
 def batt_balance(obj):
     console_message(obj,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(obj.db.batt["out"] * 100.0)))
 
-def batt_runout(self):
-    #TODO
-    console_message(self,["engineering"],"Battery runout!")
+def batt_runout(obj):
+    console_message(obj,["engineering"],ansi_warn("BATTERY DEPLETION: Batteries now offline"))
     return 1
 
-def main_overload(self):
-    #TODO
-    console_message(self,["engineering"],"Main overload!")
+def main_overload(obj):
+    do_all_console_notify(obj,ansi_warn("M/A REACTOR CORE BREACH IN PROGRESS"))
     return 1
 
-def aux_overload(self):
-    #TODO
-    console_message(self,["engineering"],"Aux overload!")
+def aux_overload(obj):
+    do_all_console_notify(obj,ansi_warn("FUSION REACTOR CORE BREACH IN PROGRESS"))
     return 1
 
-def ship_hurt(self):
-    #TODO
-    console_message(self,["engineering"],"Ship has pain!")
-    return 1
+def ship_hurt(obj):
+    if(obj.db.structure["type"] == 1 or obj.db.structure["type"] == 2):
+        do_ship_notify(obj,"{:s} rocks violently from an impact.".format(obj.name))    
+    elif (obj.db.structure["type"] == 3 and random.random(0,10) == 1):
+        do_ship_notify(obj,"{:s} trembles from a surface impact.".format(obj.name))
+	return 1
 
-def ship_hit(self):
-    #TODO
-    console_message(self,["engineering"],"Ship got hit!")
+def ship_hit(obj):
+    if(obj.db.structure["type"] == 1 or obj.db.structure["type"] == 2):
+        do_ship_notify(obj,"{:s} shudders from an impact.".format(obj.name))    
     return 1
