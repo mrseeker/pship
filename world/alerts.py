@@ -352,7 +352,7 @@ def enter_quadrant(obj):
     return 1
 
 def speed_impulse(obj):
-    console_message(obj,["helm"],ansi_alert("Speed now {:.3f}%% impulse".format(obj.db.move["out"] * 100.0)))
+    console_message(obj,["helm"],ansi_alert("Speed now {:.3f}% impulse".format(obj.db.move["out"] * 100.0)))
     return 1
 
 def yaw(obj):
