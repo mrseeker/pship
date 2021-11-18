@@ -25,6 +25,7 @@ class TacticalCmdSet(CmdSet):
             self.add(CmdTarget())
             self.add(CmdUnlock())
             self.add(science.CmdIdent())
+            self.add(CmdFreq())
 
 class CmdAlloc(default_cmds.MuxCommand):
     """
@@ -35,7 +36,7 @@ class CmdAlloc(default_cmds.MuxCommand):
     Command list:
     status - Gives a full status of the allocations
     BMS - Sets the allocation of the Beams, Missiles and Sensors
-    sensors - Allocation of the sensors (ECM and ECCM)
+    sensor - Allocation of the sensors (ECM and ECCM)
 
     """
 
@@ -51,7 +52,7 @@ class CmdAlloc(default_cmds.MuxCommand):
                 return 0
         if (self.args[0] == "BMS" and len(self.args) == 4):
             setter.do_set_tactical_alloc(self.caller,obj,float(self.args[1]),float(self.args[2]),float(self.args[3]))
-        elif (self.args[0] == "sensors" and len(self.args) == 3):
+        elif (self.args[0] == "sensor" and len(self.args) == 3):
             setter.do_set_sensor_alloc(self.caller,obj,float(self.args[1]),float(self.args[2]))
         elif (self.args[0] == "status"):
             #Give a full report back
@@ -290,6 +291,40 @@ class CmdEW(default_cmds.MuxCommand):
             self.caller.msg("Turning off Electronic Warfare systems...")
             setter.do_set_ew(obj,0,obj)
 
+class CmdFreq(default_cmds.MuxCommand):
+    """
+    Commands related to the setting of frequencies.
+
+    Usage: freq <device> <freq>
+
+    Command list:
+    device - Type of device (beam or missile)
+    first - Frequency in Ghz (1.000 to 999.999)
+    """
+
+    key="freq"
+    help_category = "Tactical"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 2):
+            if self.args[0][0] == "b":
+                setter.do_set_beam_freq(self,obj,float(self.args[1]))
+            elif self.args[0][0] == "m":
+                setter.do_set_missile_freq(self,obj,float(self.args[1]))
+            else:
+                alerts.notify(self,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+
 class CmdEnable(default_cmds.MuxCommand):
     """
     Commands related to the enabling of the weapons.
@@ -303,6 +338,7 @@ class CmdEnable(default_cmds.MuxCommand):
     """
 
     key="enable"
+    help_category = "Tactical"
     aliases=["select"]
 
     def func(self):
@@ -332,6 +368,7 @@ class CmdDisable(default_cmds.MuxCommand):
     """
 
     key="disable"
+    help_category = "Tactical"
     aliases=["unselect"]
 
     def func(self):
@@ -362,6 +399,7 @@ class CmdTarget(default_cmds.MuxCommand):
     """
 
     key="target"
+    help_category = "Tactical"
     aliases = ["lock","lock on"]
 
     def func(self):
@@ -391,6 +429,7 @@ class CmdUnlock(default_cmds.MuxCommand):
     """
 
     key="unlock"
+    help_category = "Tactical"
     aliases = []
 
     def func(self):
@@ -422,6 +461,7 @@ class CmdFire(default_cmds.MuxCommand):
     """
 
     key="fire"
+    help_category = "Tactical"
     aliases=["shoot"]
 
     def func(self):

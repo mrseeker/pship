@@ -513,6 +513,90 @@ def do_set_sensor_alloc(self,obj,ecm,eccm):
         obj.db.sensor["version"] = 1
         return 1
 
+def do_set_shield_freq(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.shield["exist"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no shields.".format(obj.name)))
+    elif(value < 1.0 or value >= 1000.0):
+        alerts.notify(self,alerts.ansi_red("Valid shield frequencies are from 1.00 to 999.999 Ghz"))
+    else:
+        obj.db.shield["freq"] = value
+        alerts.console_message(obj,["engineering","helm"],"Shield frequencies set to {:.3f} Ghz".format(obj.db.shield["freq"]))
+        alerts.write_spacelog(self,obj,"LOG: Shield frequencies set to {:.6f} Ghz".format(obj.db.shield["freq"]))
+        return 1
+    return 0
+
+def do_set_cloak_freq(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.cloak["exist"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no cloaking device.".format(obj.name)))
+    elif(value < 1.0 or value >= 1000.0):
+        alerts.notify(self,alerts.ansi_red("Valid cloaking device frequencies are from 1.00 to 999.999 Ghz"))
+    else:
+        obj.db.cloak["freq"] = value
+        alerts.console_message(obj,["engineering","helm"],"Cloaking device frequencies set to {:.3f} Ghz".format(obj.db.cloak["freq"]))
+        alerts.write_spacelog(self,obj,"LOG: Cloaking device frequency set to {:.6f} Ghz".format(obj.db.cloak["freq"]))
+        return 1
+    return 0
+
+def do_set_beam_freq(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.beam["exist"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no beam weapons.".format(obj.name)))
+    elif(value < 1.0 or value >= 1000.0):
+        alerts.notify(self,alerts.ansi_red("Valid beam weapon frequencies are from 1.00 to 999.999 Ghz"))
+    else:
+        obj.db.beam["freq"] = value
+        alerts.console_message(obj,["engineering","tactical"],"Beam weapon frequencies set to {:.3f} Ghz".format(obj.db.beam["freq"]))
+        alerts.write_spacelog(self,obj,"LOG: Beam weapon frequencies set to {:.6f} Ghz".format(obj.db.beam["freq"]))
+        return 1
+    return 0
+
+def do_set_missile_freq(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.missile["exist"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no missile weapons.".format(obj.name)))
+    elif(value < 1.0 or value >= 1000.0):
+        alerts.notify(self,alerts.ansi_red("Valid missile weapon frequencies are from 1.00 to 999.999 Ghz"))
+    else:
+        obj.db.missile["freq"] = value
+        alerts.console_message(obj,["engineering","tactical"],"Missile weapon frequencies set to {:.3f} Ghz".format(obj.db.missile["freq"]))
+        alerts.write_spacelog(self,obj,"LOG: Shield frequencies set to {:.6f} Ghz".format(obj.db.missile["freq"]))
+        return 1
+    return 0
+
+def do_set_trans_freq(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.trans["exist"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no transporter.".format(obj.name)))
+    elif(value < 1.0 or value >= 1000.0):
+        alerts.notify(self,alerts.ansi_red("Valid transporter frequencies are from 1.00 to 999.999 Ghz"))
+    else:
+        obj.db.trans["freq"] = value
+        alerts.console_message(obj,["engineering","operation","transporter"],"Transporter frequency set to {:.3f} Ghz".format(obj.db.trans["freq"]))
+        alerts.write_spacelog(self,obj,"LOG: Transporter frequency set to {:.6f} Ghz".format(obj.db.trans["freq"]))
+        return 1
+    return 0
+
+def do_set_tract_freq(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.tract["exist"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no tractor beam.".format(obj.name)))
+    elif(value < 1.0 or value >= 1000.0):
+        alerts.notify(self,alerts.ansi_red("Valid tractor beam frequencies are from 1.00 to 999.999 Ghz"))
+    else:
+        obj.db.tract["freq"] = value
+        alerts.console_message(obj,["engineering","operation"],"Tractor beam frequency set to {:.3f} Ghz".format(obj.db.tract["freq"]))
+        alerts.write_spacelog(self,obj,"LOG: Tractor beam frequency set to {:.6f} Ghz".format(obj.db.tract["freq"]))
+        return 1
+    return 0
+
 
 def do_set_autopilot (self, obj, flag):
     if (errors.error_on_console(self,obj)):

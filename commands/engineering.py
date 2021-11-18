@@ -17,6 +17,7 @@ class EngineeringCmdSet(CmdSet):
         def at_cmdset_creation(self):
             self.add(CmdEngine())
             self.add(CmdAlloc())
+            self.add(CmdFreq())
 
 class EngineeringFighterCmdSet(CmdSet):
         key = "EngineeringFighterCmdSet"
@@ -24,6 +25,7 @@ class EngineeringFighterCmdSet(CmdSet):
         def at_cmdset_creation(self):
             self.add(CmdEngine())
             self.add(CmdAlloc_Fighter())
+            self.add(CmdFreq())
 
 class CmdAlloc_Fighter(default_cmds.MuxCommand):
     """
@@ -146,6 +148,48 @@ class CmdAlloc(default_cmds.MuxCommand):
             alerts.notify(self.caller,buffer + str(table) + "\n")
         else:    
             self.caller.msg("Command not found: " + str(self.args))
+
+class CmdFreq(default_cmds.MuxCommand):
+    """
+    Commands related to the setting of frequencies.
+
+    Usage: freq <device> <freq>
+
+    Command list:
+    device - Type of device (beam,missile,shield,cloak,trans,tract)
+    first - Frequency in Ghz (1.000 to 999.999)
+    """
+
+    key="freq"
+    help_category = "Engineering"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 2):
+            if self.args[0][0] == "b":
+                setter.do_set_beam_freq(self,obj,float(self.args[1]))
+            elif self.args[0][0] == "m":
+                setter.do_set_missile_freq(self,obj,float(self.args[1]))
+            elif self.args[0][0] == "s":
+                setter.do_set_shield_freq(self,obj,float(self.args[1]))
+            elif self.args[0][0] == "c":
+                setter.do_set_cloak_freq(self,obj,float(self.args[1]))
+            elif self.args[0] == "trans":
+                setter.do_set_trans_freq(self,obj,float(self.args[1]))
+            elif self.args[0] == "tract":
+                setter.do_set_tract_freq(self,obj,float(self.args[1]))
+            else:
+                alerts.notify(self,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
 
 class CmdEngine(default_cmds.MuxCommand):
     """

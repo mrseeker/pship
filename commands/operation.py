@@ -4,7 +4,7 @@ Handles all operations-related commands
 
 from evennia import default_cmds, CmdSet
 from evennia.utils.search import search_object
-from world import errors, set as setter
+from world import alerts, errors, set as setter
 
 class OperationCmdSet(CmdSet):
         
@@ -13,6 +13,7 @@ class OperationCmdSet(CmdSet):
         def at_cmdset_creation(self):
             self.add(CmdReFuel())
             self.add(CmdDeFuel())
+            self.add(CmdFreq())
 
 class CmdReFuel(default_cmds.MuxCommand):
     """
@@ -80,3 +81,36 @@ class CmdDeFuel(default_cmds.MuxCommand):
             setter.do_set_defuel(caller,obj,receiver,self.args[1],int(self.args[2]))
         else:
             self.caller.msg("Command not found: " + str(self.args))
+
+class CmdFreq(default_cmds.MuxCommand):
+    """
+    Commands related to the setting of frequencies.
+
+    Usage: freq <device> <freq>
+
+    Command list:
+    device - Type of device (tract or trans)
+    first - Frequency in Ghz (1.000 to 999.999)
+    """
+
+    key="freq"
+    help_category = "Operation"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 2):
+            if self.args[0][0] == "tract":
+                setter.do_set_tract_freq(self,obj,float(self.args[1]))
+            elif self.args[0][0] == "trans":
+                setter.do_set_trans_freq(self,obj,float(self.args[1]))
+            else:
+                alerts.notify(self,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
