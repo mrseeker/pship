@@ -21,6 +21,10 @@ class HelmCmdSet(CmdSet):
             self.add(CmdAlloc())
             self.add(CmdIntercept())
             self.add(CmdFreq())
+            self.add(CmdPitch())
+            self.add(CmdPitch())
+            self.add(CmdRoll())
+            self.add(CmdAxis())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -33,6 +37,10 @@ class FighterCmdSet(CmdSet):
             self.add(CmdAutopilot())
             self.add(CmdIntercept())
             self.add(CmdFreq())
+            self.add(CmdPitch())
+            self.add(CmdPitch())
+            self.add(CmdRoll())
+            self.add(CmdAxis())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """
@@ -353,6 +361,126 @@ class CmdFreq(default_cmds.MuxCommand):
         else:
             alerts.notify(self,alerts.ansi_red("Wrong command entered."))
 
+
+
+class CmdAxis(default_cmds.MuxCommand):
+    """
+    Commands related to the axis of the ship.
+
+    Usage: axis <pitch> <yaw> <roll>
+
+    Command list:
+    pitch - Sets the pitch in degrees
+    yaw - Sets the yaw in degrees
+    roll - Sets the roll in degrees
+    """
+
+    key="axis"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 3):
+                setter.do_set_pitch(self,obj,float(self.args[0]))
+                setter.do_set_yaw(self,obj,float(self.args[1]))
+                setter.do_set_roll(self,obj,float(self.args[2]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+
+class CmdYaw(default_cmds.MuxCommand):
+    """
+    Commands related to the yaw of the ship.
+
+    Usage: yaw <degrees>
+
+    Command list:
+    degrees - Sets the yaw in degrees
+    """
+
+    key="yaw"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 0):
+            alerts.yaw(obj)
+        elif(len(self.args) == 1):
+                setter.do_set_yaw(self,obj,float(self.args[0]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+class CmdPitch(default_cmds.MuxCommand):
+    """
+    Commands related to the pitch of the ship.
+
+    Usage: pitch <degrees>
+
+    Command list:
+    degrees - Sets the pitch in degrees
+    """
+
+    key="pitch"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 0):
+            alerts.pitch(obj)
+        elif(len(self.args) == 1):
+                setter.do_set_pitch(self,obj,float(self.args[0]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+class CmdRoll(default_cmds.MuxCommand):
+    """
+    Commands related to the roll of the ship.
+
+    Usage: roll <degrees>
+
+    Command list:
+    degrees - Sets the roll in degrees
+    """
+
+    key="roll"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 0):
+            alerts.roll(obj)
+        elif(len(self.args) == 1):
+                setter.do_set_roll(self,obj,float(self.args[0]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
 
 class CmdEngage(default_cmds.MuxCommand):
     """

@@ -68,6 +68,80 @@ def do_set_coords_engage(self,obj):
         return 1
     return 0
 
+def do_set_yaw(self,obj,value):
+
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red("{:s} cannot be maneuvered.".format(obj.name)))
+    elif(math.fabs(value) > 360.0):
+        alerts.notify(self, alerts.ansi_red("That is not a valid yaw value."))
+    else:
+        if(obj.db.status["autopilot"] != 0):
+            obj.db.status["autopilot"] = 0
+            alerts.console_message(obj,["helm"],alerts.ansi_cmd(self.name,"Autopilot disengaged"))
+        obj.db.course["yaw_in"] = math.fmod(obj.db.course["yaw_in"] + value,360)
+        if(obj.db.course["yaw_in"] < 0.0):
+            obj.db.course["yaw_in"] += 360.0
+        alerts.console_message(obj,["helm"],"Yaw adjusted {:+.3f} to {:.3f}".format(value,obj.db.course["yaw_in"]))
+        return 1
+    return 0
+
+def do_set_pitch(self,obj,value):
+
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red("{:s} cannot be maneuvered.".format(obj.name)))
+    elif(math.fabs(value) > 360.0):
+        alerts.notify(self, alerts.ansi_red("That is not a valid pitch value."))
+    else:
+        if(obj.db.status["autopilot"] != 0):
+            obj.db.status["autopilot"] = 0
+            alerts.console_message(obj,["helm"],alerts.ansi_cmd(self.name,"Autopilot disengaged"))
+        obj.db.course["pitch_in"] = math.fmod(obj.db.course["pitch_in"] + value,360)
+        if(obj.db.course["pitch_in"] < 0.0):
+            obj.db.course["pitch_in"] += 360.0
+        alerts.console_message(obj,["helm"],"Pitch adjusted {:+.3f} to {:.3f}".format(value,obj.db.course["pitch_in"]))
+        return 1
+    return 0
+
+def do_set_roll(self,obj,value):
+
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red("{:s} cannot be maneuvered.".format(obj.name)))
+    elif(math.fabs(value) > 360.0):
+        alerts.notify(self, alerts.ansi_red("That is not a valid roll value."))
+    else:
+        if(obj.db.status["autopilot"] != 0):
+            obj.db.status["autopilot"] = 0
+            alerts.console_message(obj,["helm"],alerts.ansi_cmd(self.name,"Autopilot disengaged"))
+        obj.db.course["roll_in"] = math.fmod(obj.db.course["roll_in"] + value,360)
+        if(obj.db.course["roll_in"] < 0.0):
+            obj.db.course["roll_in"] += 360.0
+        alerts.console_message(obj,["helm"],"Roll adjusted {:+.3f} to {:.3f}".format(value,obj.db.course["roll_in"]))
+        return 1
+    return 0
 
 def do_set_inactive(self,obj):
     if (obj.db.structure["type"] == 0):
