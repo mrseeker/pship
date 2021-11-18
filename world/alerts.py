@@ -176,85 +176,85 @@ def transmit_message(self,freq,range,code,message,language="default"):
                                 message = encrypt_message(code,message)
                             do_console_notify(obj,["communication"],"[|b"+self.name+"|n]: " + message)
 
-def console_message(self,console,text):
+def console_message(obj,console,text):
     for console_name in console:
-        console_obj = search_tag(console_name,category=self.key.lower())
+        console_obj = search_tag(console_name,category=obj.key.lower())
         if (console_obj.count() > 0):
             for obj in console_obj:
                 obj.msg_contents(text)
         else:
             if (console != "bridge"):
-                console_message(self,"bridge",text)
+                console_message(obj,"bridge",text)
             return
 
-def do_console_notify(self,console,text):
-    console_message(self,console,text)
+def do_console_notify(obj,console,text):
+    console_message(obj,console,text)
 
-def do_all_console_notify(self,text):
+def do_all_console_notify(obj,text):
     for console_name in constants.CONSOLE_LIST:
-        console_obj = search_tag(console_name,category=self.key.lower())
+        console_obj = search_tag(console_name,category=obj.key.lower())
         if (console_obj.count() > 0):
             for obj in console_obj:
-                if (obj.db.ship == self.name):
+                if (obj.db.ship == obj.name):
                     obj.msg_contents(text)
     
-def do_ship_notify(self,text):
-    do_all_console_notify(self,text)
+def do_ship_notify(obj,text):
+    do_all_console_notify(obj,text)
     
-def do_space_notify_one(self,console,text):
+def do_space_notify_one(obj1,console,text):
     space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] != 0):
-                if(obj.db.location == self.db.location):
-                    if(self.name != obj.name):
-                        contact = utils.sdb2contact(obj,self)
+                if(obj.db.location == obj1.db.location):
+                    if(obj1.name != obj.name):
+                        contact = utils.sdb2contact(obj,obj1)
                         if (contact != constants.SENSOR_FAIL):
-                            console_message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
+                            console_message(obj,console,"|b[|c"+obj1.name + " " + text + "|b]|n")
 
-def do_space_notify_two(self,obj2,console,text):
+def do_space_notify_two(obj1,obj2,console,text):
     space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] != 0):
-                if(obj.db.location == self.db.location):
-                    if(self.name != obj.name and obj2.name != obj.name):
-                        contact1 = utils.sdb2contact(obj,self)
+                if(obj.db.location == obj1.db.location):
+                    if(obj1.name != obj.name and obj2.name != obj.name):
+                        contact1 = utils.sdb2contact(obj,obj1)
                         contact2 = utils.sdb2contact(obj,obj2)
                         if (contact1 != constants.SENSOR_FAIL or contact2 != constants.SENSOR_FAIL):
-                            console_message(obj,console,"|b[|c"+self.name + " " + text + "|b]|n")
+                            console_message(obj,console,"|b[|c"+obj1.name + " " + text + "|b]|n")
 
-def ship_cloak_online(self):
-    do_ship_notify(self, ansi_notify(self.name + " engages its cloaking device."));
-    do_space_notify_one(self, ["helm","tactical","science"], "engages its cloaking device")
+def ship_cloak_online(obj):
+    do_ship_notify(obj, ansi_notify(obj.name + " engages its cloaking device."))
+    do_space_notify_one(obj, ["helm","tactical","science"], "engages its cloaking device")
 
-def ship_cloak_offline(self):
-    do_ship_notify(self, ansi_notify(self.name + " disengages its cloaking device."));
-    do_space_notify_one(self, ["helm","tactical","science"], "disengages its cloaking device")
+def ship_cloak_offline(obj):
+    do_ship_notify(obj, ansi_notify(obj.name + " disengages its cloaking device."))
+    do_space_notify_one(obj, ["helm","tactical","science"], "disengages its cloaking device")
 
-def exit_empire(self):
-    console_message(self,["helm"],ansi_alert("Exiting " + unparse.unparse_empire(self) + " space"))
+def exit_empire(obj):
+    console_message(obj,["helm"],ansi_alert("Exiting " + unparse.unparse_empire(obj) + " space"))
 
-def enter_empire(self):
-    console_message(self,["helm"],ansi_warn("Entering " + unparse.unparse_empire(self) + " space"))
+def enter_empire(obj):
+    console_message(obj,["helm"],ansi_warn("Entering " + unparse.unparse_empire(obj) + " space"))
     
-def border_cross(self, type):
+def border_cross(obj1, type):
     #Check if we are actually moving, and not creating ships
-    if (utils.sdb2true_speed(self) == 0.0):
+    if (utils.sdb2true_speed(obj1) == 0.0):
         return
-    if (self.db.move["out"] != 0.0):
+    if (obj1.db.move["out"] != 0.0):
         space_obj = search_tag(constants.SHIP_ATTR_NAME,category="space_object")
         for obj in space_obj:
             if(obj.db.status["active"] == 1):
                 if(obj.db.structure["type"] != 0):
-                    if(obj.db.space == self.db.space):
-                        if(obj.db.empire == self.db.empire):
-                            if (obj.name != self.name):
-                                if (utils.sdb2range(self,obj) < constants.MAX_NOTIFICATION_DISTANCE):
+                    if(obj.db.space == obj1.db.space):
+                        if(obj.db.empire == obj1.db.empire):
+                            if (obj.name != obj1.name):
+                                if (utils.sdb2range(obj1,obj) < constants.MAX_NOTIFICATION_DISTANCE):
                                     if (type == 1):
-                                        do_console_notify(obj, ["helm","science","security"], ansi_notify(f'Inbound border crossing reported at {utils.su2pc(self.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(self.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(self.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
+                                        do_console_notify(obj, ["helm","science","security"], ansi_notify(f'Inbound border crossing reported at {utils.su2pc(obj1.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(obj1.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(obj1.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
                                     else:
-                                        do_console_notify(obj, ["helm","science","security"], ansi_notify(f'Outbound border crossing reported at {utils.su2pc(self.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(self.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(self.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
+                                        do_console_notify(obj, ["helm","science","security"], ansi_notify(f'Outbound border crossing reported at {utils.su2pc(obj1.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(obj1.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(obj1.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
 def report_eng_power(obj):
     table = evtable.EvTable("|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
     buffer = "|y|[bEngineering Allocation Report|n\n"
@@ -374,16 +374,16 @@ def yaw(self):
     console_message(self,["helm"],"New yaw set")
     return 1
 
-def main_balance(self):
-    console_message(self,["engineering"],ansi_alert("M/A reactor balanced at {:.3f}%".format(self.db.main["out"] * 100.0)))
+def main_balance(obj):
+    console_message(obj,["engineering"],ansi_alert("M/A reactor balanced at {:.3f}%".format(obj.db.main["out"] * 100.0)))
     return 1
 
-def aux_balance(self):
-    console_message(self,["engineering"],ansi_alert("Fusion reactor balanced at {:.3f}%".format(self.db.aux["out"] * 100.0)))
+def aux_balance(obj):
+    console_message(obj,["engineering"],ansi_alert("Fusion reactor balanced at {:.3f}%".format(obj.db.aux["out"] * 100.0)))
     return 1
 
-def batt_balance(self):
-    console_message(self,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(self.db.batt["out"] * 100.0)))
+def batt_balance(obj):
+    console_message(obj,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(obj.db.batt["out"] * 100.0)))
     return 1
 
 def max_repair(self):
@@ -401,8 +401,8 @@ def deut_runout(self):
     console_message(self,["engineering"],"Deuterium runout!")
     return 1
 
-def batt_balance(self):
-    console_message(self,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(self.db.batt["out"] * 100.0)))
+def batt_balance(obj):
+    console_message(obj,["engineering"],ansi_alert("Batteries set at {:.3f}%".format(obj.db.batt["out"] * 100.0)))
 
 def batt_runout(self):
     #TODO
