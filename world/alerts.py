@@ -200,8 +200,8 @@ def console_message(obj, console, text):
     for console_name in console:
         console_obj = search_tag(console_name, category=obj.key.lower())
         if (console_obj.count() > 0):
-            for obj in console_obj:
-                obj.msg_contents(text)
+            for i in console_obj:
+                i.msg_contents(text)
         else:
             if (console != "bridge"):
                 console_message(obj, "bridge", text)
