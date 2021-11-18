@@ -48,12 +48,12 @@ class CmdAlloc(default_cmds.MuxCommand):
         caller = self.caller
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
                 return 0
         if (self.args[0] == "BMS" and len(self.args) == 4):
-            setter.do_set_tactical_alloc(self.caller,obj,float(self.args[1]),float(self.args[2]),float(self.args[3]))
+            setter.do_set_tactical_alloc(caller,obj,float(self.args[1]),float(self.args[2]),float(self.args[3]))
         elif (self.args[0] == "sensor" and len(self.args) == 3):
-            setter.do_set_sensor_alloc(self.caller,obj,float(self.args[1]),float(self.args[2]))
+            setter.do_set_sensor_alloc(caller,obj,float(self.args[1]),float(self.args[2]))
         elif (self.args[0] == "status"):
             #Give a full report back
             buffer = "|y|[bTactical Allocation Report|n\n"
@@ -62,9 +62,9 @@ class CmdAlloc(default_cmds.MuxCommand):
             table.add_row("|cBeams|n",unparse.unparse_power(obj.db.alloc["beams"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["beams"]),alerts.ansi_rainbow_scale(obj.db.alloc["beams"],35))
             table.add_row("|cMissiles|n",unparse.unparse_power(obj.db.alloc["missiles"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["missiles"]),alerts.ansi_rainbow_scale(obj.db.alloc["missiles"],35))
             table.add_row("|cSensors|n",unparse.unparse_power(obj.db.alloc["sensors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["sensors"]),alerts.ansi_rainbow_scale(obj.db.alloc["sensors"],35))
-            alerts.notify(self.caller,buffer + str(table) + "\n")
+            alerts.notify(caller,buffer + str(table) + "\n")
         else:    
-            self.caller.msg("Command not found: " + str(self.args))
+            alerts.notify(caller,"Wrong command entered.")
 
 
 class CmdCloak(default_cmds.MuxCommand):
@@ -90,17 +90,17 @@ class CmdCloak(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
             
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
         elif(not obj.db.cloak["exist"]):
-            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no cloaking device."))
+            alerts.notify(self.caller,alerts.ansi_red("{:s} has no cloaking device.".format(obj.name)))
             return 0
         elif(obj.db.cloak["damage"] <= 0.0):
             alerts.notify(self.caller,alerts.ansi_red("Cloaking device is inoperative."))
             return 0
         
         if not self.args:
-            self.caller.msg("You did not enter any commands.")    
+            alerts.notify(caller,"You did not enter any commands.")    
         elif(self.args == "status"):
             buffer = "Cloaking status:\n"
             buffer += "Active: "
@@ -114,12 +114,12 @@ class CmdCloak(default_cmds.MuxCommand):
             else:
                 buffer += alerts.ansi_green("OK\n")
             buffer += "Cost: " + str(obj.db.cloak["cost"])
-            self.caller.msg(buffer)
+            alerts.notify(caller,buffer)
         elif(self.args == "on"):
-            self.caller.msg("Turning on cloak...")
+            alerts.notify(caller,"Turning on cloak...")
             setter.do_set_cloak(obj,1,obj)
         elif(self.args == "off"):
-            self.caller.msg("Turning off cloak...")
+            alerts.notify(caller,"Turning off cloak...")
             setter.do_set_cloak(obj,0,obj)
 
 class CmdSrs(default_cmds.MuxCommand):
@@ -145,14 +145,14 @@ class CmdSrs(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
             
         if not self.args:
-            self.caller.msg("You did not enter any commands.")
+            alerts.notify(caller,"You did not enter any commands.")
         elif(errors.error_on_console(self.caller,obj)):
             return 0
         elif(not obj.db.sensor["srs_exist"]):
-            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Short-range sensors."))
+            alerts.notify(caller,alerts.ansi_red("{:s} has no Short-range sensors.".format(obj.name)))
             return 0
         elif(obj.db.sensor["srs_damage"] <= 0.0):
-            alerts.notify(self.caller,alerts.ansi_red("Short-range sensors are inoperative."))
+            alerts.notify(caller,alerts.ansi_red("Short-range sensors are inoperative."))
             return 0
             
         elif(self.args == "status"):
@@ -170,17 +170,17 @@ class CmdSrs(default_cmds.MuxCommand):
                 buffer += alerts.ansi_green("OK\n")
             buffer += "SRS signature: " + str(obj.db.sensor["srs_signature"]) + "\n"
             buffer += "SRS resolution: " + str(obj.db.sensor["srs_resolution"])
-            self.caller.msg(buffer)
+            alerts.notify(caller,buffer)
         elif(self.args == "on"):
-            self.caller.msg("Turning on Short-range sensors...")
+            alerts.notify(caller,"Turning on Short-range sensors...")
             setter.do_set_srs(obj,1,obj)
         elif(self.args == "off"):
             if (obj.db.structure["type"] == 0):
-                alerts.notify(self.caller, alerts.ansi_red("Space object not loaded."))
+                alerts.notify(caller, alerts.ansi_red("Space object not loaded."))
             elif (obj.db.status["crippled"] == 2):
-                alerts.notify(self.caller, alerts.ansi_red("Space object destroyed."))
+                alerts.notify(caller, alerts.ansi_red("Space object destroyed."))
             else:
-                self.caller.msg("Turning off Short-range sensors...")
+                alerts.notify(caller,"Turning off Short-range sensors...")
                 setter.do_set_srs(obj,0,obj)
 
 class CmdLrs(default_cmds.MuxCommand):
@@ -207,13 +207,13 @@ class CmdLrs(default_cmds.MuxCommand):
             
         if not self.args:
             self.caller.msg("You did not enter any commands.")
-        elif(errors.error_on_console(self.caller,obj)):
+        elif(errors.error_on_console(caller,obj)):
             return 0  
         elif(not obj.db.sensor["lrs_exist"]):
-            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Long-range sensors."))
+            alerts.notify(caller,alerts.ansi_red("{:s} has no Long-range sensors.".format(obj.name)))
             return 0
         elif(obj.db.sensor["lrs_damage"] <= 0.0):
-            alerts.notify(self.caller,alerts.ansi_red("Long-range sensors are inoperative."))
+            alerts.notify(caller,alerts.ansi_red("Long-range sensors are inoperative."))
             return 0
     
         elif(self.args == "status"):
@@ -230,12 +230,12 @@ class CmdLrs(default_cmds.MuxCommand):
                 buffer += alerts.ansi_green("OK\n")
             buffer += "LRS signature: " + str(obj.db.sensor["lrs_signature"]) + "\n"
             buffer += "LRS resolution: " + str(obj.db.sensor["lrs_resolution"])
-            self.caller.msg(buffer)
+            alerts.notify(caller,buffer)
         elif(self.args == "on"):
-            self.caller.msg("Turning on Long-range sensors...")
+            alerts.notify(caller,"Turning on Long-range sensors...")
             setter.do_set_lrs(obj,1,obj)
         elif(self.args == "off"):
-            self.caller.msg("Turning off Long-range sensors...")
+            alerts.notify(caller,"Turning off Long-range sensors...")
             setter.do_set_lrs(obj,0,obj)
 
 class CmdEW(default_cmds.MuxCommand):
@@ -257,18 +257,18 @@ class CmdEW(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.strip()
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
             
         if not self.args:
-            self.caller.msg("You did not enter any commands.")
-        elif(errors.error_on_console(self.caller,obj)):
+            alerts.notify(alerts.ansi_red("You did not enter any commands."))
+        elif(errors.error_on_console(caller,obj)):
                 return 0
         elif(not obj.db.sensor["ew_exist"]):
-            alerts.notify(self.caller,alerts.ansi_red(obj.name + " has no Electronic Warfare systems."))
+            alerts.notify(caller,alerts.ansi_red("{:s} has no Electronic Warfare systems.".format(obj.name)))
             return 0
         elif(obj.db.sensor["ew_damage"] <= 0.0):
-            alerts.notify(self.caller,alerts.ansi_red("Electronic Warfare systems are inoperative."))
+            alerts.notify(caller,alerts.ansi_red("Electronic Warfare systems are inoperative."))
             return 0
         
         elif(self.args == "status"):
@@ -283,12 +283,12 @@ class CmdEW(default_cmds.MuxCommand):
                 buffer += alerts.ansi_red("Insufficient\n")
             else:
                 buffer += alerts.ansi_green("OK\n")
-            self.caller.msg(buffer)
+            alerts.notify(caller,buffer)
         elif(self.args == "on"):
-            self.caller.msg("Turning on Electronic Warfare systems...")
+            alerts.notify(caller,"Turning on Electronic Warfare systems...")
             setter.do_set_ew(obj,1,obj)
         elif(self.args == "off"):
-            self.caller.msg("Turning off Electronic Warfare systems...")
+            alerts.notify(caller,"Turning off Electronic Warfare systems...")
             setter.do_set_ew(obj,0,obj)
 
 class CmdFreq(default_cmds.MuxCommand):
@@ -316,13 +316,13 @@ class CmdFreq(default_cmds.MuxCommand):
     
         if(len(self.args) == 2):
             if self.args[0][0] == "b":
-                setter.do_set_beam_freq(self,obj,float(self.args[1]))
+                setter.do_set_beam_freq(caller,obj,float(self.args[1]))
             elif self.args[0][0] == "m":
-                setter.do_set_missile_freq(self,obj,float(self.args[1]))
+                setter.do_set_missile_freq(caller,obj,float(self.args[1]))
             else:
-                alerts.notify(self,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
+                alerts.notify(caller,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 
 class CmdEnable(default_cmds.MuxCommand):
@@ -351,9 +351,9 @@ class CmdEnable(default_cmds.MuxCommand):
             return 0
     
         if(len(self.args) == 3):
-            setter.do_set_weapon(self,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),1)
+            setter.do_set_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),1)
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdDisable(default_cmds.MuxCommand):
     """
@@ -377,13 +377,13 @@ class CmdDisable(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 3):
-            setter.do_set_weapon(self,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),0)
+            setter.do_set_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),0)
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdTarget(default_cmds.MuxCommand):
     """
@@ -408,13 +408,13 @@ class CmdTarget(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 4):
-            setter.do_lock_weapon(self,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),int(self.args[3]))
+            setter.do_lock_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),int(self.args[3]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdUnlock(default_cmds.MuxCommand):
     """
@@ -438,13 +438,13 @@ class CmdUnlock(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 3):
-            setter.do_unlock_weapon(self,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]))
+            setter.do_unlock_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 
 class CmdFire(default_cmds.MuxCommand):
@@ -478,5 +478,5 @@ class CmdFire(default_cmds.MuxCommand):
         elif(len(self.args) == 4):
             setter.do_set_fire(caller,obj,int(self.args[1]),int(self.args[2]),int(self.args[0]),int(self.args[3]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
