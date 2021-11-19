@@ -332,9 +332,9 @@ class CmdEnable(default_cmds.MuxCommand):
     Usage: enable <weapon> <first> <last>
 
     Command list:
-    weapon - Type of weapon (0 = all, 1 = beam, 2 = missiles)
-    first - First beam/missile
-    last - Last beam/missile
+    weapon - Type of weapon (all,beam,missile)
+    first - First bank/tube
+    last - Last bank/tube
     """
 
     key="enable"
@@ -351,7 +351,12 @@ class CmdEnable(default_cmds.MuxCommand):
             return 0
     
         if(len(self.args) == 3):
-            setter.do_set_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),1)
+            weapon = 0
+            if self.args[0][0] == "b":
+                weapon = 1
+            if self.args[0][0] == "m":
+                weapon = 2
+            setter.do_set_weapon(caller,obj,weapon,int(self.args[1]) - 1,int(self.args[2]) - 1,1)
         else:
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
@@ -362,9 +367,9 @@ class CmdDisable(default_cmds.MuxCommand):
     Usage: disable <weapon> <first> <last>
 
     Command list:
-    weapon - Type of weapon (0 = all, 1 = beam, 2 = missiles)
-    first - First beam/missile
-    last - Last beam/missile
+    weapon - Type of weapon (all,beam,missile)
+    first - First bank/tube
+    last - Last bank/tube
     """
 
     key="disable"
@@ -381,7 +386,12 @@ class CmdDisable(default_cmds.MuxCommand):
             return 0
     
         if(len(self.args) == 3):
-            setter.do_set_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),0)
+            weapon = 0
+            if self.args[0][0] == "b":
+                weapon = 1
+            if self.args[0][0] == "m":
+                weapon = 2
+            setter.do_set_weapon(caller,obj,weapon,int(self.args[1]) - 1,int(self.args[2]) - 1,0)
         else:
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
@@ -393,9 +403,9 @@ class CmdTarget(default_cmds.MuxCommand):
 
     Command list:
     target - ID of the target
-    weapon - Type of weapon (0 = all, 1 = beam, 2 = missiles)
-    first - First beam/missile
-    last - Last beam/missile
+    weapon - Type of weapon (all,beam,missiles)
+    first - First bank/tube
+    last - Last bank/tube
     """
 
     key="target"
@@ -412,7 +422,12 @@ class CmdTarget(default_cmds.MuxCommand):
             return 0
     
         if(len(self.args) == 4):
-            setter.do_lock_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]),int(self.args[3]))
+            weapon = 0
+            if self.args[1][0] == "b":
+                weapon = 1
+            if self.args[1][0] == "m":
+                weapon = 2
+            setter.do_lock_weapon(caller,obj,int(self.args[0]),weapon,int(self.args[2])-1,int(self.args[3])-1)
         else:
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
@@ -423,9 +438,9 @@ class CmdUnlock(default_cmds.MuxCommand):
     Usage: unlock <weapon> <first> <last>
 
     Command list:
-    weapon - Type of weapon (0 = all, 1 = beam, 2 = missiles)
-    first - First beam/missile
-    last - Last beam/missile
+    weapon - Type of weapon (all,beam,missiles)
+    first - First bank/tube
+    last - Last bank/tube
     """
 
     key="unlock"
@@ -442,7 +457,12 @@ class CmdUnlock(default_cmds.MuxCommand):
             return 0
     
         if(len(self.args) == 3):
-            setter.do_unlock_weapon(caller,obj,int(self.args[0]),int(self.args[1]),int(self.args[2]))
+            weapon = 0
+            if self.args[0][0] == "b":
+                weapon = 1
+            if self.args[0][0] == "m":
+                weapon = 2
+            setter.do_unlock_weapon(caller,obj,weapon,int(self.args[1]) -1 ,int(self.args[2])- 1)
         else:
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
@@ -451,13 +471,13 @@ class CmdFire(default_cmds.MuxCommand):
     """
     Commands related to the Firing of the weapons.
 
-    Usage: fire <weapon> <first> <last> <location>
+    Usage: fire <weapon> <location> <first> <last>
     
     Command list:
-    weapon - Type of weapon (0 = all, 1 = beam, 2 = missiles)
-    first - First beam/missile
-    last - Last beam/missile
-    location - Target location (0 = all, 1 = hull, 2 = engine, 3 = weapons, 4 = sensors, 5 = power)
+    weapon - Type of weapon (all,beam,missiles)
+    first - First bank/tube
+    last - Last bank/tube
+    location - Target location (all,hull,engine,weapons,sensors,power)
     """
 
     key="fire"
@@ -474,9 +494,25 @@ class CmdFire(default_cmds.MuxCommand):
             return 0
         
         if(self.args[0] == ""):
-            setter.do_set_fire(caller,obj,0,constants.MAX_BEAM_BANKS,0,0)
+            setter.do_set_fire(caller,obj,-1,-1,0,0)
         elif(len(self.args) == 4):
-            setter.do_set_fire(caller,obj,int(self.args[1]),int(self.args[2]),int(self.args[0]),int(self.args[3]))
+            weapon = 0
+            if self.args[0][0] == "b":
+                weapon = 1
+            elif self.args[0][0] == "m":
+                weapon = 2
+            mode = 0
+            if self.args[1][0] == "h":
+                weapon = 1
+            elif self.args[1][0] == "e":
+                weapon = 2
+            elif self.args[1][0] == "w":
+                weapon = 3
+            elif self.args[1][0] == "s":
+                weapon = 4
+            elif self.args[1][0] == "p":
+                weapon = 5
+            setter.do_set_fire(caller,obj,int(self.args[2])-1,int(self.args[3])-1,weapon,mode)
         else:
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
