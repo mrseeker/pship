@@ -1,5 +1,8 @@
+from unicodedata import category
 from evennia.utils.create import create_object
+from typeclasses.airlock import Airlock
 from typeclasses.exits import Exit
+from typeclasses.rooms import Room
 from typeclasses.spaceship import Console, Generic_Ship
 
 class Shuttle(Generic_Ship):
@@ -256,9 +259,28 @@ def create_ship_layout(self):
         ship_console.tags.add(console,category=self.key)
         exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
         exit_console = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_console, destination=self)
+    
+    ship_airlock = create_object(Airlock,key=self.key + "-airlock")
+    ship_airlock.db.ship = self.key
+    ship_airlock.tags.add("airlock",category=self.key)
+    exit_airlock_bridge = create_object(Exit, key="Airlock",aliases=["airlock"], location=self, destination=ship_airlock)
+    exit_airlock = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_airlock, destination=self)
+
+    ship_teleport = create_object(Room,key=self.key + "-teleport")
+    ship_teleport.db.ship = self.key
+    ship_teleport.tags.add("teleport",category=self.key)
+    exit_teleport_bridge = create_object(Exit, key="Teleporter room",aliases=["teleport"], location=self, destination=ship_teleport)
+    exit_teleport = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_teleport, destination=self)
 
 def create_fighter_layout(self):
         self.cmdset.add("commands.bridge.FighterBridgeCmdSet", persistent=True)
         self.cmdset.add("commands.engineering.EngineeringFighterCmdSet", persistent=True)
         self.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         self.cmdset.add("commands.helm.FighterCmdSet", persistent=True)
+
+        ship_airlock = create_object(Airlock,key=self.key + "-airlock")
+        ship_airlock.db.ship = self.key
+        ship_airlock.tags.add("airlock",category=self.key)
+        ship_airlock.tags.add("teleport",category=self.key)
+        exit_airlock_bridge = create_object(Exit, key="Airlock",aliases=["airlock"], location=self, destination=ship_airlock)
+        exit_airlock = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_airlock, destination=self)
