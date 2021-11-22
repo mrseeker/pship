@@ -577,11 +577,11 @@ def debug_space(obj):
             bug = 0
         for i in range(constants.MAX_BEAM_BANKS):
             if((obj.db.blist[i]["arcs"] & 1) == 0 and (obj.db.blist[i]["arcs"] & 4) == 0):
-                obj.db.blist[i] += 5
+                obj.db.blist[i]["arcs"] += 5
             if((obj.db.blist[i]["arcs"] & 2) == 0 and (obj.db.blist[i]["arcs"] & 8) == 0):
-                obj.db.blist[i] += 10
+                obj.db.blist[i]["arcs"] += 10
             if((obj.db.blist[i]["arcs"] & 16) == 0 and (obj.db.blist[i]["arcs"] & 32) == 0):
-                obj.db.blist[i] += 48
+                obj.db.blist[i]["arcs"] += 48
             if(obj.db.blist[i]["recycle"] < 1):
                 obj.db.blist[i]["recycle"] = 1
             if(obj.db.beam["banks"] == 0):
@@ -620,11 +620,11 @@ def debug_space(obj):
             bug = 0
         for i in range(constants.MAX_MISSILE_TUBES):
             if((obj.db.mlist[i]["arcs"] & 1) == 0 and (obj.db.mlist[i]["arcs"] & 4) == 0):
-                obj.db.mlist[i] += 5
+                obj.db.mlist[i]["arcs"] += 5
             if((obj.db.mlist[i]["arcs"] & 2) == 0 and (obj.db.mlist[i]["arcs"] & 8) == 0):
-                obj.db.mlist[i] += 10
+                obj.db.mlist[i]["arcs"] += 10
             if((obj.db.mlist[i]["arcs"] & 16) == 0 and (obj.db.mlist[i]["arcs"] & 32) == 0):
-                obj.db.mlist[i] += 48
+                obj.db.mlist[i]["arcs"] += 48
             if(obj.db.mlist[i]["recycle"] < 1):
                 obj.db.mlist[i]["recycle"] = 1
             if(obj.db.missile["tubes"] == 0):
