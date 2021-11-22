@@ -474,7 +474,7 @@ def sdb2eccm_srs(obj):
     else:
         return 1.0
 
-def debug_space(obj):
+def debug_space(obj) -> int:
     """
     This is a script to clean up any issues with an object. 
     """
