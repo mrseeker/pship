@@ -1,6 +1,7 @@
 """
 Sets the variables
 """
+from evennia.utils import ansi
 from typeclasses.characters import Character
 from typeclasses.objects import Object
 from world import alerts,constants,iterate, errors,utils,balance,unparse,damage
@@ -1718,3 +1719,294 @@ def do_unlock_weapon(self,obj,weapon,first,last):
     if (flag_b > 0 or flag_m > 0):
         alerts.console_message(obj,["tactical"],alerts.ansi_cmd(self,"{:s} unlocked".format(buffer)))
     return 1
+
+def do_set_fix_damage(self,obj,sys1,sys2,type,name):
+    dmg = 0
+    unit = None
+    flag = 0
+    sys1 = str(sys1).lower()
+
+    if(obj.db.structure["type"] == 0):
+        alerts.notify(self,alerts.ansi_red("Space object not loaded."))
+        return 0
+    elif(obj.db.status["crippled"] == 2):
+        alerts.notify(self,alerts.ansi_red("Space object destroyed."))
+        return 0
+    elif(obj.db.status["active"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} systems are inactive".format(obj.name)))
+        return 0
+    elif(obj.db.structure["max_repair"] <= 0):
+        alerts.notify(self,alerts.ansi_red("{:s} has no repair capacity.".format(obj.name)))
+        return 0
+
+    if(type != 0):
+        obj_x = utils.name2sdb(name)
+        if(obj_x == constants.SENSOR_FAIL):
+            alerts.notify(self,alerts.ansi_red("That is not a valid repair recipient"))
+            return 0
+        elif(obj_x.db.location != obj.name):
+            alerts.notify(self,alerts.ansi_red("That is not a valid repair recipient"))
+            return 0
+        elif(obj_x.db.structure["type"] == 0):
+            alerts.notify(self,alerts.ansi_red("That is not a valid repair recipient"))
+            alerts.write_spacelog(self,obj_x,"BUG:Repair recipient has bad TYPE")
+            return 0
+        elif(obj_x.db.status["connected"] == 0):
+            alerts.notify(self,alerts.ansi_red("{:s} is not connected.".format(obj_x.name)))
+            return 0
+    else:
+        obj_x = obj
+    
+    if(sys1[0] == "a"):
+        if(sys1[1] == "f"):
+            if(obj_x.db.shield["exist"] == 1):
+                num = 10
+                unit = 2
+        elif(sys1[1] == "u"):
+            if(obj_x.db.aux["exist"] == 1):
+                num = 1
+        else:
+            alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+            return 0
+    elif(sys1[0] == "b"):
+        if(sys1[1] == "a"):
+            if(obj_x.db.batt["exist"] == 1):
+                num = 2
+        if(sys1[1] == "e"):
+            if(obj_x.db.beam["exist"] == 1):
+                unit = int(sys2)
+                if (unit > 0 and unit <= obj_x.db.beam["banks"]):
+                    num = 3
+        else:
+            alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+            return 0
+    elif(sys1[0] == "c"):
+        if(obj_x.db.cloak["exist"] == 1):
+            num = 4
+    elif(sys1[0] == "d"):
+        if(obj_x.db.shield["exist"] == 1):
+            num = 10
+            unit = 4
+    elif(sys1[0] == "e"):
+        if(obj_x.db.sensor["ew_exist"] == 1):
+            num = 5
+    elif(sys1[0] == "f"):
+        if(sys1[1] == "o"):
+            if(obj_x.db.shield["exist"] == 1):
+                num = 10
+                unit = 0
+        elif(sys1[1] == "u"):
+            if(obj_x.db.aux["exist"] == 1):
+                num = 1
+        else:
+            alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+            return 0
+    elif(sys1[0] == "i"):
+        if(obj_x.db.engine["impulse_exist"] == 1):
+            num = 6
+    elif(sys1[0] == "l"):
+        if(obj_x.db.sensor["lrs_exist"] == 1):
+            num = 7
+    elif(sys1[0] == "m"):
+        if(sys1[1] == "a"):
+            if(obj_x.db.main["exist"] == 1):
+                num = 8
+        elif(sys1[1] == "i"):
+            if(obj_x.db.missile["exist"] == 1):
+                unit = int(sys2)
+                if(unit > 0 and unit <= obj_x.db.missile["tubes"]):
+                    num = 9
+        else:
+            alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+            return 0
+    elif(sys1[0] == "p"):
+        if(obj_x.db.shield["exist"] == 1):
+            num = 10
+            unit = 3
+    elif(sys1[0] == "s"):
+        if(sys1[1] == "r"):
+            if(obj_x.db.sensor["srs_exist"] == 1):
+                num = 11 
+        elif(sys1[1] == "t"):
+            if(obj_x.db.shield["exist"] == 1):
+                num = 10
+                unit = 1
+        elif(sys1[1] == "u"):
+            num = 0
+        else:
+            alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+            return 0
+    elif(sys1[0] == "t"):
+        if(sys1[3] == "c"):
+            if(obj_x.db.tract["exist"] == 1):
+                num = 12
+        elif(sys1[3] == "n"):
+            if(obj_x.db.trans["exist"] == 1):
+                num = 13
+        else:
+            alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+            return 0
+    elif(sys1[0] == "v"):
+        if(obj_x.db.shield["exist"] == 1):
+            num = 10
+            unit = 5
+    elif(sys1[0] == "w"):
+        if(obj_x.db.engine["warp_exist"] == 1):
+            num = 14
+    else:
+        alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+    
+    dmg = damage_getter(num,unit)
+    if (dmg >= 1.0):
+        alerts.notify(self,alerts.ansi_red("{:s} on {:s} has no damage to repair.".format(constants.system_name[num],obj_x.name)))
+        dmg = 1.0
+        return 0
+    elif((dmg <= -1.0) and (obj.db.structure["has_docking_bay"] != 1) and (num > 0)):
+        alerts.notify(self,alerts.ansi_red("{:s} on {:s} has been totally destroyed.".format(constants.system_name[num],obj_x.name)))
+        return 0
+    
+    if(num > 0):
+        if(num == 1):
+            mult = obj_x.db.aux["gw"]
+        elif(num == 2):
+            mult = obj_x.db.batt["gw"]
+        elif(num == 3):
+            mult = obj_x.db.blist[unit - 1]["cost"]
+        elif(num == 8):
+            mult = obj_x.db.main["gw"]
+        elif(num == 9):
+            mult = obj_x.db.blist[unit - 1]["warhead"]
+        else:
+            mult = (1.0 + (obj_x.db.structure["max_structure"] / 10.0))
+
+        fix_cost = (1 - dmg) * constants.repair_mult[num] * mult * 100.0
+        if(fix_cost > obj.db.structure["repair"]):
+            dmg += obj.db.structure["repair"] / constants.repair_mult[num] / mult / 100.0
+            damage_setter(obj,num,unit,dmg)
+            obj.db.structure["repair"] = 0.0
+            alerts.console_message(obj,["damage"],alerts.ansi_cmd(self.name,"{:s} repaired to {:s}".format(constants.system_name[num],unparse.unparse_percent(dmg))))
+            if(type != 0):
+                alerts.console_message(obj_x,["damage"],alerts.ansi_cmd("{:s} repaired to {:s} by {:s}".format(constants.system_name[num],unparse.unparse_percent(dmg),obj.name)))
+        else:
+            dmg = 1.0
+            obj.db.structure["repair"] -= fix_cost
+            damage_setter(obj,num,unit,dmg)
+            alerts.console_message(obj,["damage"],alerts.ansi_cmd(self.name,"{:s} repairs complete.".format(constants.system_name[num])))
+            if(type != 0):
+                alerts.console_message(obj_x,["damage"],alerts.ansi_cmd("{:s} repairs completed by {:s}".format(constants.system_name[num],obj.name)))
+        obj_x.db.sensor["version"] = 1
+        obj_x.db.engine["version"] = 1
+        obj_x.db.power["version"] = 1
+        obj_x.db.cloak["version"] = 1
+        obj_x.db.status["time"] = obj_x.db.move["time"]
+        iterate.up_cochranes(obj_x)
+        iterate.up_empire(obj_x)
+        iterate.up_quadrant(obj_x)
+        iterate.up_vectors(obj_x)
+        iterate.up_resolution(obj_x)
+        iterate.up_signature(obj_x)
+        iterate.up_visibility(obj_x)
+        utils.debug_space(obj_x)
+        return 1
+    else:
+        if(obj_x.db.structure["superstructure"] < 0.0):
+            flag = 1
+        fix_cost = (obj_x.db.structure["max_structure"] - obj_x.db.structure["superstructure"]) * constants.repair_mult[0]
+        if(fix_cost > obj.db.structure["repair"]):
+            obj_x.db.structure["superstructure"] += obj.db.structure["repair"] / constants.repair_mult[0]
+            obj.db.structure["repair"] = 0
+            dmg = damage_getter(obj,num,unit)
+            alerts.console_message(obj,["damage"],alerts.ansi_cmd(self.name,"{:s} repaired to {:s}".format(constants.system_name[num],unparse.unparse_percent(dmg))))
+            if(type != 0):
+                alerts.console_message(obj_x,["damage"],alerts.ansi_cmd("{:s} repaired to {:s} by {:s}".format(constants.system_name[num],unparse.unparse_percent(dmg),obj.name)))
+        else:
+            obj_x.db.structure["superstructure"] = obj_x.b.structure["max_structure"]
+            obj.db.structure["repair"] -= fix_cost
+            alerts.console_message(obj,["damage"],alerts.ansi_cmd(self.name,"{:s} repairs complete.".format(constants.system_name[num])))
+            if(type != 0):
+                alerts.console_message(obj_x,["damage"],alerts.ansi_cmd("{:s} repairs completed by {:s}".format(constants.system_name[num],obj.name)))
+        if(flag == 1 and obj_x.structure["superstructure"] >= 0.0):
+            obj_x.db.status["crippled"] = 0
+            alerts.do_ship_notify(obj_x,"{:s} recovers from total systems failure.".format(obj_x.name))
+        obj_x.db.sensor["version"] = 1
+        obj_x.db.engine["version"] = 1
+        obj_x.db.power["version"] = 1
+        obj_x.db.cloak["version"] = 1
+        obj_x.db.status["time"] = obj_x.db.move["time"]
+        iterate.up_cochranes(obj_x)
+        iterate.up_empire(obj_x)
+        iterate.up_quadrant(obj_x)
+        iterate.up_vectors(obj_x)
+        iterate.up_resolution(obj_x)
+        iterate.up_signature(obj_x)
+        iterate.up_visibility(obj_x)
+        utils.debug_space(obj_x)
+        return 1
+
+def damage_getter(obj,num,unit):
+    if(num == 0):
+        return (obj.db.structure["superstructure"] / obj.db.structure["max_structure"])
+    elif(num == 1):
+        return obj.db.aux["damage"]
+    elif(num == 2):
+        return obj.db.batt["damage"]
+    elif(num == 3):
+        return obj.db.blist[unit - 1]["damage"]
+    elif(num == 4):
+        return obj.db.cloak["damage"]
+    elif(num == 5):
+        return obj.db.sensor["ew_damage"]
+    elif(num == 6):
+        return obj.db.engine["impulse_damage"]
+    elif(num == 7):
+        return obj.db.sensor["lrs_damage"]
+    elif(num == 8):
+        return obj.db.main["damage"]
+    elif(num == 9):
+        return obj.db.mlist[unit - 1]["damage"]
+    elif (num == 10):
+        return obj.db.shield[unit]["damage"]
+    elif (num == 11):
+        return obj.db.sensor["srs_damage"]
+    elif(num == 12):
+        return obj.db.tract["damage"]
+    elif(num == 13):
+        return obj.db.trans["damage"]
+    elif(num == 14):
+        return obj.db.engine["warp_engine"]
+    else:
+        raise ValueError("Bad value in damage_getter")
+
+def damage_setter(obj,num,unit,value):
+    if(num == 0):
+        obj.db.structure["superstructure"] = value
+    elif(num == 1):
+        obj.db.aux["damage"] = value
+    elif(num == 2):
+        obj.db.batt["damage"] = value
+    elif(num == 3):
+        obj.db.blist[unit - 1]["damage"] = value
+    elif(num == 4):
+        obj.db.cloak["damage"] = value
+    elif(num == 5):
+        obj.db.sensor["ew_damage"] = value
+    elif(num == 6):
+        obj.db.engine["impulse_damage"] = value
+    elif(num == 7):
+        obj.db.sensor["lrs_damage"] = value
+    elif(num == 8):
+        obj.db.main["damage"] = value
+    elif(num == 9):
+        obj.db.mlist[unit - 1]["damage"] = value
+    elif (num == 10):
+        obj.db.shield[unit]["damage"] = value
+    elif (num == 11):
+        obj.db.sensor["srs_damage"] = value
+    elif(num == 12):
+        obj.db.tract["damage"] = value
+    elif(num == 13):
+        obj.db.trans["damage"] = value
+    elif(num == 14):
+        obj.db.engine["warp_engine"] = value
+    else:
+        raise ValueError("Bad value in damage_setter")

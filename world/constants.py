@@ -15,6 +15,7 @@ system_name = ["Superstructure","Fusion Reactor","Batteries","Beam Weapon","Cloa
 type_name = ["None","Ship","Base","Planet","Anomaly","Star","Asteroid","Debris","Computer-Core","Corpse","Player","Other"]
 beam_name = ["Beam Weapon","Phase Cannon","Phaser Array","Particle Beam","Disruptor Cannon","Disruptor Array","Polarized Ion Cannon","Laser","Laser Accelerator","Oscillating Laser","Fusion Laser","Nadion Beam","Plasma Beam","Polaron Beam","Meson Beam","Antiproton Beam","Ion Beam","Fusion Cutter","Fusion Beam","Mass Driver","Phase Disruptor","Jolt Cannon","Death Ray"]
 missile_name = ["Missile Weapon","Fusion Torpedo","Photon Torpedo","Plasma Torpedo","Tri-cobalt Torpedo","Fusion Missile","Fission Missile","Missile","Torpedo","Propelled Explosive","Impact Cannon","Reactory Array","Neutron Torpedo","Proton Torpedo","FTL Wave Generator","Antimatter Torpedo","Ballistic Missile","Railgun","Destruct-o-matic"]
+repair_mult = [32.0, 4.0, 2.0, 1.0, 8.0, 8.0, 4.0, 8.0, 8.0, 2.0, 1.0, 8.0, 1.0, 8.0, 4.0]
 
 SENSOR_FAIL = -100
 VACANCY_FAIL = -101

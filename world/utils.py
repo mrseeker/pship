@@ -272,6 +272,13 @@ def arc_check(contact, weapon):
     else:
         return constants.ARC_FAIL
 
+def name2sdb(name):
+    obj = search_object(name)
+    if (len(obj) > 0):
+        return obj[0]
+    else:
+        return constants.SENSOR_FAIL
+
 def get_empty_sdb():
 #NOT IMPLEMENTED!
     return constants.VACANCY_FAIL    
