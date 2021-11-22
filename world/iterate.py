@@ -728,11 +728,11 @@ def up_signature(self):
     base = math.pow(self.db.structure["displacement"],0.333333) / self.db.tech["stealth"] / 100.0
     sig = base
     
-    if(self.db.cloak["active"]):
+    if(self.db.cloak["active"] == 1):
         self.db.cloak["level"] = 0.001 / self.db.power["total"] / self.db.alloc["cloak"] / self.db.tech["cloak"] * self.db.cloak["cost"]
-        if (self.db.status["tractored"]):
+        if (self.db.status["tractored"] == 1):
             self.db.cloak["level"] *= 100.0
-        if (self.db.status["tractoring"]):
+        if (self.db.status["tractoring"] == 1):
             self.db.cloak["level"] *= 100.0
         if (self.db.beam["out"] > 1.0):
             self.db.cloak["level"] *= self.db.beam["out"]
@@ -749,7 +749,7 @@ def up_signature(self):
     self.db.sensor["srs_signature"] = sig * 10.0
     self.db.sensor["lrs_signature"] *= self.db.move["out"] * self.db.move["out"] + 1.0
     self.db.sensor["srs_signature"] *= 1.0 + self.db.power["main"] + (self.db.power["aux"] / 10.0) + (self.db.power["batt"] / 100.0)
-    if (self.db.sensor["ew_active"]):
+    if (self.db.sensor["ew_active"] == 1):
         self.db.sensor["lrs_signature"] /= utils.sdb2ecm_lrs(self)
         self.db.sensor["srs_signature"] /= utils.sdb2ecm_srs(self)
         

@@ -64,7 +64,7 @@ class CmdExit(default_cmds.MuxCommand):
             space.db.course["d"][0][2] = obj.db.course["d"][0][2]
             space.db.type = constants.type_name[9]
             space.db.status["active"] = 1
-            space.db.structure["type"] = obj.db.type
+            space.db.structure["type"] = 9
             space.tags.add("corpse",category=caller.name)
             space.cmdset.add("commands.science.ScienceCmdSet",persistent=True)
             caller.move_to(space)
