@@ -18,6 +18,7 @@ class EngineeringCmdSet(CmdSet):
             self.add(CmdEngine())
             self.add(CmdAlloc())
             self.add(CmdFreq())
+            self.add(CmdRepair())
 
 class EngineeringFighterCmdSet(CmdSet):
         key = "EngineeringFighterCmdSet"
@@ -91,7 +92,7 @@ class CmdAlloc_Fighter(default_cmds.MuxCommand):
         else:    
             self.caller.msg("Command not found: " + str(self.args))
 
-class Repair(default_cmds.MuxCommand):
+class CmdRepair(default_cmds.MuxCommand):
     """
     Repairs the full ship to full battlestrength
 
