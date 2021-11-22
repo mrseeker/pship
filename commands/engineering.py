@@ -124,7 +124,7 @@ class CmdRepair(default_cmds.MuxCommand):
             else:
                 setter.do_set_fix_damage(caller,obj,self.args[1],self.args[2],0,"")
         except IndexError:
-            alerts.notify(caller,alerts.ansi_red("Wrong amount of arguments. {:s}".format(self.args)))
+            alerts.notify(caller,alerts.ansi_red("Wrong amount of arguments. {:s}".format(str(self.args))))
 
 
 class CmdAlloc(default_cmds.MuxCommand):
