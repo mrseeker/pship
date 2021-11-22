@@ -47,7 +47,7 @@ class space_room(Room):
         self.db.shield = shield_combo
         self.db.alloc = {"version":1,"helm":0.0,"tactical":0.0,"operations":0.0,"movement":0.0,"shields":0.0,"shield":[0.0]*constants.MAX_SHIELD_NAME,"cloak":0.0,"beams":0.0,"missiles":0.0,"sensors":0.0,"ecm":0.0,"eccm":0.0,"transporters":0.0,"tractors":0.0,"miscellaneous":0.0}
         self.db.power = {"version":1,"main":0.0,"aux":0.0,"batt":0.0,"total":0.0}
-        self.db.sensor = {"version":1,"lrs_damage":1.0,"lrs_active":0,"lrs_exist":0,"lrs_resolution":1.0,"srs_signature":1.0,"srs_damage":1.0,"srs_active":0,"srs_exist":0,"srs_resolution":1.0,"srs_signature":1.0,"ew_damage":1.0,"ew_exist":0,"visibility":1.0,"contacts":0,"counter":0}
+        self.db.sensor = {"version":1,"lrs_damage":1.0,"lrs_active":0,"lrs_exist":0,"lrs_resolution":1.0,"srs_signature":1.0,"srs_damage":1.0,"srs_active":0,"srs_exist":0,"srs_resolution":1.0,"srs_signature":1.0,"ew_damage":1.0,"ew_exist":0,"ew_active":0,"visibility":1.0,"contacts":0,"counter":0}
         self.db.tech = {"firing":1.0,"fuel":1.0,"stealth":1.0,"cloak":1.0,"sensors":1.0,"aux_max":1.0,"main_max":1.0,"armor":1.0,"ly_range":1.0}
         self.db.engine = {"version":1,"warp_damage":1.0,"warp_max":1.0,"warp_exist":0,"impulse_damage":1.0,"impulse_max":1.0,"impulse_exist":1,"warp_cruise":0.0,"impulse_cruise":0.0}
         self.db.cloak = {"version":1,"cost":0,"freq":0.0,"exist":0,"active":0,"damage":0.0}

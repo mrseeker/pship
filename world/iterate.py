@@ -707,19 +707,19 @@ def up_position(self):
     self.db.coords["z"] += dv * self.db.course["d"][0][2]
 
 def up_resolution(self):
-    if(self.db.sensor["lrs_active"]):
+    if(self.db.sensor["lrs_active"] == 1):
         self.db.sensor["lrs_resolution"] = self.db.tech["sensors"] * self.db.sensor["lrs_damage"]
-        if (self.db.sensor["ew_active"]):
+        if (self.db.sensor["ew_active"] == 1):
             self.db.sensor["lrs_resolution"] *= utils.sdb2eccm_lrs(self)
-        if (self.db.cloak["active"]):
+        if (self.db.cloak["active"] == 1):
             self.db.sensor["lrs_resolution"] /= 10.0
     else:
         self.db.sensor["lrs_resolution"] = 0.0
-    if (self.db.sensor["srs_active"]):
+    if (self.db.sensor["srs_active"] == 1):
         self.db.sensor["srs_resolution"] = self.db.tech["sensors"] * self.db.sensor["srs_damage"]
-        if (self.db.sensor["ew_active"]):
+        if (self.db.sensor["ew_active"] == 1):
             self.db.sensor["srs_resolution"] *= utils.sdb2eccm_srs(self)
-        if(self.db.cloak["active"]):
+        if(self.db.cloak["active"] == 1):
             self.db.sensor["srs_resolution"] /= 10.0
     else:
         self.db.sensor["srs_resolution"] = 0.0
@@ -946,7 +946,7 @@ def do_space_db_iterate():
                     up_visibility(obj)
                 if(obj.db.cloak["version"] == 1):
                     up_cloak_status(obj)
-                if(obj.db.sensor["version"] == 1):
+                if(int(obj.db.sensor["version"]) == 1):
                     up_resolution(obj)
                     up_signature(obj)
                 up_sensor_list(obj)
