@@ -64,9 +64,10 @@ class CmdExit(default_cmds.MuxCommand):
             space.db.course["d"][0][2] = obj.db.course["d"][0][2]
             space.db.type = constants.type_name[9]
             space.db.status["active"] = 1
-            space.db.structure["type"] = self.db.type
+            space.db.structure["type"] = obj.db.type
             space.tags.add("corpse",category=caller.name)
             space.cmdset.add("commands.science.ScienceCmdSet",persistent=True)
+            caller.move_to(space)
             alerts.do_console_notify(obj,["security"],alerts.ansi_alert("Someone left the ship through the airlock."))
             alerts.log_msg("{:s} exited through the airlock.".format(caller.name))
         else:
