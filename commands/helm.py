@@ -65,9 +65,9 @@ class CmdStatus_Fighter(default_cmds.MuxCommand):
         self.args = self.args.strip()
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
         buffer = "|y|[bCondensed Status Report|n\n"
         buffer += "|cName:|n "+ obj.name + " "
@@ -127,9 +127,9 @@ class CmdStatus(default_cmds.MuxCommand):
         self.args = self.args.strip()
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
         buffer = "|y|[bHelm Status Report|n\n"
         table = evtable.EvTable("Name","Data")
@@ -191,7 +191,7 @@ class CmdStatus(default_cmds.MuxCommand):
                         table.add_row("")
                     
             buffer += str(table)
-        alerts.notify(self.caller,buffer)
+        alerts.notify(caller,buffer)
 
 class CmdCoords(default_cmds.MuxCommand):
     """
@@ -216,31 +216,31 @@ class CmdCoords(default_cmds.MuxCommand):
         self.args = self.args.strip()
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
                 return 0
 
         if (self.args[0] == ""):
-            self.caller.msg("Current location: " + str("{:10.3f}".format(obj.db.coords["x"])) + " " + str("{:10.3f}".format(obj.db.coords["y"])) + " " + str("{:10.3f}".format(obj.db.coords["z"])))
+            caller.msg("Current location: " + str("{:10.3f}".format(obj.db.coords["x"])) + " " + str("{:10.3f}".format(obj.db.coords["y"])) + " " + str("{:10.3f}".format(obj.db.coords["z"])))
         elif(self.args[0] == "relative"):
-            self.caller.msg("Relative coordinates: " + str("{:10.3f}".format(obj.db.coords["xo"])) + " " + str("{:10.3f}".format(obj.db.coords["yo"])) + " " + str("{:10.3f}".format(obj.db.coords["zo"])))
+            caller.msg("Relative coordinates: " + str("{:10.3f}".format(obj.db.coords["xo"])) + " " + str("{:10.3f}".format(obj.db.coords["yo"])) + " " + str("{:10.3f}".format(obj.db.coords["zo"])))
         elif(self.args[0] == "layin"):
-            self.caller.msg("Laid in coordinates: " + str("{:10.3f}".format(obj.db.coords["xd"])) + " " + str("{:10.3f}".format(obj.db.coords["yd"])) + " " + str("{:10.3f}".format(obj.db.coords["zd"])))
+            caller.msg("Laid in coordinates: " + str("{:10.3f}".format(obj.db.coords["xd"])) + " " + str("{:10.3f}".format(obj.db.coords["yd"])) + " " + str("{:10.3f}".format(obj.db.coords["zd"])))
         elif(self.args[0] == "set"):
             if (len(self.args) == 5):
                 if (self.args[1] == "relative"):
-                    setter.do_set_coords_manual(self.caller,obj,float(self.args[2]),float(self.args[3]),float(self.args[4]))
+                    setter.do_set_coords_manual(caller,obj,float(self.args[2]),float(self.args[3]),float(self.args[4]))
                 else:
-                    self.caller.msg(alerts.ansi_red("Incorrect data. " + str(self.args)))
+                    caller.msg(alerts.ansi_red("Incorrect data. " + str(self.args)))
             elif(len(self.args) == 4):
-                    setter.do_set_coords_layin(self.caller,obj,float(self.args[1]),float(self.args[2]),float(self.args[3]))
+                    setter.do_set_coords_layin(caller,obj,float(self.args[1]),float(self.args[2]),float(self.args[3]))
             else:
-                self.caller.msg(alerts.ansi_red("Incorrect data. " + str(self.args)))
+                caller.msg(alerts.ansi_red("Incorrect data. " + str(self.args)))
         elif(self.args[0] == "reset"):
-            setter.do_set_coords_reset(self,obj)
+            setter.do_set_coords_reset(caller,obj)
         else:    
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
             
 
 class CmdCalculate(default_cmds.MuxCommand):
@@ -265,33 +265,33 @@ class CmdCalculate(default_cmds.MuxCommand):
         self.args = self.args.strip()
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
                 return 0
 
         if (self.args[0] == ""):
-            self.caller.msg("Please fill in an unit for conversion")
+            caller.msg("Please fill in an unit for conversion")
         elif(self.args[0] == "ly2pc"):
             for arg in self.args[1:]:
-                self.caller.msg(str(arg) + " - " + str(utils.ly2pc(float(arg))))
+                caller.msg(str(arg) + " - " + str(utils.ly2pc(float(arg))))
         elif(self.args[0] == "ly2su"):
             for arg in self.args[1:]:
-                self.caller.msg(str(arg) + " - " + str(utils.ly2su(float(arg))))
+                caller.msg(str(arg) + " - " + str(utils.ly2su(float(arg))))
         elif(self.args[0] == "pc2ly"):
             for arg in self.args[1:]:
-                self.caller.msg(str(arg) + " - " + str(utils.pc2ly(float(arg))))
+                caller.msg(str(arg) + " - " + str(utils.pc2ly(float(arg))))
         elif(self.args[0] == "pc2su"):
             for arg in self.args[1:]:
-                self.caller.msg(str(arg) + " - " + str(utils.pc2su(float(arg))))
+                caller.msg(str(arg) + " - " + str(utils.pc2su(float(arg))))
         elif(self.args[0] == "su2ly"):
             for arg in self.args[1:]:
-                self.caller.msg(str(arg) + " - " + str(utils.su2ly(float(arg))))
+                caller.msg(str(arg) + " - " + str(utils.su2ly(float(arg))))
         elif(self.args[0] == "su2pc"):
             for arg in self.args[1:]:
-                self.caller.msg(str(arg) + " - " + str(utils.su2pc(float(arg))))
+                caller.msg(str(arg) + " - " + str(utils.su2pc(float(arg))))
         else:    
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
 
 class CmdAlloc(default_cmds.MuxCommand):
     """
@@ -312,14 +312,14 @@ class CmdAlloc(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
                 return 0
         if (self.args[0] == "MSC" and len(self.args) == 4):
-            setter.do_set_helm_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+            setter.do_set_helm_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
         elif (self.args[0] == "shield" and len(self.args) == 7):
-            setter.do_set_shield_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
+            setter.do_set_shield_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
         elif (self.args[0] == "status"):
             #Give a full report back
             buffer = "|y|[bHelm Allocation Report|n\n"
@@ -330,9 +330,9 @@ class CmdAlloc(default_cmds.MuxCommand):
             for i in range(constants.MAX_SHIELD_NAME):
                 table.add_row("|c"+unparse.unparse_shield(i) + "|n",unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["shield"][i]),alerts.ansi_rainbow_scale(obj.db.alloc["shield"][i],35))
             table.add_row("|c"+constants.cloak_name[obj.db.cloak["exist"]]+"|n",unparse.unparse_power(obj.db.alloc["cloak"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["cloak"]),alerts.ansi_rainbow_scale(obj.db.alloc["cloak"],35))
-            alerts.notify(self.caller,buffer + str(table) + "\n")
+            alerts.notify(caller,buffer + str(table) + "\n")
         else:    
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
 
 class CmdFreq(default_cmds.MuxCommand):
     """
@@ -351,21 +351,21 @@ class CmdFreq(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 2):
             if self.args[0][0] == "s":
-                setter.do_set_shield_freq(self,obj,float(self.args[1]))
+                setter.do_set_shield_freq(caller,obj,float(self.args[1]))
             elif self.args[0][0] == "c":
-                setter.do_set_cloak_freq(self,obj,float(self.args[1]))
+                setter.do_set_cloak_freq(caller,obj,float(self.args[1]))
             else:
-                alerts.notify(self,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
+                alerts.notify(caller,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 
 
@@ -387,18 +387,18 @@ class CmdAxis(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 3):
-                setter.do_set_pitch(self,obj,float(self.args[0]))
-                setter.do_set_yaw(self,obj,float(self.args[1]))
-                setter.do_set_roll(self,obj,float(self.args[2]))
+                setter.do_set_pitch(caller,obj,float(self.args[0]))
+                setter.do_set_yaw(caller,obj,float(self.args[1]))
+                setter.do_set_roll(caller,obj,float(self.args[2]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdEvade(default_cmds.MuxCommand):
     """
@@ -416,16 +416,16 @@ class CmdEvade(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 1):
-                setter.do_set_evade(self,obj,int(self.args[0]))
+                setter.do_set_evade(caller,obj,int(self.args[0]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdParallel(default_cmds.MuxCommand):
     """
@@ -443,16 +443,16 @@ class CmdParallel(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 1):
-                setter.do_set_parallel(self,obj,int(self.args[0]))
+                setter.do_set_parallel(caller,obj,int(self.args[0]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 
 class CmdIntercept(default_cmds.MuxCommand):
@@ -471,16 +471,16 @@ class CmdIntercept(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 1):
-                setter.do_set_intercept(self,obj,int(self.args[0]))
+                setter.do_set_intercept(caller,obj,int(self.args[0]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 
 class CmdYaw(default_cmds.MuxCommand):
@@ -499,18 +499,18 @@ class CmdYaw(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 0):
             alerts.yaw(obj)
         elif(len(self.args) == 1):
-                setter.do_set_yaw(self,obj,float(self.args[0]))
+                setter.do_set_yaw(caller,obj,float(self.args[0]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdPitch(default_cmds.MuxCommand):
     """
@@ -528,18 +528,18 @@ class CmdPitch(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 0):
             alerts.pitch(obj)
         elif(len(self.args) == 1):
-                setter.do_set_pitch(self,obj,float(self.args[0]))
+                setter.do_set_pitch(caller,obj,float(self.args[0]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdRoll(default_cmds.MuxCommand):
     """
@@ -557,18 +557,18 @@ class CmdRoll(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 0):
             alerts.roll(obj)
         elif(len(self.args) == 1):
-                setter.do_set_roll(self,obj,float(self.args[0]))
+                setter.do_set_roll(caller,obj,float(self.args[0]))
         else:
-            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdEngage(default_cmds.MuxCommand):
     """
@@ -586,11 +586,11 @@ class CmdEngage(default_cmds.MuxCommand):
     def func(self):
         #self.args = self.args.strip()
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
-        setter.do_set_coords_engage(self.caller,obj)
+        setter.do_set_coords_engage(caller,obj)
 
 class CmdAutopilot(default_cmds.MuxCommand):
     """
@@ -609,12 +609,12 @@ class CmdAutopilot(default_cmds.MuxCommand):
         self.args = self.args.strip()
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
         if (len(self.args) == 1):
-            setter.do_set_autopilot(self.caller,obj,int(self.args[0]))
+            setter.do_set_autopilot(caller,obj,int(self.args[0]))
         else:
             print("Current autopilot setting: " + obj.db.status["autopilot"])
 
@@ -633,12 +633,12 @@ class CmdSpeed(default_cmds.MuxCommand):
     
     def func(self):
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
         if (len(self.args) == 1):
-            setter.do_set_speed(self.caller,obj,float(self.args[0]))
+            setter.do_set_speed(caller,obj,float(self.args[0]))
 
 class CmdIntercept(default_cmds.MuxCommand):
     """
@@ -655,9 +655,9 @@ class CmdIntercept(default_cmds.MuxCommand):
     
     def func(self):
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
         if (len(self.args) == 1):
-            setter.do_set_intercept(self.caller,obj,int(self.args[0]))
+            setter.do_set_intercept(caller,obj,int(self.args[0]))
