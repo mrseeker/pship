@@ -1722,6 +1722,7 @@ def do_unlock_weapon(self,obj,weapon,first,last):
 
 def do_set_fix_damage(self,obj,sys1,sys2,type,name):
     dmg = 0
+    num = None
     unit = None
     flag = 0
     sys1 = str(sys1).lower()
@@ -1855,7 +1856,12 @@ def do_set_fix_damage(self,obj,sys1,sys2,type,name):
             num = 14
     else:
         alerts.notify(self,alerts.ansi_red("Invalid system specification."))
-    
+        return 0
+
+    if (num == None):
+        alerts.notify(self,alerts.ansi_red("Invalid system specification."))
+        return 0
+
     dmg = damage_getter(num,unit)
     if (dmg >= 1.0):
         alerts.notify(self,alerts.ansi_red("{:s} on {:s} has no damage to repair.".format(constants.system_name[num],obj_x.name)))
