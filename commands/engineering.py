@@ -120,11 +120,17 @@ class CmdRepair(default_cmds.MuxCommand):
             if self.caller.locks.check_lockstring(self.caller, "dummy:perm(Admin)"):
                 alerts.notify(caller,alerts.ansi_notify("Debug repairs done. Result = {:d}".format(damage.repair_everything(obj))))
             elif ("target" in self.switches):
-                setter.do_set_fix_damage(caller,obj,self.args[1],self.args[2],1,self.args[0])
+                if(len(self.args) == 2):
+                    setter.do_set_fix_damage(caller,obj,self.args[1],0,1,self.args[0])
+                else:
+                    setter.do_set_fix_damage(caller,obj,self.args[1],self.args[2],1,self.args[0])
             else:
-                setter.do_set_fix_damage(caller,obj,self.args[0],self.args[1],0,"")
+                if(len(self.args) == 1):
+                    setter.do_set_fix_damage(caller,obj,self.args[0],0,0,"")
+                else:
+                    setter.do_set_fix_damage(caller,obj,self.args[0],self.args[1],0,"")
         except IndexError:
-            alerts.notify(caller,alerts.ansi_red("Wrong amount of arguments. {:s}".format(str(self.args))))
+            alerts.notify(caller,alerts.ansi_red("Wrong amount of arguments. Input: {:s}".format(str(self.args))))
 
 
 class CmdAlloc(default_cmds.MuxCommand):
