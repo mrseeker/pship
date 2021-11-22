@@ -96,10 +96,12 @@ class CmdRepair(default_cmds.MuxCommand):
     """
     Repairs the full ship to full battlestrength
 
-    Usage: repair/[target] [target] <type> <system1> <system2>
+    Usage: repair/[target] <target> <system> <subsystem>
     
     Command list:
-    None
+    target - name of the target (if set)
+    system - Name of the system being repaired
+    subsystem - bank/tube being repaired
 
     Switch:
     Target - Repair a ship by a target name
@@ -118,9 +120,9 @@ class CmdRepair(default_cmds.MuxCommand):
             if self.caller.locks.check_lockstring(self.caller, "dummy:perm(Admin)"):
                 alerts.notify(caller,alerts.ansi_notify("Debug repairs done. Result = {:d}".format(damage.repair_everything(obj))))
             elif ("target" in self.switches):
-                setter.do_set_fix_damage(caller,obj,self.args[2],self.args[3],self.args[1],self.args[0])
+                setter.do_set_fix_damage(caller,obj,self.args[1],self.args[2],1,self.args[0])
             else:
-                setter.do_set_fix_damage(caller,obj,self.args[1],self.args[2],self.args[0],name=None)
+                setter.do_set_fix_damage(caller,obj,self.args[1],self.args[2],0,"")
         except IndexError:
             alerts.notify(caller,alerts.ansi_red("Wrong amount of arguments."))
 
