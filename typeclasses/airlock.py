@@ -1,4 +1,5 @@
-from typeclasses.rooms import Room
+from evennia.utils.create import create_object
+from typeclasses.rooms import Room, space_room
 from evennia import CmdSet
 from evennia.utils.search import search_object,search_tag
 from evennia import default_cmds
@@ -15,14 +16,18 @@ class CmdExit(default_cmds.MuxCommand):
     """
     Exits the airlock
 
-    Usage: exit
+    Usage: exit/override
     
+    Switches:
+    Override - Exits the airlock, even if it means you end up in space.
+
     Command list:
     None
     """
 
     key = "exit"
     help_category = "Airlock"
+    switch_options = ("override",)
 
     def func(self):
         self.args = self.args.strip()
@@ -46,6 +51,23 @@ class CmdExit(default_cmds.MuxCommand):
                     alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
             else:
                 alerts.notify(caller,alerts.ansi_red("{:s} does not have an airlock.".format(ship_airlock.name)))
+        elif("override" in self.switches):
+            space = create_object(space_room,key="space-" + caller.name)
+            space.db.sdesc = "Space"
+            space.db.desc = "You are a corpse happily floating in space"
+            space.db.coords["x"] = obj.db.coords["x"]
+            space.db.coords["y"] = obj.db.coords["y"]
+            space.db.coords["z"] = obj.db.coords["z"]
+            space.db.move["v"] = obj.db.move["v"]
+            space.db.course["d"][0][0] = obj.db.course["d"][0][0]
+            space.db.course["d"][0][1] = obj.db.course["d"][0][1]
+            space.db.course["d"][0][2] = obj.db.course["d"][0][2]
+            space.db.type = constants.type_name[9]
+            space.db.status["active"] = 1
+            space.db.structure["type"] = self.db.type
+            space.tags.add("corpse",category=caller.name)
+            space.cmdset.add("commands.science.ScienceCmdSet",persistent=True)
+            alerts.do_console_notify(obj,["security"],alerts.ansi_alert("Someone left the ship through the airlock."))
         else:
             alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
 
