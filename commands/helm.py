@@ -25,6 +25,9 @@ class HelmCmdSet(CmdSet):
             self.add(CmdPitch())
             self.add(CmdRoll())
             self.add(CmdAxis())
+            self.add(CmdEvade())
+            self.add(CmdIntercept())
+            self.add(CmdParallel())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -41,6 +44,9 @@ class FighterCmdSet(CmdSet):
             self.add(CmdPitch())
             self.add(CmdRoll())
             self.add(CmdAxis())
+            self.add(CmdEvade())
+            self.add(CmdIntercept())
+            self.add(CmdParallel())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """
@@ -391,6 +397,88 @@ class CmdAxis(default_cmds.MuxCommand):
                 setter.do_set_pitch(self,obj,float(self.args[0]))
                 setter.do_set_yaw(self,obj,float(self.args[1]))
                 setter.do_set_roll(self,obj,float(self.args[2]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+class CmdEvade(default_cmds.MuxCommand):
+    """
+    Commands related to evading a contact.
+
+    Usage: evade <contact>
+
+    Command list:
+    contact - Contact number to evade
+    """
+
+    key="evade"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 1):
+                setter.do_set_evade(self,obj,int(self.args[0]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+class CmdParallel(default_cmds.MuxCommand):
+    """
+    Commands related to go parallel to a contact.
+
+    Usage: parallel <contact>
+
+    Command list:
+    contact - Contact number to side
+    """
+
+    key="parallel"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 1):
+                setter.do_set_parallel(self,obj,int(self.args[0]))
+        else:
+            alerts.notify(self,alerts.ansi_red("Wrong command entered."))
+
+
+class CmdIntercept(default_cmds.MuxCommand):
+    """
+    Commands related to intercepting a contact.
+
+    Usage: intercept <contact>
+
+    Command list:
+    contact - Contact number to intercept
+    """
+
+    key="intercept"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(self.caller,obj)):
+            return 0
+    
+        if(len(self.args) == 1):
+                setter.do_set_intercept(self,obj,int(self.args[0]))
         else:
             alerts.notify(self,alerts.ansi_red("Wrong command entered."))
 

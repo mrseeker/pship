@@ -144,6 +144,95 @@ def do_set_roll(self,obj,value):
         return 1
     return 0
 
+def do_set_evade(self,obj,contact):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red("{:s} cannot be maneuvered.".format(obj.name)))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if(errors.error_on_contact(self,obj,obj_x) == 1):
+            return 0
+        else:
+            if(obj.db.status["autopilot"] != 0):
+                obj.db.status["autopilot"] = 0
+                alerts.console_message(obj,["helm"],"Autopilot disengaged")
+            obj.db.coords["xd"] = obj_x.db.coords["x"]
+            obj.db.coords["yd"] = obj_x.db.coords["y"]
+            obj.db.coords["zd"] = obj_x.db.coords["z"]
+            obj.db.course["yaw_in"] = math.fmod((utils.sdb2bearing(obj,obj_x) + 180.0),360)
+            obj.db.course["pitch_in"] = math.fmod((360.0 - utils.sdb2elevation(obj,obj_x)),360)
+            if(obj.db.course["yaw_in"] < 0.0):
+                obj.db.course["yaw_in"] += 360.0
+            if(obj.db.course["pitch_in"] < 0.0):
+                obj.db.course["pitch_in"] += 360.0
+            if(obj.db.course["roll_in"] != 0.0):
+                alerts.console_message(obj, ["helm"],alerts.ansi_cmd(self,"Evasive course from {:s} set {:.3f} {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x),obj.db.course["yaw_in"],obj.db.course["pitch_in"],obj.db.course["roll_in"])))
+            else:            
+                alerts.console_message(obj, ["helm"],alerts.ansi_cmd(self,"Evasive course from {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x),obj.db.course["yaw_in"],obj.db.course["pitch_in"])))
+            return 1
+    return 0
+
+def do_set_parallel(self,obj,contact):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red("{:s} cannot be maneuvered.".format(obj.name)))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if(errors.error_on_contact(self,obj,obj_x) == 1):
+            return 0
+        else:
+            if(obj.db.status["autopilot"] != 0):
+                obj.db.status["autopilot"] = 0
+                alerts.console_message(obj,["helm"],"Autopilot disengaged")
+            obj.db.course["yaw_in"] = obj_x.db.course["yaw_out"]
+            obj.db.course["pitch_in"] = obj_x.db.course["pitch_out"]
+            alerts.console_message(obj, ["helm"],alerts.ansi_cmd(self,"Parallel course for {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x),obj.db.course["yaw_in"],obj.db.course["pitch_in"])))
+            return 1
+    return 0
+
+
+def do_set_intercept(self,obj,contact):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and obj.db.engine["impulse_exist"] == 0):
+        alerts.notify(self, alerts.ansi_red("{:s} cannot be maneuvered.".format(obj.name)))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if(errors.error_on_contact(self,obj,obj_x) == 1):
+            return 0
+        else:
+            obj.db.coords["xd"] = obj_x.db.coords["x"]
+            obj.db.coords["yd"] = obj_x.db.coords["y"]
+            obj.db.coords["zd"] = obj_x.db.coords["z"]
+            obj.db.course["yaw_in"] = utils.sdb2bearing(obj,obj_x)
+            obj.db.course["pitch_in"] = utils.sdb2elevation(obj,obj_x)
+            if(obj.db.course["roll_in"] != 0.0):
+                alerts.console_message(obj, ["helm"],alerts.ansi_cmd(self,"Intercept course to {:s} set {:.3f} {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x),obj.db.course["yaw_in"],obj.db.course["pitch_in"],obj.db.course["roll_in"])))
+            else:            
+                alerts.console_message(obj, ["helm"],alerts.ansi_cmd(self,"Intercept course to {:s} set {:.3f} {:.3f}".format(unparse.unparse_identity(obj,obj_x),obj.db.course["yaw_in"],obj.db.course["pitch_in"])))
+            return 1
+    return 0
+
 def do_set_inactive(self,obj):
     if (obj.db.structure["type"] == 0):
         alerts.notify(self, alerts.ansi_red("Space object not loaded."))
