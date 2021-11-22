@@ -115,7 +115,7 @@ class CmdRepair(default_cmds.MuxCommand):
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
         if self.caller.locks.check_lockstring(self.caller, "dummy:perm(Admin)"):
-            damage.repair_everything(obj)
+            alerts.notify(caller,alerts.ansi_notify("Debug repairs done. Result = {:d}".format(damage.repair_everything(obj))))
         elif ("target" in self.switches):
             setter.do_set_fix_damage(caller,obj,self.args[2],self.args[3],self.args[1],self.args[0])
         else:
