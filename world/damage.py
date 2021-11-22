@@ -319,4 +319,4 @@ def repair_everything(obj):
     iterate.up_resolution(obj)
     iterate.up_signature(obj)
     iterate.up_visibility(obj)
-    utils.debug_space(obj)
+    return utils.debug_space(obj)
