@@ -946,7 +946,7 @@ def do_space_db_iterate():
                     up_visibility(obj)
                 if(obj.db.cloak["version"] == 1):
                     up_cloak_status(obj)
-                if(int(obj.db.sensor["version"]) == 1):
+                if(obj.db.sensor["version"] == 1):
                     up_resolution(obj)
                     up_signature(obj)
                 up_sensor_list(obj)
