@@ -568,7 +568,7 @@ def up_quadrant(self):
         alerts.enter_quadrant(self)
 
 def up_visibility(self):
-    if (self.db.status["docked"] or self.db.status["landed"]):
+    if (self.db.status["docked"] == 1 or self.db.status["landed"] == 1):
         self.db.sensor["visibility"] = 1.0
     else:
         self.db.sensor["visibility"] = float(utils.xyz2vis(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"]))
@@ -891,7 +891,7 @@ def do_space_db_iterate():
                             setter.do_set_inactive(obj,obj)
                 if(obj.db.move["dt"] > 60.0):
                     obj.db.move["dt"] = 60
-                if(obj.db.alloc["version"]):
+                if(obj.db.alloc["version"] == 1):
                     up_alloc_balance(obj)
                 if(obj.db.main["out"] != obj.db.main["in"]):
                     up_main_io(obj)
@@ -909,19 +909,19 @@ def do_space_db_iterate():
                     up_fuel(obj)
                 if(obj.db.power["batt"] > 0.0 or obj.db.alloc["miscellaneous"] > 0.0):
                     up_reserve(obj)
-                if(obj.db.power["version"]):
+                if(obj.db.power["version"]  == 1):
                     up_total_power(obj)
                     up_tract_status(obj)
                 if(obj.db.beam["in"] != obj.db.beam["out"]):
                     up_beam_io(obj)
                 if(obj.db.missile["in"] != obj.db.missile["out"]):
                     up_missile_io(obj)
-                if(obj.db.engine["version"]):
+                if(obj.db.engine["version"]  == 1):
                     up_warp_max(obj)
                     up_impulse_max(obj)
                     up_turn_rate(obj)
                     obj.db.engine["version"] = 0
-                if(obj.db.status["autopilot"]):
+                if(obj.db.status["autopilot"]  != 0):
                     up_autopilot(obj)
                 if(obj.db.move["in"] != obj.db.move["out"]):
                     up_speed_io(obj)
@@ -936,7 +936,7 @@ def do_space_db_iterate():
                     up_pitch_io(obj)
                 if(obj.db.course["roll_in"] != obj.db.course["roll_out"]):
                     up_roll_io(obj)
-                if(obj.db.course["version"]):
+                if(obj.db.course["version"] == 1):
                     up_vectors(obj)
                 if(obj.db.move["v"] != 0.0):
                     up_position(obj)
@@ -944,9 +944,9 @@ def do_space_db_iterate():
                     up_empire(obj)
                     up_quadrant(obj)
                     up_visibility(obj)
-                if(obj.db.cloak["version"]):
+                if(obj.db.cloak["version"] == 1):
                     up_cloak_status(obj)
-                if(obj.db.sensor["version"]):
+                if(obj.db.sensor["version"] == 1):
                     up_resolution(obj)
                     up_signature(obj)
                 up_sensor_list(obj)
