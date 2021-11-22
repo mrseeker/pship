@@ -39,7 +39,7 @@ class CmdExit(default_cmds.MuxCommand):
         if (obj.db.location != 0):
             ship_airlock = utils.name2sdb(obj.db.location)
             airlock = search_tag("airlock",category=ship_airlock.name)
-            if(len(airlock > 0)):
+            if(len(airlock) > 0):
                 airlock = airlock[0]
                 if (obj.db.status["connected"] == 1 or obj.db.status["landed"] == 1 or obj.db.status["docked"] == 1):
                     if caller.move_to(airlock):
@@ -68,6 +68,7 @@ class CmdExit(default_cmds.MuxCommand):
             space.tags.add("corpse",category=caller.name)
             space.cmdset.add("commands.science.ScienceCmdSet",persistent=True)
             alerts.do_console_notify(obj,["security"],alerts.ansi_alert("Someone left the ship through the airlock."))
+            alerts.log_msg("{:s} exited through the airlock.".format(caller.name))
         else:
             alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
 
