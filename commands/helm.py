@@ -28,6 +28,7 @@ class HelmCmdSet(CmdSet):
             self.add(CmdEvade())
             self.add(CmdIntercept())
             self.add(CmdParallel())
+            self.add(CmdSpeed())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -47,6 +48,7 @@ class FighterCmdSet(CmdSet):
             self.add(CmdEvade())
             self.add(CmdIntercept())
             self.add(CmdParallel())
+            self.add(CmdSpeed())
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """
