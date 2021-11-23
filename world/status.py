@@ -211,7 +211,7 @@ def do_sensor_contacts(self, a):
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|c-")
+        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char='|c-')
         for contact in range(obj.db.sensor["contacts"]):
             obj_contact = search_object(obj.db.slist[contact]["key"])[0]
             if(obj_contact.db.structure["type"] == ctype):
@@ -234,7 +234,7 @@ def do_sensor_contacts(self, a):
         #buffer = "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
         table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Heading","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|c-")
-        table.add_row(args=contact_line(obj,contact))
+        table.add_row(*contact_line(obj,contact))
         #buffer += contact_line(obj,contact)
         buffer += str(table)
         alerts.notify(self.caller, buffer)
@@ -251,7 +251,9 @@ def do_sensor_contacts(self, a):
                     #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
                     first = 0
                 #buffer += contact_line(obj,contact)
-                table.add_row(*contact_line(obj,contact))
+                obj = search_object(obj_x.db.slist[contact]["key"])[0]
+                if obj.db.structure["type"] == ctype:
+                    table.add_row(*contact_line(obj,contact))
         buffer += str(table)
         buffer += "\n"
         buffer += format.l_line()
