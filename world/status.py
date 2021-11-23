@@ -211,7 +211,7 @@ def do_sensor_contacts(self, a):
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char='|c-')
+        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="-")
         for contact in range(obj.db.sensor["contacts"]):
             obj_contact = search_object(obj.db.slist[contact]["key"])[0]
             if(obj_contact.db.structure["type"] == ctype):
