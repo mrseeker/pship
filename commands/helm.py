@@ -634,6 +634,8 @@ class CmdSpeed(default_cmds.MuxCommand):
     help_category = "Helm"
     
     def func(self):
+        self.args = self.args.strip()
+        self.args = self.args.split(" ")
         caller = self.caller
         obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
@@ -641,6 +643,8 @@ class CmdSpeed(default_cmds.MuxCommand):
             return 0
         if (len(self.args) == 1):
             setter.do_set_speed(caller,obj,float(self.args[0]))
+        else:
+            alerts.notify(caller,alerts.ansi_red("Command not recognized."))
 
 class CmdIntercept(default_cmds.MuxCommand):
     """
