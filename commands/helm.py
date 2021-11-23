@@ -184,7 +184,7 @@ class CmdStatus(default_cmds.MuxCommand):
                     table.add_row("|c"+unparse.unparse_shield(i)+"|n",unparse.unparse_percent(obj.db.shield[i]["damage"]),unparse.unparse_damage(obj.db.shield[i]["damage"]))
                     d = utils.sdb2dissipation(obj,i)
                     if (not obj.db.shield[i]["active"] or not d):
-                        table.add_row("|cRating:|n",unparse.unparse_power(obj.db.shield[i]["maximum"]/obj.db.shield[i]["ratio"]),unparse.unparse_power(obj.db.shield[i]["maximum"]),unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]))
+                        table.add_row("|cRating:|n",unparse.unparse_power(obj.db.shield["maximum"]/obj.db.shield[i]["ratio"]),unparse.unparse_power(obj.db.shield["maximum"]),unparse.unparse_power(obj.db.alloc["shield"][i]*obj.db.power["total"]))
                     else:
                         table.add_row(unparse.unparse_power(d),unparse.unparse_percent(1.0 - (1.0 / d)),alerts.ansi_red_scale(obj.db.shield[i]["damage"], 20))
                     if (i < constants.MAX_SHIELD_NAME -1):
