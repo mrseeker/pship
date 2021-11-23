@@ -200,11 +200,11 @@ def do_set_speed(self,obj,value):
         obj.db.move["in"] = value
         if(value >= 1.0 and obj.db.move["in"] > obj.db.engine["warp_max"]):
             obj.db.move["in"] = obj.db.engine["warp_max"]
-        elif(value <= -1.0) and obj.db.move["in"] < (-obj.db.engine["warp_max"] / 2.0):
+        elif(value <= -1.0 and obj.db.move["in"] < (-obj.db.engine["warp_max"] / 2.0)):
             obj.move["in"] = -obj.db.engine["warp_max"] / 2.0
         elif(value >= 0.0 and obj.db.move["in"] > obj.db.engine["impulse_max"]):
             obj.db.move["in"] = obj.db.engine["impulse_max"]
-        elif(value <= -1.0) and obj.db.move["in"] < (-obj.db.engine["impulse_max"] / 2.0):
+        elif(value <= -1.0 and obj.db.move["in"] < (-obj.db.engine["impulse_max"] / 2.0)):
             obj.move["in"] = -obj.db.engine["impulse_max"] / 2.0
         
         if math.fabs(obj.db.move["in"]) >= 1.0:
@@ -216,10 +216,10 @@ def do_set_speed(self,obj,value):
             if math.fabs(obj.db.move["in"]) > obj.db.engine["impulse_cruise"]:
                 alerts.console_message(obj,["helm","engineering"],"Speed set to impulse {:.3f}% {:s}".format(obj.db.move["in"]*100.0,alerts.ansi_blink(alerts.ansi_red("OVERLOAD"))))
             else:
-                alerts.console_message(obj,["helm","engineering"],"Speed set to impulse {:.3f}%".format(obj.db.move["in"] * 100.0))
+                alerts.console_message(obj,["helm","engineering"],"Speed set to warp {:.3f}%".format(obj.db.move["in"] * 100.0))
         return 1
     return 0
-
+    
 def do_set_parallel(self,obj,contact):
     if (errors.error_on_console(self,obj)):
         return 0
