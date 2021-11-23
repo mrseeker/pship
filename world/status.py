@@ -149,11 +149,11 @@ def contact_line(obj_x,contact):
         friendly = "|r*"
     if (obj.db.cloak["active"]):
         cloak = "(cloaked)"
-        classname = ""
-        contact_flag = ""
+        classname = "-"
+        contact_flag = "-"
     else:
         if (level < 50.0):
-            cloak = ""
+            cloak = "-"
             classname = f'{unparse.unparse_class(obj):16}'
             contact_flag = f'{contact_flags(obj_x,obj):>6}'
         else:
