@@ -179,6 +179,47 @@ def do_set_evade(self,obj,contact):
             return 1
     return 0
 
+def do_set_speed(self,obj,value):
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"]):
+        alerts.notify(self, alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.engine["warp_exist"] == 0 and math.fabs(value) >= 1.0):
+        alerts.notify(self, alerts.ansi_red("{:s} has no warp engines.".format(obj.name)))
+    elif(obj.db.engine["impulse_exist"] == 0 and math.fabs(value) < 1.0):
+        alerts.notify(self, alerts.ansi_red("{:s} has no impulse engines.".format(obj.name)))
+    elif(obj.db.engine["warp_damage"] <= 0 and math.fabs(value) >= 1.0):
+        alerts.notify(self, alerts.ansi_red("Warp engines are inoperative."))
+    elif(obj.db.engine["impulse_damage"] <= 0 and math.fabs(value) >= 1.0):
+        alerts.notify(self, alerts.ansi_red("Impulse engines are inoperative."))
+    else:
+        obj.db.move["in"] = value
+        if(value >= 1.0 and obj.db.move["in"] > obj.db.engine["warp_max"]):
+            obj.db.move["in"] = obj.db.engine["warp_max"]
+        elif(value <= -1.0) and obj.db.move["in"] < (-obj.db.engine["warp_max"] / 2.0):
+            obj.move["in"] = -obj.db.engine["warp_max"] / 2.0
+        elif(value >= 0.0 and obj.db.move["in"] > obj.db.engine["impulse_max"]):
+            obj.db.move["in"] = obj.db.engine["impulse_max"]
+        elif(value <= -1.0) and obj.db.move["in"] < (-obj.db.engine["impulse_max"] / 2.0):
+            obj.move["in"] = -obj.db.engine["impulse_max"] / 2.0
+        
+        if math.fabs(obj.db.move["in"]) >= 1.0:
+            if math.fabs(obj.db.move["in"]) > obj.db.engine["warp_cruise"]:
+                alerts.console_message(obj,["helm","engineering"],"Speed set to warp {:.6f} {:s}".format(obj.db.move["in"],alerts.ansi_blink(alerts.ansi_red("OVERLOAD"))))
+            else:
+                alerts.console_message(obj,["helm","engineering"],"Speed set to warp {:.6f}".format(obj.db.move["in"]))
+        else:
+            if math.fabs(obj.db.move["in"]) > obj.db.engine["impulse_cruise"]:
+                alerts.console_message(obj,["helm","engineering"],"Speed set to impulse {:.3f}% {:s}".format(obj.db.move["in"]*100.0,alerts.ansi_blink(alerts.ansi_red("OVERLOAD"))))
+            else:
+                alerts.console_message(obj,["helm","engineering"],"Speed set to warp {:.3f}%".format(obj.db.move["in"] * 100.0))
+        return 1
+    return 0
+    
 def do_set_parallel(self,obj,contact):
     if (errors.error_on_console(self,obj)):
         return 0
