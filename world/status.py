@@ -233,7 +233,7 @@ def do_sensor_contacts(self, a):
         buffer = ""
         #buffer = "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
         #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Heading","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|c-")
+        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Heading","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="-")
         table.add_row(*contact_line(obj,contact))
         #buffer += contact_line(obj,contact)
         buffer += str(table)
@@ -243,7 +243,7 @@ def do_sensor_contacts(self, a):
         buffer = "|b--[|ySensor Report|b]--------------------------------------------------------------|n\n"
         
         #buffer += "|c### Type Res Bearing Range   Arcs  Heading Speed  Arcs  Name       Class flags\n"
-        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Heading","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="|c-")
+        table = evtable.EvTable("###","Type","Res","Bearing","Elevation","Range","Arcs","Heading","Yaw","Pitch","Speed","Arcs","Name","Class","flags",border="header",header_line_char="-")
         for ctype in range(1,len(constants.type_name)):
             first = 1
             for contact in range(obj.db.sensor["contacts"]):
