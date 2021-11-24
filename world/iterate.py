@@ -960,11 +960,11 @@ def do_space_db_iterate():
        add_ticker(10)
     else:
         tickers = constants.tickers
-        for i in tickers:
-            if (timer > i):
-                if(TICKER_HANDLER.all(i) is None):
-                    print("WARN: Ticker delay too long: {:.3f}, setting new timer to {:d} seconds".format(timer,i))
-                    add_ticker(i)
+        for i in range(0,len(tickers)):
+            if (timer > tickers[i]):
+                if(TICKER_HANDLER.all(tickers[i]) is None):
+                    print("WARN: Ticker delay too long: {:.3f}, setting new timer to {:d} seconds".format(timer,tickers[i-1]))
+                    add_ticker(tickers[i-1])
                     return count
                 else:
                     return count
@@ -977,13 +977,15 @@ def stop_tickers():
         if(ticker is None):
             continue
         else:
-            TICKER_HANDLER.remove(idstring="db_iterate_{:d}".format(i))
+            handler = "db_iterate_{:d}".format(i)
+            TICKER_HANDLER.remove(idstring=handler)
 
 def add_ticker(value):
     ticker = TICKER_HANDLER.all(value)
+    handler = "db_iterate_{:d}".format(value)
     if (ticker is None):
         stop_tickers()
-        TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate_{:d}".format(value))        
+        TICKER_HANDLER.add(value,do_space_db_iterate,handler)        
     else:
         stop_tickers()
-        TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate_{:d}".format(value))
+        TICKER_HANDLER.add(value,do_space_db_iterate,handler)
