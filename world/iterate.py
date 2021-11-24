@@ -977,15 +977,13 @@ def stop_tickers():
         if(ticker is None):
             continue
         else:
-            handler = "db_iterate_{:d}".format(i)
-            TICKER_HANDLER.remove(idstring=handler)
+            TICKER_HANDLER.remove(interval=i,callback=do_space_db_iterate,idstring="db_iterate")
 
 def add_ticker(value):
     ticker = TICKER_HANDLER.all(value)
-    handler = "db_iterate_{:d}".format(value)
     if (ticker is None):
         stop_tickers()
-        TICKER_HANDLER.add(value,do_space_db_iterate,handler)        
+        TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate")        
     else:
         stop_tickers()
-        TICKER_HANDLER.add(value,do_space_db_iterate,handler)
+        TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate")
