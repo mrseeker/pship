@@ -955,7 +955,7 @@ def do_space_db_iterate():
                 if(obj.db.structure["repair"] != obj.db.structure["max_repair"]):
                     up_repair(obj)
     timer = time.time() - timer
-    if (timer > 10.0):
+    if (timer > constants.tickers[0]):
        print("WARN: Ticker delay too long: {:f}".format(timer))
     else:
         tickers = constants.tickers
