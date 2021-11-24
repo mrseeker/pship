@@ -976,7 +976,10 @@ def stop_tickers():
         if(ticker is None):
             continue
         else:
-            TICKER_HANDLER.remove(interval=i,callback=do_space_db_iterate,idstring="db_iterate")
+            try:
+                TICKER_HANDLER.remove(interval=i,callback=do_space_db_iterate,idstring="db_iterate")
+            except KeyError:
+                continue
 
 def add_ticker(value):
     ticker = TICKER_HANDLER.all(value)
