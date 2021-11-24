@@ -954,15 +954,16 @@ def do_space_db_iterate():
                 up_sensor_list(obj)
                 if(obj.db.structure["repair"] != obj.db.structure["max_repair"]):
                     up_repair(obj)
-    timer -= time.time()
+    timer = time.time() - timer
     if (timer > 10.0):
-       alerts.log_msg("WARN: Ticker delay too long: {:d}, cannot set new timer.".format(timer))
+       print("WARN: Ticker delay too long: {:f}, wont set timer beyond 10 seconds.".format(timer))
+       add_ticker(10)
     else:
         tickers = constants.tickers
         for i in tickers:
             if (timer > i):
                 if(len(TICKER_HANDLER.all(i)) == 0):
-                    alerts.log_msg("WARN: Ticker delay too long: {:d}, setting new timer to {:d} seconds".format(timer,i))
+                    print("WARN: Ticker delay too long: {:.3f}, setting new timer to {:d} seconds".format(timer,i))
                     add_ticker(i)
                     return count
                 else:
@@ -975,7 +976,7 @@ def stop_tickers():
         ticker = TICKER_HANDLER.all(i)
         if(ticker is None):
             continue
-        elif("db_iterate_{:d}".format(i) in ticker):
+        else:
             TICKER_HANDLER.remove(idstring="db_iterate_{:d}".format(i))
 
 def add_ticker(value):
@@ -983,6 +984,6 @@ def add_ticker(value):
     if (ticker is None):
         stop_tickers()
         TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate_{:d}".format(value))        
-    elif("db_iterate_{:d}".format(value) not in ticker):
+    else:
         stop_tickers()
         TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate_{:d}".format(value))
