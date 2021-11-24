@@ -972,7 +972,8 @@ def do_space_db_iterate():
 
 def stop_tickers():
     for i in constants.tickers:
-        TICKER_HANDLER.remove(store_key="db_iterate_{:d}".format(i))
+        if(len(TICKER_HANDLER.all(i)) != 0):
+            TICKER_HANDLER.remove(store_key="db_iterate_{:d}".format(i))
 
 def add_ticker(value):
     stop_tickers()
