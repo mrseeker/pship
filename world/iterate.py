@@ -2,10 +2,12 @@
 Iterates the world and it's settings
 """
 
+import time
 from world import constants, alerts, utils, balance, damage
 from world import set as setter
 from evennia.utils.search import search_tag,search_object
 from evennia import gametime
+from evennia.scripts.tickerhandler import TICKER_HANDLER
 import math
 import random
 import sys
@@ -869,7 +871,7 @@ def up_repair(self):
 def do_space_db_iterate():
     objects = search_tag(category="space_object")
     count = 0
-    
+    timer = time.time()
     for obj in objects:
         if (obj.db.status["active"] == 1 and obj.db.structure["type"] > 0):
             count = count + 1
@@ -952,5 +954,26 @@ def do_space_db_iterate():
                 up_sensor_list(obj)
                 if(obj.db.structure["repair"] != obj.db.structure["max_repair"]):
                     up_repair(obj)
-                    
+    timer -= time.time()
+    if (timer > 10.0):
+       alerts.log_msg("WARN: Ticker delay too long: {:d}, cannot set new timer.".format(timer))
+    else:
+        tickers = constants.tickers
+        for i in tickers:
+            if (timer > i):
+                if(len(TICKER_HANDLER.all(i)) == 0):
+                    alerts.log_msg("WARN: Ticker delay too long: {:d}, setting new timer to {:d} seconds".format(timer,i))
+                    add_ticker(i)
+                    return count
+                else:
+                    return count
+        add_ticker(1)
     return count
+
+def stop_tickers():
+    for i in constants.tickers:
+        TICKER_HANDLER.remove(store_key="db_iterate_{:d}".format(i))
+
+def add_ticker(value):
+    stop_tickers()
+    TICKER_HANDLER.add(value,do_space_db_iterate,"db_iterate_{:d}".format(value))
