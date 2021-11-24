@@ -269,7 +269,7 @@ def create_ship_layout(self):
     ship_teleport = create_object(Room,key=self.key + "-teleport")
     ship_teleport.db.ship = self.key
     ship_teleport.tags.add("teleport",category=self.key)
-    exit_teleport_bridge = create_object(Exit, key="Teleporter room",aliases=["teleport"], location=self, destination=ship_teleport)
+    exit_teleport_bridge = create_object(Exit, key="Teleporter",aliases=["teleport"], location=self, destination=ship_teleport)
     exit_teleport = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_teleport, destination=self)
 
 def create_fighter_layout(self):
