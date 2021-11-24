@@ -64,7 +64,7 @@ def up_batt_io(self):
     
 
 def up_main_damage(self):
-    if (self.db.main["exist"]):
+    if (self.db.main["exist"] == 1):
         dmg = (self.db.main["out"] - self.db.main["damage"]) * self.db.move["dt"] / self.db.tech["main_max"] / 1000.0
         if (self.db.main["damage"] > 0.0 and (self.db.main["damage"] - dmg) <= 0.0):
             alerts.main_overload(self)
@@ -80,7 +80,7 @@ def up_main_damage(self):
             
 
 def up_aux_damage(self):
-    if (self.db.aux["exist"]):
+    if (self.db.aux["exist"] == 1):
         dmg = (self.db.aux["out"] - self.db.aux["damage"]) * self.db.move["dt"] / self.db.tech["aux_max"] / 1000.0
         if (self.db.aux["damage"] > 0.0 and (self.db.aux["damage"] - dmg) <= 0.0):
             alerts.aux_overload(self)
@@ -141,7 +141,7 @@ def up_total_power(self):
     up_turn_rate(self)
     
 def up_warp_damage(self):
-    if (self.db.engine["warp_exist"]):
+    if (self.db.engine["warp_exist"] == 1):
         if(math.fabs(self.db.move["out"]) >= 1.0):
             if (math.fabs(self.db.move["out"]) > self.db.engine["warp_cruise"]):
                 self.db.engine["warp_damage"] -= (math.fabs(self.db.move["out"]) - self.db.engine["warp_cruise"]) * self.db.move["dt"] / self.db.tech["main_max"] / 10000.0
@@ -155,7 +155,7 @@ def up_warp_damage(self):
                 up_warp_max(self)
 
 def up_impulse_damage(self):
-    if(self.db.engine["impulse_exist"]):
+    if(self.db.engine["impulse_exist"] == 1):
         if(math.fabs(self.db.move["out"]) < 1.0):
             if(math.fabs(self.db.move["out"]) > self.db.engine["impulse_cruise"] and math.fabs(self.db.move["in"]) < 1.0):
                 self.db.engine["impulse_damage"] -= (math.fabs(self.db.move["out"])-self.db.engine["impulse_cruise"]) * self.db.move["dt"] / self.db.tech["aux_max"] / 10000.0
@@ -186,7 +186,7 @@ def up_impulse_max(self):
         self.db.move["in"] = -self.db.engine["impulse_max"] / 2.0
 
 def up_tract_status(self):
-    if(self.db.status["tractoring"]):
+    if(self.db.status["tractoring"] == 1):
         x = self.db.status["tractoring"]
         obj_x = search_object(x)[0]
         p = self.db.tract["damage"] * self.db.power["total"] * self.db.alloc["tractors"] / (utils.sdb2range(self,obj_x) + 1.0)
@@ -210,7 +210,7 @@ def up_tract_status(self):
                 obj_x.db.power["version"] = 1
 
 def up_cloak_status(self):
-    if(self.db.cloak["active"]):
+    if(self.db.cloak["active"] == 1):
         if(self.db.alloc["cloak"] * self.db.power["total"] < self.db.cloak["cost"]):
             alerts.cloak_failure(self)
             alerts.ship_cloak_offline(self)
@@ -524,12 +524,12 @@ def up_turn_rate(self):
     if (self.db.move["out"] < 0.0):
         a /= 2.0
     
-    if (self.db.status["tractoring"]):
+    if (self.db.status["tractoring"] == 1):
         x = self.db.status["tractoring"]
         obj_x = search_object(x)[0]
         
         a *= (self.db.structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + self.db.structure["displacement"] + 0.1)
-    elif(self.db.status["tractored"]):
+    elif(self.db.status["tractored"] == 1):
         x = self.db.status["tractored"]
         obj_x = search_object(x)[0]
         a *= (self.db.structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + self.db.structure["displacement"] + 0.1)
@@ -690,13 +690,13 @@ def up_position(self):
     dv = self.db.move["v"] * self.db.move["dt"]
     if (math.fabs(self.db.move["out"]) >= 1.0):
         dv *= self.db.move["cochranes"]
-    if (self.db.status["tractoring"]):
+    if (self.db.status["tractoring"] != 0):
         x = self.db.status["tractoring"]
         obj_x = search_object(x)[0]
         obj_x.coords["x"] += dv * self.db.course["d"][0][0]
         obj_x.coords["y"] += dv * self.db.course["d"][0][1]
         obj_x.coords["z"] += dv * self.db.course["d"][0][2]
-    elif (self.db.status["tractored"]):
+    elif (self.db.status["tractored"] != 0):
         x = self.db.status["tractored"]
         obj_x = search_object(x)[0]
         obj_x.coords["x"] += dv * self.db.course["d"][0][0]
@@ -766,7 +766,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 temp_num[i] = self.db.slist[j]["num"]
                 break
         if (gain > 0):
-            ++self.db.sensor["counter"]
+            self.db.sensor["counter"] += 1
             if (self.db.sensor["counter"] > 999):
                 self.db.sensor["counter"] = 1
             temp_num[i] = self.db.sensor["counter"]
@@ -800,14 +800,14 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                     flag = 1
                     self.db.blist[j]["lock"] = 0
             if (flag > 0):
-                alerts.console_message(self,["tactical"],alerts.ansi_warn("Phaser Array lock lost on " + str(obj_x.db.name)))
+                alerts.console_message(self,["tactical"],alerts.ansi_warn("Phaser Array lock lost on {:s}".format(obj_x.name)))
             flag = 0
             for j in range(self.db.missile["tubes"]):
                 if (self.db.mlist[j]["lock"] == self.db.slist[i]["key"]):
                     flag = 1
                     self.db.mlist[j]["lock"] = 0
             if (flag > 0):
-                alerts.console_message(self,["tactical"],alerts.ansi_warn("Missile lock lost on " + str(obj_x.db.name)))
+                alerts.console_message(self,["tactical"],alerts.ansi_warn("Missile lock lost on {:s}".format(obj_x.name)))
                 
     self.db.sensor["contacts"] = contacts
     if (contacts == 0):
@@ -842,7 +842,7 @@ def up_sensor_list(self):
             z /= constants.PARSEC
             if (level < 0.01):
                 continue
-            if(obj.db.cloak["active"]):
+            if(obj.db.cloak["active"] == 1):
                 if (self.db.tech["sensors"] < 2.0):
                     level *= obj.db.cloak["level"]
             if (level < 0.01):
