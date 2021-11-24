@@ -962,7 +962,7 @@ def do_space_db_iterate():
         tickers = constants.tickers
         for i in range(0,len(tickers)):
             if (timer > tickers[i]):
-                if(TICKER_HANDLER.all(tickers[i]) is None):
+                if(TICKER_HANDLER.all(tickers[i-1]) is None):
                     print("WARN: Ticker delay too long: {:.3f}, setting new timer to {:d} seconds".format(timer,tickers[i-1]))
                     add_ticker(tickers[i-1])
                     return count
