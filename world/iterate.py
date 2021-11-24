@@ -956,8 +956,7 @@ def do_space_db_iterate():
                     up_repair(obj)
     timer = time.time() - timer
     if (timer > 10.0):
-       print("WARN: Ticker delay too long: {:f}, wont set timer beyond 10 seconds.".format(timer))
-       add_ticker(10)
+       print("WARN: Ticker delay too long: {:f}".format(timer))
     else:
         tickers = constants.tickers
         for i in range(0,len(tickers)):
