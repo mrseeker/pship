@@ -54,22 +54,22 @@ class CmdAlloc_Fighter(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
                 return 0
         if (self.args[0] == "HTO" and len(self.args) == 4):
-            setter.do_set_eng_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+            setter.do_set_eng_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
         elif (self.args[0] == "main" and len(self.args) == 2):
-            setter.do_set_main_reactor(self.caller,float(self.args[1]),obj)
+            setter.do_set_main_reactor(caller,float(self.args[1]),obj)
         elif (self.args[0] == "aux" and len(self.args) == 2):
-            setter.do_set_aux_reactor(self.caller,float(self.args[1]),obj)
+            setter.do_set_aux_reactor(caller,float(self.args[1]),obj)
         elif (self.args[0] == "batt" and len(self.args) == 2):
-            setter.do_set_battery(self.caller,float(self.args[1]),obj)
+            setter.do_set_battery(caller,float(self.args[1]),obj)
         if (self.args[0] == "MSC" and len(self.args) == 4):
-            setter.do_set_helm_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+            setter.do_set_helm_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
         elif (self.args[0] == "shield" and len(self.args) == 7):
-            setter.do_set_shield_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
+            setter.do_set_shield_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
         elif (self.args[0] == "status"):
             #Give a full report back
             buffer = "|y|[bTotal Allocation Report|n\n"
@@ -92,9 +92,9 @@ class CmdAlloc_Fighter(default_cmds.MuxCommand):
             table.add_row("|cTransporters|n",unparse.unparse_power(obj.db.alloc["transporters"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["transporters"]),alerts.ansi_rainbow_scale(obj.db.alloc["transporters"],35))
             table.add_row("|cTractors|n",unparse.unparse_power(obj.db.alloc["tractors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tractors"]),alerts.ansi_rainbow_scale(obj.db.alloc["tractors"],35))
             table.add_row("|cMiscellaneous|n",unparse.unparse_power(obj.db.alloc["miscellaneous"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["miscellaneous"]),alerts.ansi_rainbow_scale(obj.db.alloc["miscellaneous"],35))
-            alerts.notify(self.caller,buffer + str(table) + "\n")
+            alerts.notify(caller,buffer + str(table) + "\n")
         else:    
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
 
 class CmdRepair(default_cmds.MuxCommand):
     """
@@ -118,10 +118,10 @@ class CmdRepair(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
         try:
-            if self.caller.locks.check_lockstring(self.caller, "dummy:perm(Admin)"):
+            if caller.locks.check_lockstring(caller, "dummy:perm(Admin)"):
                 alerts.notify(caller,alerts.ansi_notify("Debug repairs done. Result = {:d}".format(damage.repair_everything(obj))))
             elif ("target" in self.switches):
                 if(len(self.args) == 2):
@@ -157,18 +157,18 @@ class CmdAlloc(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
                 return 0
         if (self.args[0] == "HTO" and len(self.args) == 4):
-            setter.do_set_eng_alloc(self.caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+            setter.do_set_eng_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
         elif (self.args[0] == "main" and len(self.args) == 2):
-            setter.do_set_main_reactor(self.caller,float(self.args[1])/100,obj)
+            setter.do_set_main_reactor(caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "aux" and len(self.args) == 2):
-            setter.do_set_aux_reactor(self.caller,float(self.args[1])/100,obj)
+            setter.do_set_aux_reactor(caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "batt" and len(self.args) == 2):
-            setter.do_set_battery(self.caller,float(self.args[1])/100,obj)
+            setter.do_set_battery(caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "status"):
             #Give a full report back
             buffer = "|y|[bTotal Allocation Report|n\n"
@@ -191,9 +191,9 @@ class CmdAlloc(default_cmds.MuxCommand):
             table.add_row("|cTransporters|n",unparse.unparse_power(obj.db.alloc["transporters"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["transporters"]),alerts.ansi_rainbow_scale(obj.db.alloc["transporters"],35))
             table.add_row("|cTractors|n",unparse.unparse_power(obj.db.alloc["tractors"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["tractors"]),alerts.ansi_rainbow_scale(obj.db.alloc["tractors"],35))
             table.add_row("|cMiscellaneous|n",unparse.unparse_power(obj.db.alloc["miscellaneous"]*obj.db.power["total"]),unparse.unparse_percent(obj.db.alloc["miscellaneous"]),alerts.ansi_rainbow_scale(obj.db.alloc["miscellaneous"],35))
-            alerts.notify(self.caller,buffer + str(table) + "\n")
+            alerts.notify(caller,buffer + str(table) + "\n")
         else:    
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
 
 class CmdFreq(default_cmds.MuxCommand):
     """
@@ -212,10 +212,10 @@ class CmdFreq(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.split(" ")
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if(errors.error_on_console(self.caller,obj)):
+        if(errors.error_on_console(caller,obj)):
             return 0
     
         if(len(self.args) == 2):
@@ -258,12 +258,12 @@ class CmdEngine(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.strip()
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
         if not self.args:
-            self.caller.msg("You did not enter any commands.")
+            caller.msg("You did not enter any commands.")
         elif(self.args == "status"):
-            if(errors.error_on_console(self.caller,obj)):
+            if(errors.error_on_console(caller,obj)):
                 return 0
             buffer = "|y|[bEngineering Status Report|n\n"
             table = evtable.EvTable("|cName|n","|cValue|n","")
@@ -295,7 +295,7 @@ class CmdEngine(default_cmds.MuxCommand):
                     m = WorldUtils.sdb2max_reserves(obj)
                     table.add_row("|cReserves|n",str(obj.db.fuel["reserves"]/ 3600.0) + "/"+ str(m / 3600.0) + " GW^H (" +unparse.unparse_percent(obj.db.fuel["reserves"] / m)+ ")",alerts.ansi_stoplight_scale(obj.db.fuel["reserves"]/m,25))
             buffer += str(table)
-            alerts.notify(self.caller,buffer)        
+            alerts.notify(caller,buffer)        
         elif(self.args == "start"):
             if (self.args == "start" and obj.db.engineering["start_sequence"]==0):
                 if (obj.db.structure["type"] == 0):
@@ -313,19 +313,20 @@ class CmdEngine(default_cmds.MuxCommand):
                 elif(obj.db.fuel["deuterium"] <= 0.0):
                     alerts.notify(self,alerts.ansi_red("There is no deuterium fuel."))
                 else:
-                    self.caller.msg("Starting up engines for " + obj.name)
-                    alerts.console_message(obj,["engineering"],alerts.ansi_notify(self.caller.name + " is starting up the engines... type 'engine abort' to stop the process."))
-                    obj.db.engineering["start_sequence"]=1
-                    for i in range(1,11):
-                        if (obj.db.engineering["start_sequence"] == 0):
-                            return
-                        yield(10)
-                        self.caller.msg("Starting engine: "+ str(int(i/10*100)) + "%")
-                    alerts.console_message(obj,["engineering"],alerts.ansi_cmd(self.caller.name,"Engine startup complete!"))
-                    obj.db.engineering["start_sequence"] = 0
-                    setter.do_set_active(self.caller,obj)
+                    if not caller.locks.check_lockstring(caller, "dummy:perm(Admin)"):
+                        caller.msg("Starting up engines for " + obj.name)
+                        alerts.console_message(obj,["engineering"],alerts.ansi_notify(caller.name + " is starting up the engines... type 'engine abort' to stop the process."))
+                        obj.db.engineering["start_sequence"]=1
+                        for i in range(1,11):
+                            if (obj.db.engineering["start_sequence"] == 0):
+                                return
+                            yield(10)
+                            caller.msg("Starting engine: "+ str(int(i/10*100)) + "%")
+                        alerts.console_message(obj,["engineering"],alerts.ansi_cmd(caller.name,"Engine startup complete!"))
+                        obj.db.engineering["start_sequence"] = 0
+                    setter.do_set_active(caller,obj)
             else:
-                self.caller.msg("Engines are already starting... type 'engine abort' to stop the process.")
+                caller.msg("Engines are already starting... type 'engine abort' to stop the process.")
         elif(self.args == "eject main " + obj.db.engineering["override"]):
             alerts.console_message(obj,["engineering"],alerts.ansi_alert("Dumping M/A reactor!"))
             alerts.do_all_console_notify(obj,alerts.ansi_alert("M/A reactor is being dumped by engineering!"))
@@ -344,27 +345,27 @@ class CmdEngine(default_cmds.MuxCommand):
             obj.db.engineering["start_sequence"]=-1
             for i in range(1,11):
                 yield(5)
-                self.caller.msg("Aborting sequence "+ str(i*10) + "% complete...")
+                caller.msg("Aborting sequence "+ str(i*10) + "% complete...")
             alerts.console_message(obj,["engineering"],alerts.ansi_notify("Restart is now possible."))
             obj.db.engineering["start_sequence"]=0
         elif(self.args == "shutdown" and obj.db.engineering["start_sequence"] == 0 and obj.db.status["active"] == 1):
-            self.caller.msg("Shutting down engines for " + obj.name)
+            caller.msg("Shutting down engines for " + obj.name)
             alerts.console_message(obj,["engineering"],alerts.ansi_warn("Shutting down engines... type 'engine abort' to stop the process."))
             obj.db.engineering["start_sequence"]=-1
             for i in range(1,10):
                 yield(10)
                 if(obj.db.engineering["start_sequence"]==0):
                     return
-                self.caller.msg("Shutdown sequence "+ str(i*10) + "% complete...")
-            setter.do_set_inactive(self.caller,obj)
+                caller.msg("Shutdown sequence "+ str(i*10) + "% complete...")
+            setter.do_set_inactive(caller,obj)
             alerts.console_message(obj,["engineering"],alerts.ansi_notify("Engines have stopped. Restart is now possible."))
             obj.db.engineering["start_sequence"]=0
         elif((self.args == "shutdown" or self.args=="start") and obj.db.engineering["start_sequence"] < 0):
-            self.caller.msg(alerts.ansi_red("Shutdown sequence already in progress..."))
+            caller.msg(alerts.ansi_red("Shutdown sequence already in progress..."))
         elif((self.args == "shutdown" or self.args=="start") and obj.db.engineering["start_sequence"] > 0):
-            self.caller.msg(alerts.ansi_red("Startup sequence already in progress..."))
+            caller.msg(alerts.ansi_red("Startup sequence already in progress..."))
         else:
-            self.caller.msg("Command not found: " + self.args)
+            caller.msg("Command not found: " + self.args)
 
 class CmdDamageReport(default_cmds.MuxCommand):
     """
@@ -383,7 +384,7 @@ class CmdDamageReport(default_cmds.MuxCommand):
     def func(self):
         self.args = self.args.strip()
         caller = self.caller
-        obj_x = search_object(self.caller.location)[0]
+        obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
         if not self.args:
             do_damage_status(caller,obj)
