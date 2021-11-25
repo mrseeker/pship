@@ -317,8 +317,8 @@ def do_damage_status(self,obj,name=None):
         table.add_row(constants.system_name[4],unparse.unparse_percent(obj_x.db.cloak["damage"]),unparse.unparse_damage(obj_x.db.cloak["damage"]),(1 - obj_x.db.cloak["damage"]) * constants.repair_mult[4] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
     if(obj_x.db.sensor["ew_exist"] == 1 and obj_x.db.sensor["ew_damage"] < 1.0):
         table.add_row(constants.system_name[5],unparse.unparse_percent(obj_x.db.sensor["ew_damage"]),unparse.unparse_damage(obj_x.db.sensor["ew_damage"]),(1 - obj_x.db.sensor["ew_damage"]) * constants.repair_mult[5] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
-    if(obj_x.db.impulse["exist"] == 1 and obj_x.db.impulse["damage"] < 1.0):
-        table.add_row(constants.system_name[6],unparse.unparse_percent(obj_x.db.impulse["damage"]),unparse.unparse_damage(obj_x.db.impulse["damage"]),(1 - obj_x.db.impulse["damage"]) * constants.repair_mult[6] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.engine["impulse_exist"] == 1 and obj_x.db.engine["impulse_damage"] < 1.0):
+        table.add_row(constants.system_name[6],unparse.unparse_percent(obj_x.db.engine["impulse_damage"]),unparse.unparse_damage(obj_x.db.engine["impulse_damage"]),(1 - obj_x.db.engine["impulse_damage"]) * constants.repair_mult[6] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
     if(obj_x.db.sensor["lrs_exist"] == 1 and obj_x.db.sensor["lrs_damage"] < 1.0):
         table.add_row(constants.system_name[7],unparse.unparse_percent(obj_x.db.sensor["lrs_damage"]),unparse.unparse_damage(obj_x.db.sensor["lrs_damage"]),(1 - obj_x.db.sensor["lrs_damage"]) * constants.repair_mult[7] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
     if(obj_x.db.main["exist"] == 1 and obj_x.db.main["damage"] < 1.0):
