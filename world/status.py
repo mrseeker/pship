@@ -266,4 +266,84 @@ def do_sensor_contacts(self, a):
         buffer += format.l_end()
         alerts.notify(self.caller, buffer)
         return 1
-    return 0
+
+def do_damage_status(self,obj,name=None):
+    if(obj.db.structure["type"] == 0):
+        alerts.notify(self,alerts.ansi_red("Space object not loaded."))
+        return 0
+    elif(obj.db.status["crippled"] == 2):
+        alerts.notify(self,alerts.ansi_red("Space object destroyed."))
+        return 0
+    elif(obj.db.status["active"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} systems are inactive.".format(obj.name)))
+        return 0
+    
+    if(name is not None):
+        obj_x = utils.name2sdb(name)
+
+        if (obj_x == constants.SENSOR_FAIL):
+            alerts.notify(self,alerts.ansi_red("That is not a valid subject."))
+            return 0
+        elif(obj_x.db.location != obj.name):
+            alerts.notify(self,alerts.ansi_red("That is not a valid subject."))
+            return 0
+        elif(obj_x.db.type == 0):
+            alerts.notify(self,alerts.ansi_red("That is not a valid subject."))
+            alerts.write_spacelog(self,obj_x,"BUG:Subject has bad TYPE")
+            return 0
+        elif(obj_x.db.status["connected"] != 1):
+            alerts.notify(self,alerts.ansi_red("{:s} is not connected.".format(obj_x.name)))
+    else:
+        obj_x = obj
+    
+    buffer = "|b--[|yDamage Control Status Report|b]-----------------------------------------------|n\n"
+    if(name is not None):
+        buffer += format.name(obj_x)
+        buffer += format.ship_class(obj_x)
+        buffer += "\n"
+        buffer += format.l_line()
+    table = evtable.EvTable("System Name","Integ","Condition","Repair Cost",border="header",header_line_char="-")
+    if(obj_x.db.structure["superstructure"] != obj_x.db.structure["max_structure"]):
+        table.add_row(constants.system_name[0],unparse.unparse_percent(obj_x.db.structure["superstructure"]/obj_x.db.structure["max_structure"]),unparse.unparse_damage(obj_x.db.structure["superstructure"]/obj_x.db.structure["max_structure"]),(obj_x.db.structure["superstructure"] - obj_x.db.structure["max_structure"]) * constants.repair_mult[0])
+    if(obj_x.db.aux["exist"] == 1 and obj_x.db.aux["damage"] < 1.0):
+        table.add_row(constants.system_name[1],unparse.unparse_percent(obj_x.db.aux["damage"]),unparse.unparse_damage(obj_x.db.aux["damage"]),(1 - obj_x.db.aux["damage"]) * constants.repair_mult[1] * obj_x.db.aux["gw"] * 100.0)
+    if(obj_x.db.batt["exist"] == 1 and obj_x.db.batt["damage"] < 1.0):
+        table.add_row(constants.system_name[2],unparse.unparse_percent(obj_x.db.batt["damage"]),unparse.unparse_damage(obj_x.db.batt["damage"]),(1 - obj_x.db.batt["damage"]) * constants.repair_mult[2] * obj_x.db.batt["gw"] * 100.0)
+    if(obj_x.db.beam["exist"] == 1):
+        for i in range(obj_x.db.beam["banks"]):
+            if(obj_x.db.blist[i]["damage"] < 1.0):
+                table.add_row("{:s} {:d}".format(constants.system_name[3],i+1),unparse.unparse_percent(obj_x.db.blist[i]["damage"]),unparse.unparse_damage(obj_x.db.blist[i]["damage"]),(1.0 - obj_x.db.blist[i]["damage"])* constants.repair_mult[3] * obj_x.db.blist[i]["cost"] * 100.0)
+    if(obj_x.db.cloak["exist"] == 1 and obj_x.db.cloak["damage"] < 1.0):
+        table.add_row(constants.system_name[4],unparse.unparse_percent(obj_x.db.cloak["damage"]),unparse.unparse_damage(obj_x.db.cloak["damage"]),(1 - obj_x.db.cloak["damage"]) * constants.repair_mult[4] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.sensor["ew_exist"] == 1 and obj_x.db.sensor["ew_damage"] < 1.0):
+        table.add_row(constants.system_name[5],unparse.unparse_percent(obj_x.db.sensor["ew_damage"]),unparse.unparse_damage(obj_x.db.sensor["ew_damage"]),(1 - obj_x.db.sensor["ew_damage"]) * constants.repair_mult[5] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.impulse["exist"] == 1 and obj_x.db.impulse["damage"] < 1.0):
+        table.add_row(constants.system_name[6],unparse.unparse_percent(obj_x.db.impulse["damage"]),unparse.unparse_damage(obj_x.db.impulse["damage"]),(1 - obj_x.db.impulse["damage"]) * constants.repair_mult[6] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.sensor["lrs_exist"] == 1 and obj_x.db.sensor["lrs_damage"] < 1.0):
+        table.add_row(constants.system_name[7],unparse.unparse_percent(obj_x.db.sensor["lrs_damage"]),unparse.unparse_damage(obj_x.db.sensor["lrs_damage"]),(1 - obj_x.db.sensor["lrs_damage"]) * constants.repair_mult[7] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.main["exist"] == 1 and obj_x.db.main["damage"] < 1.0):
+        table.add_row(constants.system_name[8],unparse.unparse_percent(obj_x.db.main["damage"]),unparse.unparse_damage(obj_x.db.main["damage"]),(1 - obj_x.db.main["damage"]) * constants.repair_mult[8] * obj_x.db.main["gw"] * 100.0)
+    if(obj_x.db.missile["exist"] == 1):
+        for i in range(obj_x.db.missile["tubes"]):
+            if(obj_x.db.mlist[i]["damage"] < 1.0):
+                table.add_row("{:s} {:d}".format(constants.system_name[9],i+1),unparse.unparse_percent(obj_x.db.mlist[i]["damage"]),unparse.unparse_damage(obj_x.db.mlist[i]["damage"]),(1.0 - obj_x.db.mlist[i]["damage"])* constants.repair_mult[9] * obj_x.db.blist[i]["warhead"] * 100.0)
+    if(obj_x.db.shield["exist"] == 1):
+        for i in range(constants.MAX_SHIELD_NAME):
+            if(obj_x.db.shield[i]["damage"] < 1.0):
+                table.add_row(unparse.unparse_shield(i),unparse.unparse_percent(obj_x.db.shield[i]["damage"]),unparse.unparse_damage(obj_x.db.shield[i]["damage"]),(1.0 - obj_x.db.shield[i]["damage"])* constants.repair_mult[10] * (1.0 + (obj_x.db.structure["max_structure"]/10.0)) * 100)
+    if(obj_x.db.sensor["srs_exist"] == 1 and obj_x.db.sensor["ars_damage"] < 1.0):
+        table.add_row(constants.system_name[11],unparse.unparse_percent(obj_x.db.sensor["srs_damage"]),unparse.unparse_damage(obj_x.db.sensor["srs_damage"]),(1 - obj_x.db.sensor["srs_damage"]) * constants.repair_mult[11] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.tract["exist"] == 1 and obj_x.db.tract["damage"] < 1.0):
+        table.add_row(constants.system_name[12],unparse.unparse_percent(obj_x.db.tract["damage"]),unparse.unparse_damage(obj_x.db.tract["damage"]),(1 - obj_x.db.tract["damage"]) * constants.repair_mult[12] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.trans["exist"] == 1 and obj_x.db.trans["damage"] < 1.0):
+        table.add_row(constants.system_name[13],unparse.unparse_percent(obj_x.db.trans["damage"]),unparse.unparse_damage(obj_x.db.trans["damage"]),(1 - obj_x.db.trans["damage"]) * constants.repair_mult[13] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    if(obj_x.db.engine["warp_exist"] == 1 and obj_x.db.engine["warp_damage"] < 1.0):
+        table.add_row(constants.system_name[14],unparse.unparse_percent(obj_x.db.engine["warp_damage"]),unparse.unparse_damage(obj_x.db.engine["warp_damage"]),(1 - obj_x.db.engine["warp_damage"]) * constants.repair_mult[14] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
+    buffer += str(table) + "\n"
+    buffer += format.l_line
+    buffer += "|cRepair Capacity|w: {:.3f} ({:d}) units: {:s}\n".format(obj.db.structure["repair"],int(obj.db.structure["max_repair"]),unparse.unparse_percent_3(obj.db.structure["repair"] / obj.db.structure["max_repair"]))
+    buffer += format.l_end
+
+    alerts.notify(self,buffer)
+    obj.db.status["time"] = obj.db.move["time"]
+    return 1
