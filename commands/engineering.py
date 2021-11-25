@@ -10,6 +10,8 @@ from evennia import CmdSet
 from evennia.utils.search import search_object
 from evennia.utils import evtable, utils
 
+from world.status import do_damage_status
+
 class EngineeringCmdSet(CmdSet):
         
         key = "EngineeringCmdSet"
@@ -361,3 +363,27 @@ class CmdEngine(default_cmds.MuxCommand):
             self.caller.msg(alerts.ansi_red("Startup sequence already in progress..."))
         else:
             self.caller.msg("Command not found: " + self.args)
+
+class CmdDamageReport(default_cmds.MuxCommand):
+    """
+    Commands related to the damage reports.
+
+    Usage: damage <shipname>
+    
+    Command list:
+    None
+
+    """
+
+    key = "damage"
+    help_category = "Engineering"
+    
+    def func(self):
+        self.args = self.args.strip()
+        caller = self.caller
+        obj_x = search_object(self.caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        if not self.args:
+            do_damage_status(caller,obj)
+        else:
+            do_damage_status(caller,obj,self.args[0])
