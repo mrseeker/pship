@@ -1,4 +1,3 @@
-from os import system
 from world import alerts,constants,unparse,format,iterate, utils
 from evennia.utils.search import search_object,search_tag
 import random
