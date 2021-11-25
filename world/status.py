@@ -331,7 +331,7 @@ def do_damage_status(self,obj,name=None):
         for i in range(constants.MAX_SHIELD_NAME):
             if(obj_x.db.shield[i]["damage"] < 1.0):
                 table.add_row(unparse.unparse_shield(i),unparse.unparse_percent(obj_x.db.shield[i]["damage"]),unparse.unparse_damage(obj_x.db.shield[i]["damage"]),(1.0 - obj_x.db.shield[i]["damage"])* constants.repair_mult[10] * (1.0 + (obj_x.db.structure["max_structure"]/10.0)) * 100)
-    if(obj_x.db.sensor["srs_exist"] == 1 and obj_x.db.sensor["ars_damage"] < 1.0):
+    if(obj_x.db.sensor["srs_exist"] == 1 and obj_x.db.sensor["srs_damage"] < 1.0):
         table.add_row(constants.system_name[11],unparse.unparse_percent(obj_x.db.sensor["srs_damage"]),unparse.unparse_damage(obj_x.db.sensor["srs_damage"]),(1 - obj_x.db.sensor["srs_damage"]) * constants.repair_mult[11] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
     if(obj_x.db.tract["exist"] == 1 and obj_x.db.tract["damage"] < 1.0):
         table.add_row(constants.system_name[12],unparse.unparse_percent(obj_x.db.tract["damage"]),unparse.unparse_damage(obj_x.db.tract["damage"]),(1 - obj_x.db.tract["damage"]) * constants.repair_mult[12] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
