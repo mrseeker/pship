@@ -21,6 +21,7 @@ class EngineeringCmdSet(CmdSet):
             self.add(CmdAlloc())
             self.add(CmdFreq())
             self.add(CmdRepair())
+            self.add(CmdDamageReport())
 
 class EngineeringFighterCmdSet(CmdSet):
         key = "EngineeringFighterCmdSet"
@@ -29,6 +30,7 @@ class EngineeringFighterCmdSet(CmdSet):
             self.add(CmdEngine())
             self.add(CmdAlloc_Fighter())
             self.add(CmdFreq())
+            self.add(CmdDamageReport())
 
 class CmdAlloc_Fighter(default_cmds.MuxCommand):
     """
