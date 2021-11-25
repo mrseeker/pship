@@ -340,9 +340,9 @@ def do_damage_status(self,obj,name=None):
     if(obj_x.db.engine["warp_exist"] == 1 and obj_x.db.engine["warp_damage"] < 1.0):
         table.add_row(constants.system_name[14],unparse.unparse_percent(obj_x.db.engine["warp_damage"]),unparse.unparse_damage(obj_x.db.engine["warp_damage"]),(1 - obj_x.db.engine["warp_damage"]) * constants.repair_mult[14] * (1.0 + (obj_x.db.structure["max_structure"]/10.0))*100.0)
     buffer += str(table) + "\n"
-    buffer += format.l_line
+    buffer += format.l_line()
     buffer += "|cRepair Capacity|w: {:.3f} ({:d}) units: {:s}\n".format(obj.db.structure["repair"],int(obj.db.structure["max_repair"]),unparse.unparse_percent_3(obj.db.structure["repair"] / obj.db.structure["max_repair"]))
-    buffer += format.l_end
+    buffer += format.l_end()
 
     alerts.notify(self,buffer)
     obj.db.status["time"] = obj.db.move["time"]
