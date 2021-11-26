@@ -1,11 +1,13 @@
 """
 Sets the variables
 """
+from os import write
+from unicodedata import category
 from evennia.utils import ansi
 from typeclasses.characters import Character
 from typeclasses.objects import Object
 from world import alerts,constants,iterate, errors,utils,balance,unparse,damage
-from evennia.utils.search import search_object
+from evennia.utils.search import search_object, search_tag
 from evennia import gametime
 import math
 import random
@@ -2146,3 +2148,525 @@ def damage_setter(obj,num,unit,value):
         obj.db.engine["warp_engine"] = value
     else:
         raise ValueError("Bad value in damage_setter")
+
+def do_set_dock(self,obj,contact):
+    l = obj.db.location
+    if (l != 0):
+        l = search_object(l)[0]
+    tsize = 0
+    trac = obj.db.status["tractoring"]
+
+    if(trac != 0):
+        trac = search_object(obj.db.status["tractoring"])[0]
+        tsize = trac.db.structure["displacement"]
+    
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.structure["can_dock"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} is incapable of docking.".format(obj.name)))
+    #check if the tractoree can dock
+    elif(trac != 0):
+        if(trac.db.structure["can_dock"] != 1):
+            alerts.notify(self,alerts.ansi_red("The ship you are tractoring ({:s}) is incapable of docking.".format(trac.name)))
+    elif(obj.db.status["connected"] == 1):
+        alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.status["tractored"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot dock while being tractored.".format(obj.name)))
+    elif(math.fabs(obj.db.move["out"]) > 1.0):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot dock while at warp.".format(obj.name)))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if(errors.error_on_contact(self,obj,obj_x)):
+            return 0
+        elif(utils.sdb2range(obj,obj_x) > constants.MAX_DOCKING_DISTANCE):
+            alerts.notify(self,alerts.ansi_red("That is too far away to dock with"))
+        elif(obj_x.db.structure["has_docking_bay"] == 0):
+            alerts.notify(self,alerts.ansi_red("{:s} does not have a dock.".format(obj_x.name)))
+        elif(obj_x.db.status["open_docking"] == 0):
+            alerts.notify(self,alerts.ansi_red("{:s}'s docking bay doors are closed.".format(obj_x.name)))
+        #check size of dock, including tractoree
+        elif((tsize + obj.db.structure["displacement"] + obj_x.db.structure["cargo_mass"]) > obj_x.db.structure["cargo_hold"]):
+            alerts.notify(self,alerts.ansi_red("{:s} does not have enough room.".format(obj_x.name)))
+        elif(obj.db.shields[0]["active"] or obj.db.shields[1]["active"] or obj.db.shields[2]["active"] or obj.db.shields[3]["active"] or obj.db.shields[4]["active"] or obj.db.shields[5]["active"]):
+            alerts.notify(self,alerts.ansi_red("{:s} must lower all shields to dock.".format(obj.name)))
+        elif(utils.sdb2dissipation(obj_x,utils.sdb2shield(obj_x,obj)) != 0.0):
+            alerts.notify(self,alerts.ansi_red("{:s}'s facing shield must be lowered.".format(obj_x.name)))
+        elif(obj_x.db.status["tractored"] != 0):
+            alerts.notify(self,alerts.ansi_red("{:s} is being tractored.".format(obj_x.name)))
+        else:
+            if(obj.db.status["docked"] != 0):
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} undocking from {:s}".format(obj.name,l.name)))
+                alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} undocking from {:s}".format(obj.name,l.name)))
+                alerts.do_ship_notify(obj,"The {:s} slides out of dock.".format(obj.name))
+                alerts.do_space_notify_two(obj,l,["helm","tactical","science"],"undocking from")
+            elif(obj.db.status["landed"] != 0):
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} launching from {:s}".format(obj.name,l.name)))
+                alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} launching from {:s}".format(obj.name,l.name)))
+                alerts.do_ship_notify(obj,"The {:s} lifts off from its landing pad.".format(obj.name))
+                alerts.do_space_notify_two(obj,l,["helm","tactical","science"],"launching from")
+            obj.db.location = obj_x.name
+
+            #move the tractoree
+            if(trac != 0):
+                trac.db.location = obj_x.name
+            alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} docking with {:s}".format(obj.name,obj_x.name)))
+            alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} docking with {:s}".format(obj.name,obj_x.name)))
+            alerts.do_ship_notify(obj,"The {:s} slides into dock.".format(obj.name))
+            alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"docking with")
+
+            #notify space the tractoree went in as well
+            if(trac != 0):
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} tractors {:s} into dock with {:s}".format(obj.name,trac.name,obj_x.name)))
+                alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} tractors {:s} into dock with {:s}".format(obj.name,trac.name,obj_x.name)))
+                alerts.do_ship_notify(trac,"The {:s} pulls {:s} into dock.".format(obj.name,trac.name))
+                alerts.do_space_notify_two(trac,obj_x,["helm","science","tactical"],"docking with")
+
+            #where we were
+            if(l != 0):
+                l.db.structure["cargo_mass"] -= obj.db.structure["displacement"]
+                if(l.db.structure["cargo_mass"] < 0.0):
+                    l.db.structure["cargo_mass"] = 0.0
+                l.db.engine["version"] = 1
+                iterate.up_signature(l)
+            
+            #where we are going
+            obj_x.db.structure["cargo_mass"] += obj.db.structure["displacement"]
+            obj_x.db.engine["version"] = 1
+            iterate.up_signature(obj_x)
+
+            #do the same for the tractoree
+            if(trac != 0):
+                obj_x.db.structure["cargo_mass"] += trac.db.structure["displacement"]
+                obj_x.db.engine["version"] = 1
+                iterate.up_signature(obj_x)
+
+            #break the lock, but don't announce
+            if(trac != 0):
+                obj.db.tract["lock"] = 0
+                obj.db.status["tractoring"] = 0
+                trac.db.status["tractored"] = 0
+                obj.db.power["version"] = 0
+                trac.db.power["version"] = 0
+
+            #do the actual moving
+            obj.db.space = obj_x.db.space
+            obj.db.location = obj_x.name
+            for i in range(obj.db.beam["banks"]):
+                obj.db.blist[i]["lock"] = 0
+            for i in range(obj.db.missiles["tubes"]):
+                obj.db.mlist[i]["lock"] = 0
+            obj.db.sensor["contacts"] = 0
+            obj.db.sensor["counter"] = 0
+            obj.db.move["in"] = 0
+            obj.db.move["out"] = 0
+            obj.db.move["v"] = 0
+            obj.db.move["empire"] = obj_x.db.move["empire"]
+            obj.db.move["quadrant"] = obj_x.db.move["quadrant"]
+            if (obj.db.trans["d_lock"] != obj.name):
+                obj.db.trans["d_lock"] = 0
+            if (obj.db.trans["s_lock"] != obj.name):
+                obj.db.trans["s_lock"] = 0
+            obj.db.coords["x"] = obj_x.db.coords["x"]
+            obj.db.coords["y"] = obj_x.db.coords["y"]
+            obj.db.coords["z"] = obj_x.db.coords["z"]
+            obj.db.course["yaw_in"] = obj_x.db.course["yaw_out"]
+            obj.db.course["yaw_out"] = obj_x.db.course["yaw_out"]
+            obj.db.course["pitch_in"] = obj_x.db.course["pitch_out"]
+            obj.db.course["pitch_out"] = obj_x.db.course["pitch_out"]
+            obj.db.course["roll_in"] = obj_x.db.course["roll_out"]
+            obj.db.course["roll_out"] = obj_x.db.course["roll_out"]
+            obj.db.status["docked"] = obj_x.name
+            obj.db.status["landed"] = 0
+            obj.db.status["autopilot"] = 0
+            alerts.do_space_notify_two(obj,obj_x,["helm","tactical","science"],"docking with")
+            iterate.up_cochranes(obj)
+            iterate.up_empire(obj)
+            iterate.up_quadrant(obj)
+            iterate.up_vectors(obj)
+            iterate.up_resolution(obj)
+            iterate.up_visibility(obj)
+            #write space db
+
+            if(trac != 0):
+                #do the actual moving also for the tractoree
+                trac.db.space = obj_x.db.space
+                trac.db.location = obj_x.name
+                for i in range(trac.db.beam["banks"]):
+                    trac.db.blist[i]["lock"] = 0
+                for i in range(trac.db.missiles["tubes"]):
+                    trac.db.mlist[i]["lock"] = 0
+                trac.db.sensor["contacts"] = 0
+                trac.db.sensor["counter"] = 0
+                trac.db.move["in"] = 0
+                trac.db.move["out"] = 0
+                trac.db.move["v"] = 0
+                trac.db.move["empire"] = obj_x.db.move["empire"]
+                trac.db.move["quadrant"] = obj_x.db.move["quadrant"]
+                if (trac.db.trans["d_lock"] != trac.name):
+                    trac.db.trans["d_lock"] = 0
+                if (trac.db.trans["s_lock"] != trac.name):
+                    trac.db.trans["s_lock"] = 0
+                trac.db.coords["x"] = obj_x.db.coords["x"]
+                trac.db.coords["y"] = obj_x.db.coords["y"]
+                trac.db.coords["z"] = obj_x.db.coords["z"]
+                trac.db.course["yaw_in"] = obj_x.db.course["yaw_out"]
+                trac.db.course["yaw_out"] = obj_x.db.course["yaw_out"]
+                trac.db.course["pitch_in"] = obj_x.db.course["pitch_out"]
+                trac.db.course["pitch_out"] = obj_x.db.course["pitch_out"]
+                trac.db.course["roll_in"] = obj_x.db.course["roll_out"]
+                trac.db.course["roll_out"] = obj_x.db.course["roll_out"]
+                trac.db.status["docked"] = obj_x.name
+                trac.db.status["landed"] = 0
+                trac.db.status["autopilot"] = 0
+                alerts.do_space_notify_two(trac,obj_x,["helm","tactical","science"],"docking with")
+                iterate.up_cochranes(trac)
+                iterate.up_empire(trac)
+                iterate.up_quadrant(trac)
+                iterate.up_vectors(trac)
+                iterate.up_resolution(trac)
+                iterate.up_visibility(trac)
+                #write space db
+                
+                return 1
+    return 0
+
+def do_set_undock(self,obj):
+    l = obj.db.location
+    if (l != 0):
+        l = search_object(l)[0]
+    else:
+        alerts.notify(self,alerts.ansi_red("{:s} is not in dock.".format(obj.name)))
+        alerts.write_spacelog(self,obj,"BUG: Bad location")
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["docked"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is not in dock.".format(obj.name)))
+    elif(obj.db.status["connected"] !=0):
+        alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    else:
+        obj_x = 0
+        i = search_object(obj.db.location)
+        if (len(i) > 0):
+            obj_x = i
+        if(obj_x == 0):
+            alerts.notify(self,alerts.ansi_red("Undocking error."))
+            alerts.write_spacelog(self,obj,"BUG: Bad undocking location SDB")
+        elif(obj_x.db.status["open_docking"] != 1):
+            alerts.notify(self,alerts.ansi_red("{:s}'s docking bay doors are closed.".format(obj_x.name)))
+        else:
+            obj.db.location = obj_x.db.location
+            alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} undocking from {:s}".format(obj.name, obj_x.name)))
+            alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} undocking from {:s}".format(obj.name, obj_x.name)))
+            alerts.do_ship_notify(obj,"The {:s} slides out of dock.".format(obj.name))
+            alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"undocking from")
+        
+            #where we are going
+            l = obj_x.db.location
+            if (l != 0):
+                l = search_object(l)[0]
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} docking with {:s}".format(obj.name, l.name)))
+                alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} docking with {:s}".format(obj.name, l.name)))
+                alerts.do_ship_notify(obj,"The {:s} slides into dock.".format(obj.name))
+                alerts.do_space_notify_two(obj,l,["helm","science","tactical"],"docking with")
+                l.db.structure["cargo_mass"] += obj.db.structure["displacement"]
+                l.db.engine["version"] = 1
+                iterate.up_signature(l)
+            
+            #where we were
+            obj_x.db.structure["cargo_mass"] -= obj.db.structure["displacement"]
+            if (obj_x.db.structure["cargo_mass"] < 0.0):
+                obj_x.db.structure["cargo_mass"] = 0.0
+            obj_x.db.engine["version"] = 1
+            iterate.up_signature(obj_x)
+
+            #we
+            obj.db.space = obj_x.db.space
+            obj.db.location = obj_x.db.location
+            for i in range(obj.db.beam["banks"]):
+                obj.db.blist[i]["lock"] = 0
+            for i in range(obj.db.missile["tubes"]):
+                obj.db.mlist[i]["lock"] = 0
+            obj.db.sensor["contacts"] = 0
+            obj.db.sensor["counter"] = 0
+            obj.db.move["in"] = 0
+            obj.db.move["out"] = 0
+            obj.db.move["v"] = 0
+            obj.db.move["empire"] = obj_x.db.move["empire"]
+            obj.db.move["quadrant"] = obj_x.db.move["quadrant"]
+            if(obj.db.trans["d_lock"] != obj.name):
+                obj.db.trans["d_lock"] = 0
+            if(obj.db.trans["s_lock"] != obj.name):
+                obj.db.trans["s_lock"] = 0
+            obj.db.coords["x"] = obj_x.db.coords["x"]
+            obj.db.coords["y"] = obj_x.db.coords["y"]
+            obj.db.coords["z"] = obj_x.db.coords["z"]
+            obj.db.course["yaw_in"] = obj_x.db.course["yaw_out"]
+            obj.db.course["yaw_out"] = obj_x.db.course["yaw_out"]
+            obj.db.course["pitch_in"] = obj_x.db.course["pitch_out"]
+            obj.db.course["pitch_out"] = obj_x.db.course["pitch_out"]
+            obj.db.course["roll_in"] = obj_x.db.course["roll_out"]
+            obj.db.course["roll_out"] = obj_x.db.course["roll_out"]
+            if (l != 0):
+                obj.db.status["docked"] = l.name
+            else:
+                obj.db.status["docked"] = 0
+            obj.db.status["landed"] = 0
+            obj.db.status["autopilot"] = 0
+            alerts.do_space_notify_two(obj,obj_x,["helm","tactical","science"],"undocking from")
+            iterate.up_cochranes(obj)
+            iterate.up_empire(obj)
+            iterate.up_quadrant(obj)
+            iterate.up_vectors(obj)
+            iterate.up_resolution(obj)
+            iterate.up_visibility(obj)
+            #write space db
+            return 1
+    return 0
+
+
+def do_set_land(self,obj,contact):
+    l = obj.db.location
+    if (l != 0):
+        l = search_object(l)[0]
+    
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.structure["can_land"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} is incapable of landing.".format(obj.name)))
+    elif(obj.db.status["connected"] == 1):
+        alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(obj.db.status["tractored"] == 1):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot land while being tractored.".format(obj.name)))
+    elif(obj.db.status["tractoring"] == 1):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot land while tractoring.".format(obj.name)))
+    elif(math.fabs(obj.db.move["out"]) > 1.0):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot land while at warp.".format(obj.name)))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if(errors.error_on_contact(self,obj,obj_x)):
+            return 0
+        elif(utils.sdb2range(obj,obj_x) > constants.MAX_LANDING_DISTANCE):
+            alerts.notify(self,alerts.ansi_red("That is too far away to land on."))
+        elif(obj_x.db.structure["has_landing_pad"] != 1):
+            alerts.notify(self,alerts.ansi_red("{:s} does not have a landing pad.".format(obj_x.name)))
+        elif(obj_x.db.structure["open_landing"] != 1):
+            alerts.notify(self,alerts.ansi_red("{:s}'s landing bay doors are closed.".format(obj_x.name)))
+        elif((obj.db.structure["displacement"] + obj_x.db.structure["cargo_mass"] > obj_x.db.structure["cargo_hold"])):
+            alerts.notify(self,alerts.ansi_red("{:s} does not have enough room.".format(obj_x.name)))
+        elif(obj.db.shields[0]["active"] or obj.db.shields[1]["active"] or obj.db.shields[2]["active"] or obj.db.shields[3]["active"] or obj.db.shields[4]["active"] or obj.db.shields[5]["active"]):
+            alerts.notify(self,alerts.ansi_red("{:s} must lower all shields to land.".format(obj.name)))
+        elif(utils.sdb2dissipation(obj_x,utils.sdb2shield(obj_x,obj)) != 0.0):
+            alerts.notify(self,alerts.ansi_red("{:s}'s facing shield must be lowered.".format(obj_x.name)))
+        elif(obj_x.db.status["tractored"] != 0):
+            alerts.notify(self,alerts.ansi_red("{:s} is being tractored.".format(obj_x.name)))
+        else:
+            if(obj.db.status["docked"] == 1):
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} undocking from {:s}".format(obj.name,l.name)))
+                alerts.console_message(l,["science","helm","tactical"],alerts.ansi_alert("{:s} undocking from {:s}".format(obj.name,l.name)))
+                alerts.do_ship_notify(obj,"The {:s} slides out of dock.".format(obj.name))
+                alerts.do_space_notify_two(obj,l,["helm","science","tactical"],"undocking from")
+            elif(obj.db.status["landed"] == 1):
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} launching from {:s}".format(obj.name,l.name)))
+                alerts.console_message(l,["science","helm","tactical"],alerts.ansi_alert("{:s} launching from {:s}".format(obj.name,l.name)))
+                alerts.do_ship_notify(obj,"The {:s} lifts off from its landing pad.".format(obj.name))
+                alerts.do_space_notify_two(obj,l,["helm","science","tactical"],"launching from")
+
+            obj.db.location = obj_x.name
+            alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} landing on {:s}".format(obj.name,obj_x.name)))
+            alerts.console_message(obj_x,["science","helm","tactical"],alerts.ansi_alert("{:s} landing on {:s}".format(obj.name,obj_x.name)))
+            alerts.do_ship_notify(obj,"The {:s} settles onto its landing pad.".format(obj.name))
+            alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"landing on")
+
+            #where we were
+            if(l != 0):
+                l.db.structure["cargo_mass"] -= obj.db.structure["displacement"]
+                if (l.db.structure["cargo_mass"] < 0.0):
+                    l.db.structure["cargo_mass"] = 0
+                l.db.engine["version"] = 1
+                iterate.up_signature(l)
+            
+            #where we are going
+            obj_x.db.structure["cargo_mass"] += obj.db.structure["displacement"]
+            obj_x.db.engine["version"] = 1
+            iterate.up_signature(obj_x)
+
+            #we
+            for i in range(obj.db.beam["banks"]):
+                obj.db.blist[i]["lock"] = 0
+            for i in range(obj.db.missile["tubes"]):
+                obj.db.mlist[i]["lock"] = 0
+            obj.db.space = obj_x.db.space
+            obj.db.location = obj_x.name
+            obj.db.sensor["contacts"] = 0
+            obj.db.sensor["counter"] = 0
+            obj.db.move["in"] = 0
+            obj.db.move["out"] = 0
+            obj.db.move["v"] = 0
+            obj.db.move["empire"] = obj_x.db.move["empire"]
+            obj.db.move["quadrant"] = obj_x.db.move["quadrant"]
+            if (obj.db.trans["d_lock"] != obj.name):
+                obj.db.trans["d_lock"] = 0
+            if (obj.db.trans["s_lock"] != obj.name):
+                obj.db.trans["s_lock"] = 0
+            obj.db.coords["x"] = obj_x.db.coords["x"]
+            obj.db.coords["y"] = obj_x.db.coords["y"]
+            obj.db.coords["z"] = obj_x.db.coords["z"]
+            obj.db.course["yaw_in"] = obj_x.db.course["yaw_out"]
+            obj.db.course["yaw_out"] = obj_x.db.course["yaw_out"]
+            obj.db.course["pitch_in"] = obj_x.db.course["pitch_out"]
+            obj.db.course["pitch_out"] = obj_x.db.course["pitch_out"]
+            obj.db.course["roll_in"] = obj_x.db.course["roll_out"]
+            obj.db.course["roll_out"] = obj_x.db.course["roll_out"]
+            obj.db.status["docked"] = obj_x.name
+            obj.db.status["landed"] = 0
+            obj.db.status["autopilot"] = 0
+            alerts.do_space_notify_two(obj,obj_x,["helm","tactical","science"],"docking with")
+            iterate.up_cochranes(obj)
+            iterate.up_empire(obj)
+            iterate.up_quadrant(obj)
+            iterate.up_vectors(obj)
+            iterate.up_resolution(obj)
+            iterate.up_visibility(obj)
+            #write space db
+            return 1
+    return 0
+
+def do_set_launch(self,obj):
+    l = obj.db.location
+    if (l != 0):
+        l = search_object(l)[0]
+    
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.status["landed"] == 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is not on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    else:
+        obj_x = 0
+        i = search_object(obj.db.location)
+        if (len(i) > 0):
+            obj_x = i
+        if(obj_x == 0):
+            alerts.notify(self,alerts.ansi_red("Launching error."))
+            alerts.write_spacelog(self,obj,"BUG: Bad launching location SDB")
+        elif(obj_x.db.status["open_landing"] != 1):
+            alerts.notify(self,alerts.ansi_red("{:s}'s landing bay doors are closed.".format(obj_x.name)))
+        else:
+            obj.db.location = obj_x.db.location
+            alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} launching from {:s}".format(obj.name,obj_x.name)))
+            alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} launching from {:s}".format(obj.name,obj_x.name)))
+            alerts.do_ship_notify(obj,"The {:s} lifts off from it's landing pad.".format(obj.name))
+            alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"launching from")
+
+            #where we are going
+            l = obj_x.db.location
+            if (l != 0):
+                l = search_object(l)[0]
+                alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} landing on {:s}".format(obj.name,l.name)))
+                alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} landing on {:s}".format(obj.name,l.name)))
+                alerts.do_ship_notify(obj,"The {:s} settles onto its landing pad.".format(obj.name))
+                alerts.do_space_notify_two(obj,l,["helm","science","tactical"],"landing on")
+                l.db.structure["cargo_mass"] += obj.db.structure["displacement"]
+                l.db.engine["version"] = 1
+                iterate.up_signature(l)
+            
+            #where we were
+            obj_x.structure["cargo_mass"] -= obj.db.structure["displacement"]
+            if(obj_x.db.structure["cargo_mass"] < 0):
+                obj_x.db.structure["cargo_mass"] = 0
+            obj_x.db.engine["version"] = 1
+            iterate.up_signature(obj_x)
+
+            #we
+            obj.db.space = obj_x.db.space
+            obj.db.location = obj_x.db.location
+            for i in range(obj.db.beam["banks"]):
+                obj.db.blist[i]["lock"] = 0
+            for i in range(obj.db.missile["tubes"]):
+                obj.db.mlist[i]["lock"] = 0
+            obj.db.sensor["contacts"] = 0
+            obj.db.sensor["counter"] = 0
+            obj.db.move["in"] = 0
+            obj.db.move["out"] = 0
+            obj.db.move["v"] = 0
+            obj.db.move["empire"] = obj_x.db.move["empire"]
+            obj.db.move["quadrant"] = obj_x.db.move["quadrant"]
+            if(obj.db.trans["d_lock"] != obj.name):
+                obj.db.trans["d_lock"] = 0
+            if(obj.db.trans["s_lock"] != obj.name):
+                obj.db.trans["s_lock"] = 0
+            obj.db.coords["x"] = obj_x.db.coords["x"]
+            obj.db.coords["y"] = obj_x.db.coords["y"]
+            obj.db.coords["z"] = obj_x.db.coords["z"]
+            obj.db.course["yaw_in"] = obj_x.db.course["yaw_out"]
+            obj.db.course["yaw_out"] = obj_x.db.course["yaw_out"]
+            obj.db.course["pitch_in"] = obj_x.db.course["pitch_out"]
+            obj.db.course["pitch_out"] = obj_x.db.course["pitch_out"]
+            obj.db.course["roll_in"] = obj_x.db.course["roll_out"]
+            obj.db.course["roll_out"] = obj_x.db.course["roll_out"]
+            obj.db.status["docked"] = 0
+            if (l != 0):
+                obj.db.status["landed"] = l.name
+            else:
+                obj.db.status["landed"] = 0
+            obj.db.status["autopilot"] = 0
+            alerts.do_space_notify_two(obj,obj_x,["helm","tactical","science"],"undocking from")
+            iterate.up_cochranes(obj)
+            iterate.up_empire(obj)
+            iterate.up_quadrant(obj)
+            iterate.up_vectors(obj)
+            iterate.up_resolution(obj)
+            iterate.up_visibility(obj)
+            #write space db
+            return 1
+    return 0
+
+def do_set_enter_wormhole(self,obj,contact):
+    
+    if (errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.structure["type"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} is much too large to enter.".format(obj.name)))
+    elif(obj.db.status["docked"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is in dock.".format(obj.name)))
+    elif(obj.db.status["landed"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is on a landing pad.".format(obj.name)))
+    elif(obj.db.status["connected"] != 0):
+        alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
+    elif(math.fabs(obj.db.move["out"]) >= 1.0):
+        alerts.notify(self,alerts.ansi_red("{:s} cannot gate while at warp.".format(obj.name)))
+    else:
+        obj_x = utils.contact2sdb(obj,contact)
+        if(errors.error_on_contact(self,obj,obj_x)):
+            return 0
+        elif(obj_x.db.structure["type"] != 4):
+            alerts.notify(self,alerts.ansi_red("That is not an anomaly."))
+        elif(utils.sdb2range(obj,obj_x) > constants.MAX_WORMHOLE_DISTANCE):
+            alerts.notify(self,alerts.ansi_red("{:s} is out of range.".format(obj.name)))
+        elif(obj_x.move["out"] >= 1.0):
+            alerts.notify(self,alerts.ansi_red("{:s} is moving too fast.".format(obj.name)))
+        elif(obj_x.db.status["link"] == 0):
+            alerts.notify(self,alerts.ansi_red("Gating error."))
+            alerts.write_spacelog(self,obj_x,"BUG: Bad gating linked Object")
+        else:
+            if(obj.db.status["tractoring"] != 0):
+                t = obj.db.status["tractoring"]
+            elif(obj.db.status["tractored"] != 0):
+                t = obj.db.status["tractored"]
+            else:
+                t = 0
+            if (t != 0):
+                obj_t = search_object(t)[0]
+                if(obj_t.db.structure["type"] != 1):
+                    alerts.notify(self,alerts.ansi_red("{:s} is much too large to enter.".format(obj_t.name)))
+                    return 0
+                elif(utils.sdb2range(obj_t,obj_x) > constants.MAX_WORMHOLE_DISTANCE):
+                    alerts.notify(self,alerts.ansi_red("{:s} is out of range.".format(obj_t.name)))
+                    return 0
+                else:
+                    iterate.up_wormhole(obj_t,obj_x)
+            alerts.do_all_console_notify(obj,alerts.ansi_cmd(self.name,"{:s} entering {:s}".format(obj.name,obj_x.name)))
+            iterate.up_wormhole(obj,obj_x)
+            return 1
+    return 0

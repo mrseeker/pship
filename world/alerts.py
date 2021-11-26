@@ -297,7 +297,6 @@ def border_cross(obj1, type):
                                         do_console_notify(obj, ["helm", "science", "security"], ansi_notify(
                                             f'Outbound border crossing reported at {utils.su2pc(obj1.db.coords["x"] - obj.db.coords["xo"]):.3f} {utils.su2pc(obj1.db.coords["y"] - obj.db.coords["yo"]):.3f} {utils.su2pc(obj1.db.coords["z"] - obj.db.coords["zo"]):.3f}'))
 
-
 def report_eng_power(obj):
     table = evtable.EvTable(
         "|cAllocation|n", "|cEPS Power|n", "|cPercentage|n")
@@ -528,4 +527,28 @@ def ship_hurt(obj):
 def ship_hit(obj):
     if(obj.db.structure["type"] == 1 or obj.db.structure["type"] == 2):
         do_ship_notify(obj, "{:s} shudders from an impact.".format(obj.name))
+    return 1
+
+def cloak_voided(obj):
+    console_message(obj,["helm","tactical"],ansi_warn("Cloaking device voided. Deactivating"))
+    return 1
+
+def cloak_failure(obj):
+    console_message(obj,["engineering","helm","tactical"],ansi_warn("Insufficient power: Cloaking device disengaged"))
+    return 1
+
+def beam_charged(obj):
+    console_message(obj,["tactical"],ansi_alert("Beam capacitor fully charged"))
+    return 1
+
+def beam_balance(obj):
+    console_message(obj,["tactical"],ansi_alert("Beam capacitor power balanced"))
+    return 1
+
+def missile_charged(obj):
+    console_message(obj,["tactical"],ansi_alert("Missile capacitor fully charged"))
+    return 1
+
+def missile_balance(obj):
+    console_message(obj,["tactical"],ansi_alert("Missile capacitor power balanced"))
     return 1

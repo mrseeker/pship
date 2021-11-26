@@ -29,6 +29,11 @@ class HelmCmdSet(CmdSet):
             self.add(CmdIntercept())
             self.add(CmdParallel())
             self.add(CmdSpeed())
+            self.add(CmdWormhole())
+            self.add(CmdLand())
+            self.add(CmdLaunch())
+            self.add(CmdDock())
+            self.add(CmdUndock())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -48,7 +53,13 @@ class FighterCmdSet(CmdSet):
             self.add(CmdEvade())
             self.add(CmdIntercept())
             self.add(CmdParallel())
-            self.add(CmdSpeed())
+            self.add(CmdSpeed())            
+            self.add(CmdWormhole())
+            self.add(CmdLand())
+            self.add(CmdLaunch())
+            self.add(CmdDock())
+            self.add(CmdUndock())
+
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
     """
@@ -428,6 +439,134 @@ class CmdEvade(default_cmds.MuxCommand):
                 setter.do_set_evade(caller,obj,int(self.args[0]))
         else:
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
+
+class CmdWormhole(default_cmds.MuxCommand):
+    """
+    Commands related to entering a wormhole.
+
+    Usage: wormhole <contact>
+
+    Command list:
+    contact - Contact number of the wormhole
+    """
+
+    key="wormhole"
+    aliases=["worm"]
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(caller,obj)):
+            return 0
+    
+        if(len(self.args) == 1):
+                setter.do_set_enter_wormhole(caller,obj,int(self.args[0]))
+        else:
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
+
+class CmdDock(default_cmds.MuxCommand):
+    """
+    Commands related to docking into another space object.
+
+    Usage: dock <contact>
+
+    Command list:
+    contact - Contact number
+    """
+
+    key="dock"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(caller,obj)):
+            return 0
+    
+        if(len(self.args) == 1):
+                setter.do_set_dock(caller,obj,int(self.args[0]))
+        else:
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
+
+class CmdUndock(default_cmds.MuxCommand):
+    """
+    Commands related to undocking.
+
+    Usage: undock
+
+    Command list:
+    None
+    """
+
+    key="undock"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(caller,obj)):
+            return 0
+        setter.do_set_undock(caller,obj)
+
+class CmdLand(default_cmds.MuxCommand):
+    """
+    Commands related to landing into another space object.
+
+    Usage: land <contact>
+
+    Command list:
+    contact - Contact number
+    """
+
+    key="land"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(caller,obj)):
+            return 0
+    
+        if(len(self.args) == 1):
+                setter.do_set_land(caller,obj,int(self.args[0]))
+        else:
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
+
+class CmdLaunch(default_cmds.MuxCommand):
+    """
+    Commands related to flying from the landing pad.
+
+    Usage: launch
+
+    Command list:
+    None
+    """
+
+    key="launch"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+
+        if(errors.error_on_console(caller,obj)):
+            return 0
+        setter.do_set_launch(caller,obj)
 
 class CmdParallel(default_cmds.MuxCommand):
     """

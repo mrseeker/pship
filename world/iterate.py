@@ -12,6 +12,8 @@ import math
 import random
 import sys
 
+from world.unparse import unparse_identity, unparse_type
+
 def up_alloc_balance(self):
     balance.balance_eng_power(self)
     balance.balance_helm_power(self)
@@ -707,6 +709,43 @@ def up_position(self):
     self.db.coords["x"] += dv * self.db.course["d"][0][0]
     self.db.coords["y"] += dv * self.db.course["d"][0][1]
     self.db.coords["z"] += dv * self.db.course["d"][0][2]
+
+def up_wormhole(self,obj,obj_x):
+    alerts.do_ship_notify(obj,"The {:s} shudders and rocks about violently for a few moments.".format(obj.name))
+    alerts.do_space_notify_two(obj,obj_x,["helm","tactical","science"],"enters")
+    if(obj.db.cloak["active"] == 1):
+        alerts.cloak_voided(obj)
+        alerts.ship_cloak_offline(obj)
+        obj.db.cloak["active"] = 0
+        obj.db.sensor["version"] = 1
+        obj.db.engine["version"] = 1
+    
+    #clear contacts and reset sensors
+    for i in range(obj.db.sensor["contacts"]):
+        tmp_c = search_object(obj.db.slist[i]["key"])[0]
+        alerts.console_message(obj,["helm","science","tactical"],"{:s} contact lost: {:s}".format(unparse_type(tmp_c),unparse_identity(obj,tmp_c)))
+    obj.db.sensor["contacts"] = 0
+    up_sensor_message(obj,0,[""] * constants.MAX_SENSOR_CONTACTS,[0] * constants.MAX_SENSOR_CONTACTS)
+    obj_link = search_object(obj_x.db.status["link"])
+    if (len(obj_link) == 0):
+        alerts.notify(alerts.ansi_red("{:s} loops back on itself.".format(obj_x.name)))
+        alerts.write_spacelog(self,obj_x,"BUG: Bad wormhole link")
+        obj_link = obj_x
+    else:
+        obj_link = obj_link[0]    
+    obj.db.space = obj_link.db.space
+    obj.db.coords["x"] = obj_link.db.coords["x"]
+    obj.db.coords["y"] = obj_link.db.coords["y"]
+    obj.db.coords["z"] = obj_link.db.coords["z"]
+    obj.db.status["autopilot"] = 0
+    alerts.do_space_notify_one(obj_link,["helm","tactical","science"],"expells an unknown contact")
+    up_cochranes(obj)
+    up_empire(obj)
+    up_quadrant(obj)
+    up_resolution(obj)
+    up_signature(obj)
+    up_visibility(obj)
+    return
 
 def up_resolution(self):
     if(self.db.sensor["lrs_active"] == 1):
