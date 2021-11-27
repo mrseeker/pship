@@ -1,4 +1,3 @@
-from unicodedata import category
 from evennia.utils.create import create_object
 from typeclasses.airlock import Airlock
 from typeclasses.exits import Exit

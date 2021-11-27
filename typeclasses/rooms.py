@@ -29,6 +29,7 @@ class space_room(Room):
 
     def at_object_creation(self):
         super().at_object_creation()
+        self.locks.add("get:perm(Admin)")
         self.db.desc = "This is a space room. You should not see this message."
         self.db.type = constants.type_name[0]
         self.db.sdesc = "Default Space Room"
@@ -75,6 +76,8 @@ class space_room(Room):
         self.db.slist = sensor_combo
         
     def get_display_name(self,looker, **kwargs):
-       idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-       selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
-       return "%s%s" % (selfdesc, idstr)
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
+        if (str(looker.location) != str(self.name)) and not self.access(looker, access_type="control"):
+           return ""    
+        return "%s%s" % (selfdesc, idstr)

@@ -25,11 +25,6 @@ class Ship(space_room):
         self.db.engineering = {"start_sequence":0,"override":self.key}
         self.db.ship = self.key
 
-    def get_display_name(self,looker, **kwargs):
-       idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-       selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
-       return "%s%s" % (selfdesc, idstr)
-
 class Generic_Ship(Ship):
     def at_object_creation(self):
         super().at_object_creation()
@@ -98,7 +93,3 @@ class Console(Room):
         self.db.type=constants.CONSOLE_ATTR_NAME
         self.db.sdesc = "Console"
         self.db.ship=""
-    
-    def get_display_name(self,looker, **kwargs):
-       idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-       return "%s%s" % (self.db.sdesc, idstr)
