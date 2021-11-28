@@ -85,8 +85,3 @@ class Airlock(Room):
         self.db.sdesc = "Airlock"
         self.db.ship=""
         self.cmdset.add("typeclasses.airlock.AirlockCmdSet", persistent=True)
-    
-    def get_display_name(self,looker, **kwargs):
-       idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-       return "%s%s" % (self.db.sdesc, idstr)
-
