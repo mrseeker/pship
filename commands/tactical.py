@@ -143,7 +143,7 @@ class CmdEW(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
             
         if not self.args:
-            alerts.notify(alerts.ansi_red("You did not enter any commands."))
+            alerts.notify(caller,alerts.ansi_red("You did not enter any commands."))
         elif(errors.error_on_console(caller,obj)):
                 return 0
         elif(not obj.db.sensor["ew_exist"]):
