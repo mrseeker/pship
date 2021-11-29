@@ -796,13 +796,15 @@ def up_signature(self):
         
     self.db.sensor["version"] = 0
     
-def up_sensor_message(self, contacts, t_sdb, t_lev):
+def up_sensor_message(self, contacts, temp_sdb, temp_lev):
     temp_num = [0] * constants.MAX_SENSOR_CONTACTS
-    temp_sdb = t_sdb
-    temp_lev = t_lev
+
     for i in range(contacts):
         gain = 0
         for j in range(contacts):
+            if (temp_sdb[i] == ""):
+                gain = 1
+                break
             if (temp_sdb[i] == self.db.slist[j]["key"]):
                 gain = 1
                 temp_num[i] = self.db.slist[j]["num"]
@@ -817,6 +819,9 @@ def up_sensor_message(self, contacts, t_sdb, t_lev):
     for i in range(contacts):
         lose = 0
         for j in range(contacts):
+            if(temp_sdb[j] == ""):
+                lose = 1
+                break
             if(temp_sdb[j] == self.db.slist[i]["key"]):
                 lose = 1
                 break
