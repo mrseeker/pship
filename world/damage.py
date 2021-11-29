@@ -67,13 +67,13 @@ def damage_structure(obj, damage):
             obj_x = search_object(obj.db.status["tractoring"])[0]
             obj_x.db.status["tractored"] = 0
             obj.db.status["tractoring"] = 0
-        iterate.up_cochranes()
+        iterate.up_cochranes(obj)
         iterate.up_empire(obj)
-        iterate.up_quadrant()
-        iterate.up_vectors()
-        iterate.up_resolution()
+        iterate.up_quadrant(obj)
+        iterate.up_vectors(obj)
+        iterate.up_resolution(obj)
         iterate.up_signature(obj)
-        iterate.up_visibility()
+        iterate.up_visibility(obj)
     return
 
 def damage_aux(obj,damage):
