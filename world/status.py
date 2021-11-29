@@ -251,8 +251,8 @@ def do_sensor_contacts(self, a):
                     #buffer += "|b--- ---- --- ------- ------- ----- ------- ------ ----- ---------------- ------|w\n"
                     first = 0
                 #buffer += contact_line(obj,contact)
-                obj = search_object(obj_x.db.slist[contact]["key"])[0]
-                if obj.db.structure["type"] == ctype:
+                obj_contact = search_object(obj.db.slist[contact]["key"])[0]
+                if obj_contact.db.structure["type"] == ctype:
                     table.add_row(*contact_line(obj,contact))
         buffer += str(table)
         buffer += "\n"
