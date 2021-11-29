@@ -3,9 +3,7 @@ Creates a spacebase with all it's functionalities.
 
 """
 
-from typeclasses.airlock import Airlock
-from typeclasses.rooms import Room,space_room
-from typeclasses.exits import Exit
+from typeclasses.rooms import space_room
 from evennia import create_object
 from world import constants
 
@@ -37,11 +35,3 @@ class Generic_SpaceBase(SpaceBase):
         self.db.main["exist"] = 1
         self.db.aux["exist"] = 1
         self.db.batt["exist"] = 1
-
-class Console(Room):
-    def at_object_creation(self):
-        super().at_object_creation()
-        self.tags.add("general",category="console")
-        self.db.type=constants.CONSOLE_ATTR_NAME
-        self.db.sdesc = "Console"
-        self.db.ship=""

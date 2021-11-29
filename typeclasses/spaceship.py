@@ -4,7 +4,7 @@ Creates a spaceship with all it's functionalities.
 """
 
 from typeclasses.airlock import Airlock
-from typeclasses.rooms import Room,space_room
+from typeclasses.rooms import Room,space_room,Console
 from typeclasses.exits import Exit
 from evennia import create_object
 from world import constants
@@ -227,12 +227,3 @@ class Test(Ship):
         ship_teleport.tags.add("teleport",category=self.key)
         exit_teleport_bridge = create_object(Exit, key="Teleporter room",aliases=["teleport"], location=self, destination=ship_teleport)
         exit_teleport = create_object(Exit, key="Bridge",aliases=["bridge"], location=ship_teleport, destination=self)
-
-       
-class Console(Room):
-    def at_object_creation(self):
-        super().at_object_creation()
-        self.tags.add("general",category="console")
-        self.db.type=constants.CONSOLE_ATTR_NAME
-        self.db.sdesc = "Console"
-        self.db.ship=""

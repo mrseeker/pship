@@ -81,3 +81,11 @@ class space_room(Room):
         if (str(looker.location) != str(self.name)) and not self.access(looker, access_type="control"):
            return ""    
         return "%s%s" % (selfdesc, idstr)
+
+class Console(Room):
+    def at_object_creation(self):
+        super().at_object_creation()
+        self.tags.add("general",category="console")
+        self.db.type=constants.CONSOLE_ATTR_NAME
+        self.db.sdesc = "Console"
+        self.db.ship=""
