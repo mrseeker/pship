@@ -806,7 +806,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 gain = 1
                 temp_num[i] = self.db.slist[j]["num"]
                 break
-        if (gain > 0):
+        if (gain == 0):
             self.db.sensor["counter"] += 1
             if (self.db.sensor["counter"] > 999):
                 self.db.sensor["counter"] = 1
@@ -819,7 +819,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
             if(temp_sdb[j] == self.db.slist[i]["key"]):
                 lose = 1
                 break
-        if (lose > 0):
+        if (lose == 0):
             obj_x = search_object(self.db.slist[i]["key"])[0]
             alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.db.name)))
             if (self.db.trans["s_lock"] == self.db.slist[i]["key"]):
