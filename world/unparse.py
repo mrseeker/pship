@@ -1,7 +1,6 @@
 """
 All things to make it look better
 """
-import cmath
 from world import constants,utils
 from evennia.utils.search import search_object
 import math
@@ -147,7 +146,7 @@ def unparse_velocity(obj):
         dx = v * obj.db.course["d"][0][0] + vx * obj_x.db.course["d"][0][0]
         dy = v * obj.db.course["d"][0][1] + vx * obj_x.db.course["d"][0][1]
         dz = v * obj.db.course["d"][0][2] + vx * obj_x.db.course["d"][0][2]
-        v = cmath.sqrt(dx * dx + dy * dy + dz * dz)
+        v = math.sqrt(dx * dx + dy * dy + dz * dz)
         
     if (v == 0):
         return "Stationary"
