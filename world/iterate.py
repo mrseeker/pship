@@ -796,9 +796,10 @@ def up_signature(self):
         
     self.db.sensor["version"] = 0
     
-def up_sensor_message(self, contacts, temp_sdb, temp_lev):
+def up_sensor_message(self, contacts, t_sdb, t_lev):
     temp_num = [0] * constants.MAX_SENSOR_CONTACTS
-
+    temp_sdb = t_sdb
+    temp_lev = t_lev
     for i in range(contacts):
         gain = 0
         for j in range(contacts):
@@ -819,7 +820,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
             if(temp_sdb[j] == self.db.slist[i]["key"]):
                 lose = 1
                 break
-        if (lose == 1):
+        if (lose == 0):
             obj_x = search_object(self.db.slist[i]["key"])[0]
             alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.db.name)))
             if (self.db.trans["s_lock"] == self.db.slist[i]["key"]):
