@@ -4,7 +4,6 @@ Creates a spacebase with all it's functionalities.
 """
 
 from typeclasses.rooms import space_room
-from evennia import create_object
 from world import constants
 
 class SpaceBase(space_room):

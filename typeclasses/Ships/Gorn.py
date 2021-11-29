@@ -1,8 +1,8 @@
 from evennia.utils.create import create_object
 from typeclasses.airlock import Airlock
 from typeclasses.exits import Exit
-from typeclasses.rooms import Room
-from typeclasses.spaceship import Console, Gorn_Ship
+from typeclasses.rooms import Room, Console
+from typeclasses.spaceship import Gorn_Ship
 
 class Allosaurus(Gorn_Ship):
     def at_object_creation(self):

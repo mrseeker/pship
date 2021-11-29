@@ -1,8 +1,8 @@
 from evennia.utils.create import create_object
 from typeclasses.airlock import Airlock
 from typeclasses.exits import Exit
-from typeclasses.rooms import Room
-from typeclasses.spacebase import Console, Generic_SpaceBase
+from typeclasses.rooms import Room,Console
+from typeclasses.spacebase import Generic_SpaceBase
 
 class Outpost_II(Generic_SpaceBase):
     def at_object_creation(self):

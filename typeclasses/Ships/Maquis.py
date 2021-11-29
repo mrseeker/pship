@@ -1,8 +1,8 @@
 from evennia.utils.create import create_object
 from typeclasses.airlock import Airlock
 from typeclasses.exits import Exit
-from typeclasses.rooms import Room
-from typeclasses.spaceship import Console, Maquis_Ship
+from typeclasses.rooms import Room, Console
+from typeclasses.spaceship import Maquis_Ship
 
 class Opus_Mach_II(Maquis_Ship):
     def at_object_creation(self):
