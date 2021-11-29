@@ -235,11 +235,11 @@ class CmdCoords(default_cmds.MuxCommand):
                 return 0
 
         if (self.args[0] == ""):
-            caller.msg("Current location: " + str("{:10.3f}".format(obj.db.coords["x"])) + " " + str("{:10.3f}".format(obj.db.coords["y"])) + " " + str("{:10.3f}".format(obj.db.coords["z"])))
+            caller.msg("Current location: {:10.3f} {:10.3f} {:10.3f}".format(utils.su2pc(obj.db.coords["x"]),utils.su2pc(obj.db.coords["y"]),utils.su2pc(obj.db.coords["z"])))
         elif(self.args[0] == "relative"):
-            caller.msg("Relative coordinates: " + str("{:10.3f}".format(obj.db.coords["xo"])) + " " + str("{:10.3f}".format(obj.db.coords["yo"])) + " " + str("{:10.3f}".format(obj.db.coords["zo"])))
+            caller.msg("Relative coordinates: {:10.3f} {:10.3f} {:10.3f}".format(utils.su2pc(obj.db.coords["xo"]),utils.su2pc(obj.db.coords["yo"]),utils.su2pc(obj.db.coords["zo"])))
         elif(self.args[0] == "layin"):
-            caller.msg("Laid in coordinates: " + str("{:10.3f}".format(obj.db.coords["xd"])) + " " + str("{:10.3f}".format(obj.db.coords["yd"])) + " " + str("{:10.3f}".format(obj.db.coords["zd"])))
+            caller.msg("Laid in coordinates: {:10.3f} {:10.3f} {:10.3f}".format(utils.su2pc(obj.db.coords["xd"]),utils.su2pc(obj.db.coords["yd"]),utils.su2pc(obj.db.coords["zd"])))
         elif(self.args[0] == "set"):
             if (len(self.args) == 5):
                 if (self.args[1] == "relative"):
