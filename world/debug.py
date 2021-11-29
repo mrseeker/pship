@@ -3,4 +3,8 @@ from world import utils
 
 objects = search_tag(category="space_object")
 for obj in objects:
-    utils.debug_space(obj)
+    print("Debugging " + obj.name)
+    if(utils.debug_space(obj) == 1):
+        print("{:s}: OK".format(obj.name))
+    else:
+        print("{:s}: NOK".format(obj.name))
