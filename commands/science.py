@@ -152,13 +152,14 @@ class CmdIdent(default_cmds.MuxCommand):
     
     def func(self):
         self.args = self.args.strip()
+        self.args = self.args.split(" ")
         caller = self.caller
         obj_x = search_object(self.caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
             
         if not self.args:
             self.caller.msg("You did not enter any contacts")
-        elif(len(self.args) == 1):
+        elif(len(self.args) > 0):
             status.sensor_report(self,int(self.args[0]))
         else:
             self.caller.msg("Wrong amount of arguments")
