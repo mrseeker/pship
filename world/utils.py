@@ -6,7 +6,7 @@ Utilities to get things going
 import random
 from evennia.utils.search import search_object
 from world import constants,iterate
-import math
+import math,cmath
 
 #Space objects and others
 
@@ -58,15 +58,15 @@ def xy2bearing(x,y):
             return 270.0
     elif(x > 0.0):
         if (y > 0.0):
-            return math.atan(y / x) * 180.0 / math.pi
+            return cmath.atan(y / x) * 180.0 / math.pi
         else:
-            return math.atan(y / x) * 180.0 / math.pi + 360.0
+            return cmath.atan(y / x) * 180.0 / math.pi + 360.0
     elif(x < 0.0):
-        return math.atan(y / x) * 180 / math.pi + 180.0
+        return cmath.atan(y / x) * 180 / math.pi + 180.0
     return 0.0
 
 def xyz2elevation(x,y,z):
-    r = math.sqrt(x * x + y * y)
+    r = cmath.sqrt(x * x + y * y)
     
     if (r == 0.0):
         if (z == 0.0):
@@ -76,9 +76,9 @@ def xyz2elevation(x,y,z):
         else:
             return 270.0
     elif(z > 0.0):
-        return math.atan(z / r) * 180.0 / math.pi
+        return cmath.atan(z / r) * 180.0 / math.pi
     elif(z < 0.0):
-        return math.atan(z / r) * 180 / math.pi + 360
+        return cmath.atan(z / r) * 180 / math.pi + 360
     else:
         return 0.0
         
@@ -86,7 +86,7 @@ def xyz2range(xa,ya,za,xb,yb,zb):
     x = xb - xa
     y = yb - ya
     z = zb - za
-    return math.sqrt(x * x + y * y + z * z)
+    return cmath.sqrt(x * x + y * y + z * z)
 
 def xyz2vis(x,y,z):
     px = x / constants.PARSEC
@@ -124,14 +124,14 @@ def sdb2arc(obj1,obj2):
     x = obj2.db.coords["x"] - obj1.db.coords["x"]
     y = obj2.db.coords["y"] - obj1.db.coords["y"]
     z = obj2.db.coords["z"] - obj1.db.coords["z"]
-    r = math.sqrt(x * x + y * y + z * z)
+    r = cmath.sqrt(x * x + y * y + z * z)
     
     if (r == 0.0):
         firing_arc = 63
     else:
-        v1 = (x * obj1.db.course["d"][0][0] + y * obj1.db.course["d"][0][1] + z * obj1.db.course["d"][0][2]) / r / math.sqrt(obj1.db.course["d"][0][0] * obj1.db.course["d"][0][0] + obj1.db.course["d"][0][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][0][2] * obj1.db.course["d"][0][2])
-        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / math.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][1][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
-        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / math.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][2][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
+        v1 = (x * obj1.db.course["d"][0][0] + y * obj1.db.course["d"][0][1] + z * obj1.db.course["d"][0][2]) / r / cmath.sqrt(obj1.db.course["d"][0][0] * obj1.db.course["d"][0][0] + obj1.db.course["d"][0][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][0][2] * obj1.db.course["d"][0][2])
+        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / cmath.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][1][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
+        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / cmath.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][2][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
         if (v1 > 1.0):
             v1 = 1.0
         elif(v1 < -1.0):
@@ -227,14 +227,14 @@ def sdb2shield(n1,n2):
     x = obj2.db.coords["x"] - obj1.db.coords["x"]
     y = obj2.db.coords["y"] - obj1.db.coords["y"]
     z = obj2.db.coords["z"] - obj1.db.coords["z"]
-    r = math.sqrt(x * x + y * y + z * z)
+    r = cmath.sqrt(x * x + y * y + z * z)
     
     if (r == 0.0):
         return 0
     else:
-        v1 = (x * obj1.db.course["d"][0][0] + y * obj1.db.course["d"][0][1] + z * obj1.db.course["d"][0][2]) / r / math.sqrt(obj1.db.course["d"][0][0] * obj1.db.course["d"][0][0] + obj1.db.course["d"][0][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][0][2] * obj1.db.course["d"][0][2])
-        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / math.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
-        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / math.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
+        v1 = (x * obj1.db.course["d"][0][0] + y * obj1.db.course["d"][0][1] + z * obj1.db.course["d"][0][2]) / r / cmath.sqrt(obj1.db.course["d"][0][0] * obj1.db.course["d"][0][0] + obj1.db.course["d"][0][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][0][2] * obj1.db.course["d"][0][2])
+        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / cmath.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
+        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / cmath.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
         if (v1 > 1.0):
             v1 = 1.0
         elif(v1 < -1.0):
@@ -310,7 +310,7 @@ def sdb2max_warp(obj):
         obj_tractored = search_object(obj.db.status["tractored"])[0]
         a *= (obj.db.structure.displacement + obj_tractored.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
     
-    a = math.sqrt(10.0 * p/a)
+    a = cmath.sqrt(10.0 * p/a)
     if (a < 1.0):
         return 0.0
     else:
@@ -349,7 +349,7 @@ def sdb2cruise_warp(x):
     if (obj.db.engine["warp_damage"] <= 0.0):
         return 0.0
     
-    a = math.sqrt(10.0 * obj.db.main["gw"]  / obj.db.move["ratio"])
+    a = cmath.sqrt(10.0 * obj.db.main["gw"]  / obj.db.move["ratio"])
     if (a < 1.0):
         return 0.0
         
@@ -382,7 +382,7 @@ def sdb2ecm_lrs(x):
     obj = search_object(x)[0]
     
     if (obj.db.sensor["ew_active"]):
-        return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["ecm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"] / 10.0)
+        return cmath.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["ecm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"] / 10.0)
     else:
         return 1.0
         
@@ -390,7 +390,7 @@ def sdb2eccm_lrs(x):
     obj = search_object(x)[0]
     
     if (obj.db.sensor["ew_active"]):
-        return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"] / 10.0)
+        return cmath.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"] / 10.0)
     else:
         return 1.0
         
@@ -398,7 +398,7 @@ def sdb2ecm_srs(x):
     obj = search_object(x)[0]
     
     if (obj.db.sensor["ew_active"]):
-        return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["ecm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
+        return cmath.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["ecm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
     else:
         return 1.0
         
@@ -406,7 +406,7 @@ def sdb2ecm_srs(x):
     obj = search_object(x)[0]
     
     if (obj.db.sensor["ew_active"]):
-        return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
+        return cmath.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
     else:
         return 1.0
         
@@ -449,7 +449,7 @@ def sdb2angular(n1, n2):
     b[2] = (obj2.db.move["v"] * obj2.db.course["d"][0][2]) - (obj1.db.move["v"] * obj1.db.course["d"][0][2]) + a[2]
     
     dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
-    mag = math.sqrt((a[0] * a[0] + a[1] * a[1] + a[2] * a[2]) * (b[0] * b[0] + b[1] * b[1] + b[2] * b[2]))
+    mag = cmath.sqrt((a[0] * a[0] + a[1] * a[1] + a[2] * a[2]) * (b[0] * b[0] + b[1] * b[1] + b[2] * b[2]))
     if (mag == 0):
         return 0
     x = dot / mag
@@ -470,7 +470,7 @@ def sdb2friendly(n1,n2):
         
 def sdb2eccm_srs(obj):
     if (obj.db.sensor["ew_active"] == 1):
-        return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
+        return cmath.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
     else:
         return 1.0
 

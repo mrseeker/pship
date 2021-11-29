@@ -2,6 +2,7 @@
 Iterates the world and it's settings
 """
 
+import cmath
 import time
 from world import constants, alerts, utils, balance, damage
 from world import set as setter
@@ -672,12 +673,12 @@ def up_roll_io(self):
 
 def up_vectors(self):
     d2r = math.pi / 180.0
-    sy = math.sin(self.db.course["yaw_out"] * d2r)
-    cy = math.cos(self.db.course["yaw_out"] * d2r)
-    sp = math.sin(self.db.course["pitch_out"] * d2r)
-    cp = math.cos(self.db.course["pitch_out"] * d2r)
-    sr = math.sin(self.db.course["roll_out"] * d2r)
-    cr = math.cos(self.db.course["roll_out"] * d2r)
+    sy = cmath.sin(self.db.course["yaw_out"] * d2r)
+    cy = cmath.cos(self.db.course["yaw_out"] * d2r)
+    sp = cmath.sin(self.db.course["pitch_out"] * d2r)
+    cp = cmath.cos(self.db.course["pitch_out"] * d2r)
+    sr = cmath.sin(self.db.course["roll_out"] * d2r)
+    cr = cmath.cos(self.db.course["roll_out"] * d2r)
 
     self.db.course["d"][0][0] = cy * cp
     self.db.course["d"][0][1] = sy * cp
@@ -902,7 +903,7 @@ def up_sensor_list(self):
             self.db.slist[i]["lev"] = temp_lev[i]
     
 def up_repair(self):
-    self.db.structure["repair"] += self.db.move["dt"] * self.db.structure["max_repair"] / 1000.0 * (1.0 + math.sqrt(self.db.alloc["miscellaneous"] * self.db.power["total"]))
+    self.db.structure["repair"] += self.db.move["dt"] * self.db.structure["max_repair"] / 1000.0 * (1.0 + cmath.sqrt(self.db.alloc["miscellaneous"] * self.db.power["total"]))
     if (self.db.structure["repair"] >= self.db.structure["max_repair"]):
         self.db.structure["repair"] = self.db.structure["max_repair"]
         alerts.max_repair(self)
