@@ -23,4 +23,27 @@
 # system for loading python-code this way.
 #
 
+dig SPACEBASE-1:Starbases.Generic.Station_II
+open SPACEBASE-1,Limbo = SPACEBASE-1
+
+dig SHUTTLE-1:Ships.Generic.Shuttle
+open SHUTTLE-1,Limbo = SHUTTLE-1
+
+dig SHUTTLE-2:Ships.Generic.Shuttle
+open SHUTTLE-2,Limbo = SHUTTLE-2
+
+dig SHUTTLE-3:Ships.Generic.Shuttle
+open SHUTTLE-3,Limbo = SHUTTLE-3
+
+dig FREIGHTER-1:Ships.Generic.Mega_Freight_IV
+open FREIGHTER-1,Limbo = FREIGHTER-1
+
+dig FREIGHTER-2:Ships.Generic.Mega_Freight_IV
+open FREIGHTER-2,Limbo = FREIGHTER-2
+
+dig FREIGHTER-3:Ships.Generic.Mega_Freight_IV
+open FREIGHTER-3,Limbo = FREIGHTER-3
+
+dig Earth:Planets.Generic.M
+open Earth,Limbo = Earth
 
