@@ -240,6 +240,7 @@ class Super_Cruiser_II(Generic_Ship):
 def create_ship_layout(self):
     #create the ship layout here
     self.cmdset.add("commands.bridge.BridgeCmdSet", persistent=True)
+    self.tags.add("bridge",category=self.key)
     for console in ["helm","engineering","tactical","science","security","operation"]:
         ship_console = create_object(Console,key=self.key + "-"+ console)
         ship_console.db.sdesc = console
@@ -276,6 +277,7 @@ def create_fighter_layout(self):
         self.cmdset.add("commands.engineering.EngineeringFighterCmdSet", persistent=True)
         self.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         self.cmdset.add("commands.helm.FighterCmdSet", persistent=True)
+        self.tags.add("bridge",category=self.key)
 
         ship_airlock = create_object(Airlock,key=self.key + "-airlock")
         ship_airlock.db.ship = self.key
