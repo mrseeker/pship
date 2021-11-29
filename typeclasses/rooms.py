@@ -40,7 +40,7 @@ class space_room(Room):
         self.tags.add(constants.type_name[0],category="space_object")
         self.db.coords = {"x":0.0,"y":0.0,"z":0.0,"xo":0.0,"yo":0.0,"zo":0.0,"xd":0.0,"yd":0.0,"zd":0.0}
         self.db.move = {"time":0,"dt":0,"in":0.0,"out":0.0,"ratio":1.0,"cochranes":0.0,"v":0.0,"empire":"","quadrant":0}
-        self.db.course = {"version":0,"yaw_in":0.0,"yaw_out":0.0,"pitch_in":0.0,"pitch_out":0.0,"roll_in":0.0,"roll_out":0.0,"d":[[1,1,1],[1,1,1],[1,1,1]],"rate":0.0}
+        self.db.course = {"version":0,"yaw_in":0.0,"yaw_out":0.0,"pitch_in":0.0,"pitch_out":0.0,"roll_in":0.0,"roll_out":0.0,"d":[[1,0,0],[1,0,0],[1,0,0]],"rate":0.0}
         self.db.iff = {"frequency":0.0}
         shield_combo = {"ratio":0.0,"maximum":0,"freq":0.0,"exist":0}
         for i in range(constants.MAX_SHIELD_NAME):
