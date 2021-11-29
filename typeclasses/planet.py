@@ -35,12 +35,3 @@ class Generic_Planet(Planet):
         self.db.tract = {"cost":1,"freq":1.0,"exist":0,"active":0,"damage":0.0,"lock":0}
         self.db.trans = {"cost":1,"freq":1.0,"exist":0,"active":0,"damage":0.0,"d_lock":0,"s_lock":0}
         
-
-class Console(Room):
-    def at_object_creation(self):
-        super().at_object_creation()
-        self.tags.add("general",category="console")
-        self.db.type=constants.CONSOLE_ATTR_NAME
-        self.db.sdesc = "Console"
-        self.db.ship=""
-    
