@@ -827,15 +827,15 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 break
         if (lose == 0 and self.db.slist[i]["key"] != "" and self.db.slist[i]["key"] != 0):
             obj_x = search_object(self.db.slist[i]["key"])[0]
-            alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.db.name)))
+            alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.name)))
             if (self.db.trans["s_lock"] == self.db.slist[i]["key"]):
-                alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.db.name)))
+                alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.name)))
                 self.db.trans.s_lock = 0
             if (self.db.trans["d_lock"] == self.db.slist[i]["key"]):
-                alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.db.name)))
+                alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.name)))
                 self.db.trans.d_lock = 0
             if (self.db.tract["lock"] == self.db.slist[i]["key"]):
-                alerts.console_message(self,["helm","operation"],alerts.ansi_warn("Tractor beam lost lock on " + str(obj_x.db.name)))
+                alerts.console_message(self,["helm","operation"],alerts.ansi_warn("Tractor beam lost lock on " + str(obj_x.name)))
                 self.db.tract["lock"] = 0
                 self.db.status["tractoring"] = 0
                 obj_x.status["tractored"] = 0

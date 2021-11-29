@@ -18,7 +18,7 @@ def damage_structure(obj, damage):
         obj.db.status["crippled"] = 2
         objects = search_tag(category="space_object")
         for obj_x in objects:
-            if (obj_x.db.location == obj.db.name):
+            if (obj_x.db.location == obj.name):
                 if (obj_x.db.structure["type"] > 0):
                     alerts.do_ship_notify(obj_x,"|*|r" + format.name(obj) + " explodes into white hot vapor. Goodbye!|n")
                     obj_x.space = -1                    
