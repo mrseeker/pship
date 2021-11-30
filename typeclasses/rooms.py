@@ -89,3 +89,8 @@ class Console(Room):
         self.db.type=constants.CONSOLE_ATTR_NAME
         self.db.sdesc = "Console"
         self.db.ship=""
+    
+    def get_display_name(self,looker, **kwargs):
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
+        return "%s%s" % (selfdesc, idstr)
