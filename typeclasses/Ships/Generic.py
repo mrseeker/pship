@@ -277,6 +277,7 @@ def create_fighter_layout(self):
         self.cmdset.add("commands.engineering.EngineeringFighterCmdSet", persistent=True)
         self.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         self.cmdset.add("commands.helm.FighterCmdSet", persistent=True)
+        self.cmdset.add("commands.science.ScienceCmdSet", persistent=True)
         self.tags.add("bridge",category=self.key)
 
         ship_airlock = create_object(Airlock,key=self.key + "-airlock")
