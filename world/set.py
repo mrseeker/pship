@@ -2442,7 +2442,7 @@ def do_set_land(self,obj,contact):
             alerts.notify(self,alerts.ansi_red("That is too far away to land on."))
         elif(obj_x.db.structure["has_landing_pad"] != 1):
             alerts.notify(self,alerts.ansi_red("{:s} does not have a landing pad.".format(obj_x.name)))
-        elif(obj_x.db.structure["open_landing"] != 1):
+        elif(obj_x.db.status["open_landing"] != 1):
             alerts.notify(self,alerts.ansi_red("{:s}'s landing bay doors are closed.".format(obj_x.name)))
         elif((obj.db.structure["displacement"] + obj_x.db.structure["cargo_mass"] > obj_x.db.structure["cargo_hold"])):
             alerts.notify(self,alerts.ansi_red("{:s} does not have enough room.".format(obj_x.name)))
