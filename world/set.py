@@ -2191,7 +2191,7 @@ def do_set_dock(self,obj,contact):
         #check size of dock, including tractoree
         elif((tsize + obj.db.structure["displacement"] + obj_x.db.structure["cargo_mass"]) > obj_x.db.structure["cargo_hold"]):
             alerts.notify(self,alerts.ansi_red("{:s} does not have enough room.".format(obj_x.name)))
-        elif(obj.db.shields[0]["active"] or obj.db.shields[1]["active"] or obj.db.shields[2]["active"] or obj.db.shields[3]["active"] or obj.db.shields[4]["active"] or obj.db.shields[5]["active"]):
+        elif(obj.db.shield[0]["active"] ==1 or obj.db.shield[1]["active"]==1 or obj.db.shield[2]["active"]==1 or obj.db.shield[3]["active"]==1 or obj.db.shield[4]["active"]==1 or obj.db.shield[5]["active"]==1):
             alerts.notify(self,alerts.ansi_red("{:s} must lower all shields to dock.".format(obj.name)))
         elif(utils.sdb2dissipation(obj_x,utils.sdb2shield(obj_x,obj)) != 0.0):
             alerts.notify(self,alerts.ansi_red("{:s}'s facing shield must be lowered.".format(obj_x.name)))
@@ -2446,7 +2446,7 @@ def do_set_land(self,obj,contact):
             alerts.notify(self,alerts.ansi_red("{:s}'s landing bay doors are closed.".format(obj_x.name)))
         elif((obj.db.structure["displacement"] + obj_x.db.structure["cargo_mass"] > obj_x.db.structure["cargo_hold"])):
             alerts.notify(self,alerts.ansi_red("{:s} does not have enough room.".format(obj_x.name)))
-        elif(obj.db.shields[0]["active"] or obj.db.shields[1]["active"] or obj.db.shields[2]["active"] or obj.db.shields[3]["active"] or obj.db.shields[4]["active"] or obj.db.shields[5]["active"]):
+        elif(obj.db.shield[0]["active"]==1 or obj.db.shield[1]["active"]==1 or obj.db.shield[2]["active"]==1 or obj.db.shield[3]["active"]==1 or obj.db.shield[4]["active"]==1 or obj.db.shield[5]["active"]==1):
             alerts.notify(self,alerts.ansi_red("{:s} must lower all shields to land.".format(obj.name)))
         elif(utils.sdb2dissipation(obj_x,utils.sdb2shield(obj_x,obj)) != 0.0):
             alerts.notify(self,alerts.ansi_red("{:s}'s facing shield must be lowered.".format(obj_x.name)))
