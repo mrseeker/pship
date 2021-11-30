@@ -1118,7 +1118,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x = search_object(obj.db.blist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
-                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.dbref)   #slist number
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
                 obj_x.ndb.i2 = 0                            #firing arc
                 obj_x.ndb.i3 = 0                            #facing shield
                 obj_x.ndb.i4 = 0                            #multiple hit flag
@@ -1209,7 +1209,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x = search_object(obj.db.mlist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
-                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.dbref)   #slist number
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x)   #slist number
                 obj_x.ndb.i2 = 0                            #firing arc
                 obj_x.ndb.i3 = 0                            #facing shield
                 obj_x.ndb.i4 = 0                            #multiple hit flag
