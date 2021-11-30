@@ -19,6 +19,14 @@ class Room(ContribRPRoom):
     properties and methods available on all Objects.
     """
 
+    def basetype_setup(self):
+        super().basetype_setup()
+        self.locks.add(
+            ";".join(["get:false()", "puppet:false()"])
+        )  # would be weird to puppet a room ...
+        self.location = None
+
+
     def at_object_creation(self):
         super().at_object_creation()
 
@@ -83,13 +91,6 @@ class space_room(Room):
             sensor_combo[i] = {"key":"","num":0,"lev":0.0}
         self.db.slist = sensor_combo
         
-    def get_display_name(self,looker, **kwargs):
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
-        if (looker.location != self) and not self.access(looker, access_type="control"):
-           return ""    
-        return "%s%s" % (selfdesc, idstr)
-
 class Console(Room):
     def at_object_creation(self):
         super().at_object_creation()
@@ -97,8 +98,3 @@ class Console(Room):
         self.db.type=constants.CONSOLE_ATTR_NAME
         self.db.sdesc = "Console"
         self.db.ship=""
-    
-    def get_display_name(self,looker, **kwargs):
-        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
-        return "%s%s" % (selfdesc, idstr)
