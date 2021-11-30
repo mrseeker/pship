@@ -78,7 +78,7 @@ class space_room(Room):
     def get_display_name(self,looker, **kwargs):
         idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
         selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
-        if (str(looker.location) != str(self.name)) and not self.access(looker, access_type="control"):
+        if (looker.location != self) and not self.access(looker, access_type="control"):
            return ""    
         return "%s%s" % (selfdesc, idstr)
 
