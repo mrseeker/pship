@@ -75,8 +75,8 @@ def facing_shield(obj1,obj2):
             return f'|c{"Facing Shield":16}:|w {unparse.unparse_shield(shield):<20}'
 
 def location(obj):
-    l = obj.db.location
-    if (l == 0):
+    l = obj.location
+    if (l is None):
         if(obj.db.sensor["visibility"] < 0.1):
             return f'|c{"Location":16}:|w {"Opaque Nebula":<20}'
         elif(obj.db.sensor["visibility"] < 0.25):
@@ -87,13 +87,13 @@ def location(obj):
             return f'|c{"Location":16}:|w {"Light Nebula":<20}'
         else:
             return f'|c{"Location":16}:|w {"Open Space":<20}'
-    elif(obj.db.status["docked"]):
-        if(obj.db.status["connected"]):
+    elif(obj.db.status["docked"] == 1):
+        if(obj.db.status["connected"] == 1):
             return f'|c{"Location":16}:|w D+C:{l:<17}'
         else:
             return f'|c{"Location":16}:|w D:{l:<18}'
-    elif(obj.db.status["landed"]):
-        if(obj.db.status["connected"]):
+    elif(obj.db.status["landed"] == 1):
+        if(obj.db.status["connected"] == 1):
             return f'|c{"Location":16}:|w L+C:{l:<17}'
         else:
             return f'|c{"Location":16}:|w L:{l:<18}'

@@ -172,28 +172,24 @@ def decrypt_message(key, message):
     return ret_txt
 
 
-def transmit_message(self, freq, range, code, message, language="default"):
+def transmit_message(self, obj, freq, range, code, message, language="default"):
     if (freq < constants.MIN_COMMS_FREQUENCY or freq > constants.MAX_COMMS_FREQUENCY):
-        console_message(self, ["communication"],
-                        ansi_red("#-1 BAD FREQUENCY VALUE"))
+        console_message(self, ["communication"],ansi_red("#-1 BAD FREQUENCY VALUE"))
     if (range <= 0):
-        console_message(self, ["communication"],
-                        ansi_red("#-1 BAD RANGE VALUE"))
+        console_message(self, ["communication"],ansi_red("#-1 BAD RANGE VALUE"))
     # sending the message here...
     space_obj = search_tag(constants.SHIP_ATTR_NAME, category="space_object")
-    for obj in space_obj:
-        if(obj.db.status["active"]):
-            if(obj.db.structure["type"] != 0):
-                if(obj.db.location == self.db.location):
-                    if(self.name != obj.name):
-                        if(utils.sdb2range(self, obj) < range):
-                            if(obj.db.language != language):
-                                message = rplanguage.obfuscate_language(
-                                    message, language=language, level=1.0)
+    for obj_x in space_obj:
+        if(obj_x.db.status["active"] == 1):
+            if(obj_x.db.structure["type"] != 0):
+                if(obj_x.location == obj.location):
+                    if(obj_x.name != obj.name):
+                        if(utils.sdb2range(obj, obj_x) < range):
+                            if(obj_x.db.language != language):
+                                message = rplanguage.obfuscate_language(message, language=language, level=1.0)
                             if(code):
                                 message = encrypt_message(code, message)
-                            do_console_notify(
-                                obj, ["communication"], "[|b"+self.name+"|n]: " + message)
+                            do_console_notify(obj_x, ["communication"], "[|b"+obj.name+"|n]: " + message)
 
 
 def console_message(obj, console, text):
@@ -230,7 +226,7 @@ def do_space_notify_one(obj1, console, text):
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] != 0):
-                if(obj.db.location == obj1.db.location):
+                if(obj.location == obj1.location):
                     if(obj1.name != obj.name):
                         contact = utils.sdb2contact(obj, obj1)
                         if (contact != constants.SENSOR_FAIL):
@@ -243,13 +239,12 @@ def do_space_notify_two(obj1, obj2, console, text):
     for obj in space_obj:
         if(obj.db.status["active"]):
             if(obj.db.structure["type"] != 0):
-                if(obj.db.location == obj1.db.location):
+                if(obj.location == obj1.location):
                     if(obj1.name != obj.name and obj2.name != obj.name):
                         contact1 = utils.sdb2contact(obj, obj1)
                         contact2 = utils.sdb2contact(obj, obj2)
                         if (contact1 != constants.SENSOR_FAIL or contact2 != constants.SENSOR_FAIL):
-                            console_message(
-                                obj, console, "|b[|c"+obj1.name + " " + text + "|b]|n")
+                            console_message(obj, console, "|b[|c"+obj1.name + " " + text + "|b]|n")
 
 
 def ship_cloak_online(obj):

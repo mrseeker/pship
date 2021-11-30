@@ -173,7 +173,6 @@ class space_object(Object):
         self.db.desc = "This is a space object. You should not see this message."
         self.db.type = constants.type_name[0]
         self.db.sdesc = "Default Space Object"
-        self.db.location = 0
         self.db.space = 0
         self.db.language = "default"
         self.db.cost = 0

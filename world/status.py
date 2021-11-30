@@ -32,7 +32,7 @@ def sensor_report(self,contact):
                 if (obj_contact.db.structure["has_landing_pad"] == 1):
                     buffer += format.landing_doors(obj_contact)
                 buffer += "\n"
-        if (obj.db.slist[i]["lev"] > 0.25 and not obj_contact.db.cloak["active"]):
+        if (obj.db.slist[i]["lev"] > 0.25 and obj_contact.db.cloak["active"] == 0):
             buffer += format.ship_class(obj_contact)
             buffer += format.displacement(obj_contact)
             buffer += "\n"
@@ -284,7 +284,7 @@ def do_damage_status(self,obj,name=None):
         if (obj_x == constants.SENSOR_FAIL):
             alerts.notify(self,alerts.ansi_red("That is not a valid subject."))
             return 0
-        elif(obj_x.db.location != obj.name):
+        elif(obj_x.location != obj):
             alerts.notify(self,alerts.ansi_red("That is not a valid subject."))
             return 0
         elif(obj_x.db.type == 0):

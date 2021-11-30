@@ -884,7 +884,7 @@ def do_set_refuel(self, obj, receiver,type,tons):
     elif (utils.sdb2contact(obj,receiver) == constants.SENSOR_FAIL):
         alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
         return 0
-    elif (receiver.db.location is not obj.name):
+    elif (receiver.location != obj):
         alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
         return 0
     elif (receiver.db.status["connected"] != 0):
@@ -963,7 +963,7 @@ def do_set_defuel(self, obj, receiver,type,tons):
         if (utils.sdb2contact(obj,receiver) == constants.SENSOR_FAIL):
             alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
             return 0
-        elif (receiver.db.location is not obj.name):
+        elif (receiver.location is not obj):
             alerts.notify(self,alerts.ansi_red("That is not a valid fuel recepient"))
             return 0
         elif (receiver.db.status["connected"] != 0):
@@ -1118,7 +1118,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x = search_object(obj.db.blist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
-                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.name)   #slist number
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.dbref)   #slist number
                 obj_x.ndb.i2 = 0                            #firing arc
                 obj_x.ndb.i3 = 0                            #facing shield
                 obj_x.ndb.i4 = 0                            #multiple hit flag
@@ -1209,7 +1209,7 @@ def do_set_fire(self,obj,first,last,weapon,mode):
             obj_x = search_object(obj.db.mlist[i]["lock"])[0]
             if (obj_x.ndb.i0 != obj.name):
                 obj_x.ndb.i0 = obj.name                     #initial marker
-                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.name)   #slist number
+                obj_x.ndb.i1 = utils.sdb2slist(obj,obj_x.dbref)   #slist number
                 obj_x.ndb.i2 = 0                            #firing arc
                 obj_x.ndb.i3 = 0                            #facing shield
                 obj_x.ndb.i4 = 0                            #multiple hit flag
@@ -1302,6 +1302,9 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                         obj_x.ndb.d0 = 0.0
                         obj_x.ndb.d1 = 0.0
                         obj_x.ndb.d2 = 0.0
+                else:
+                    alerts.notify(self,alerts.ansi_red("Error firing weapon."))
+                    alerts.write_spacelog(self,obj,"BUG: Contact does not exist: {:s}".format(obj.db.slist[i]["key"]))
             return 0
 
         if (is_m_load == 0 and (weapon == 2 or (weapon == 0 and obj.db.missile["exist"] == 1))):    
@@ -1331,6 +1334,9 @@ def do_set_fire(self,obj,first,last,weapon,mode):
                         obj_x.ndb.d0 = 0.0
                         obj_x.ndb.d1 = 0.0
                         obj_x.ndb.d2 = 0.0
+                else:
+                    alerts.notify(self,alerts.ansi_red("Error firing weapon."))
+                    alerts.write_spacelog(self,obj,"BUG: Contact does not exist: {:s}".format(obj.db.slist[i]["key"]))
             return 0
 
     #report firing messages
@@ -1877,7 +1883,7 @@ def do_set_fix_damage(self,obj,sys1,sys2,type,name):
         if(obj_x == constants.SENSOR_FAIL):
             alerts.notify(self,alerts.ansi_red("That is not a valid repair recipient"))
             return 0
-        elif(obj_x.db.location != obj.name):
+        elif(obj_x.location != obj):
             alerts.notify(self,alerts.ansi_red("That is not a valid repair recipient"))
             return 0
         elif(obj_x.db.structure["type"] == 0):
@@ -2150,9 +2156,7 @@ def damage_setter(obj,num,unit,value):
         raise ValueError("Bad value in damage_setter")
 
 def do_set_dock(self,obj,contact):
-    l = obj.db.location
-    if (l != 0):
-        l = search_object(l)[0]
+    l = obj.location
     tsize = 0
     trac = obj.db.status["tractoring"]
 
@@ -2204,11 +2208,11 @@ def do_set_dock(self,obj,contact):
                 alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} launching from {:s}".format(obj.name,l.name)))
                 alerts.do_ship_notify(obj,"The {:s} lifts off from its landing pad.".format(obj.name))
                 alerts.do_space_notify_two(obj,l,["helm","tactical","science"],"launching from")
-            obj.db.location = obj_x.name
+            obj.location = obj_x
 
             #move the tractoree
             if(trac != 0):
-                trac.db.location = obj_x.name
+                trac.location = obj_x
             alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} docking with {:s}".format(obj.name,obj_x.name)))
             alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} docking with {:s}".format(obj.name,obj_x.name)))
             alerts.do_ship_notify(obj,"The {:s} slides into dock.".format(obj.name))
@@ -2222,7 +2226,7 @@ def do_set_dock(self,obj,contact):
                 alerts.do_space_notify_two(trac,obj_x,["helm","science","tactical"],"docking with")
 
             #where we were
-            if(l != 0):
+            if(l is not None):
                 l.db.structure["cargo_mass"] -= obj.db.structure["displacement"]
                 if(l.db.structure["cargo_mass"] < 0.0):
                     l.db.structure["cargo_mass"] = 0.0
@@ -2250,7 +2254,7 @@ def do_set_dock(self,obj,contact):
 
             #do the actual moving
             obj.db.space = obj_x.db.space
-            obj.db.location = obj_x.name
+            obj.location = obj_x
             for i in range(obj.db.beam["banks"]):
                 obj.db.blist[i]["lock"] = 0
             for i in range(obj.db.missiles["tubes"]):
@@ -2290,7 +2294,7 @@ def do_set_dock(self,obj,contact):
             if(trac != 0):
                 #do the actual moving also for the tractoree
                 trac.db.space = obj_x.db.space
-                trac.db.location = obj_x.name
+                trac.location = obj_x
                 for i in range(trac.db.beam["banks"]):
                     trac.db.blist[i]["lock"] = 0
                 for i in range(trac.db.missiles["tubes"]):
@@ -2331,12 +2335,7 @@ def do_set_dock(self,obj,contact):
     return 0
 
 def do_set_undock(self,obj):
-    l = obj.db.location
-    if (l != 0):
-        l = search_object(l)[0]
-    else:
-        alerts.notify(self,alerts.ansi_red("{:s} is not in dock.".format(obj.name)))
-        alerts.write_spacelog(self,obj,"BUG: Bad location")
+    l = obj.location
     if(errors.error_on_console(self,obj)):
         return 0
     elif(obj.db.status["docked"] == 0):
@@ -2344,26 +2343,22 @@ def do_set_undock(self,obj):
     elif(obj.db.status["connected"] !=0):
         alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
     else:
-        obj_x = 0
-        i = search_object(obj.db.location)
-        if (len(i) > 0):
-            obj_x = i
-        if(obj_x == 0):
+        obj_x = obj.location
+        if(l is None):
             alerts.notify(self,alerts.ansi_red("Undocking error."))
             alerts.write_spacelog(self,obj,"BUG: Bad undocking location SDB")
         elif(obj_x.db.status["open_docking"] != 1):
             alerts.notify(self,alerts.ansi_red("{:s}'s docking bay doors are closed.".format(obj_x.name)))
         else:
-            obj.db.location = obj_x.db.location
+            obj.location = obj_x.location
             alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} undocking from {:s}".format(obj.name, obj_x.name)))
             alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} undocking from {:s}".format(obj.name, obj_x.name)))
             alerts.do_ship_notify(obj,"The {:s} slides out of dock.".format(obj.name))
             alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"undocking from")
         
             #where we are going
-            l = obj_x.db.location
-            if (l != 0):
-                l = search_object(l)[0]
+            l = obj_x.location
+            if (l is not None):
                 alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} docking with {:s}".format(obj.name, l.name)))
                 alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} docking with {:s}".format(obj.name, l.name)))
                 alerts.do_ship_notify(obj,"The {:s} slides into dock.".format(obj.name))
@@ -2381,7 +2376,7 @@ def do_set_undock(self,obj):
 
             #we
             obj.db.space = obj_x.db.space
-            obj.db.location = obj_x.db.location
+            obj.location = obj_x.location
             for i in range(obj.db.beam["banks"]):
                 obj.db.blist[i]["lock"] = 0
             for i in range(obj.db.missile["tubes"]):
@@ -2406,7 +2401,7 @@ def do_set_undock(self,obj):
             obj.db.course["pitch_out"] = obj_x.db.course["pitch_out"]
             obj.db.course["roll_in"] = obj_x.db.course["roll_out"]
             obj.db.course["roll_out"] = obj_x.db.course["roll_out"]
-            if (l != 0):
+            if (l is not None):
                 obj.db.status["docked"] = l.name
             else:
                 obj.db.status["docked"] = 0
@@ -2425,9 +2420,7 @@ def do_set_undock(self,obj):
 
 
 def do_set_land(self,obj,contact):
-    l = obj.db.location
-    if (l != 0):
-        l = search_object(l)[0]
+    l = obj.location
     
     if(errors.error_on_console(self,obj)):
         return 0
@@ -2471,14 +2464,14 @@ def do_set_land(self,obj,contact):
                 alerts.do_ship_notify(obj,"The {:s} lifts off from its landing pad.".format(obj.name))
                 alerts.do_space_notify_two(obj,l,["helm","science","tactical"],"launching from")
 
-            obj.db.location = obj_x.name
+            obj.location = obj_x
             alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} landing on {:s}".format(obj.name,obj_x.name)))
             alerts.console_message(obj_x,["science","helm","tactical"],alerts.ansi_alert("{:s} landing on {:s}".format(obj.name,obj_x.name)))
             alerts.do_ship_notify(obj,"The {:s} settles onto its landing pad.".format(obj.name))
             alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"landing on")
 
             #where we were
-            if(l != 0):
+            if(l is not None):
                 l.db.structure["cargo_mass"] -= obj.db.structure["displacement"]
                 if (l.db.structure["cargo_mass"] < 0.0):
                     l.db.structure["cargo_mass"] = 0
@@ -2496,7 +2489,7 @@ def do_set_land(self,obj,contact):
             for i in range(obj.db.missile["tubes"]):
                 obj.db.mlist[i]["lock"] = 0
             obj.db.space = obj_x.db.space
-            obj.db.location = obj_x.name
+            obj.location = obj_x
             obj.db.sensor["contacts"] = 0
             obj.db.sensor["counter"] = 0
             obj.db.move["in"] = 0
@@ -2532,9 +2525,7 @@ def do_set_land(self,obj,contact):
     return 0
 
 def do_set_launch(self,obj):
-    l = obj.db.location
-    if (l != 0):
-        l = search_object(l)[0]
+    l = obj.location
     
     if(errors.error_on_console(self,obj)):
         return 0
@@ -2544,8 +2535,8 @@ def do_set_launch(self,obj):
         alerts.notify(self,alerts.ansi_red("{:s} is still connected.".format(obj.name)))
     else:
         obj_x = 0
-        i = search_object(obj.db.location)
-        if (len(i) > 0):
+        i = obj.location
+        if (i is None):
             obj_x = i
         if(obj_x == 0):
             alerts.notify(self,alerts.ansi_red("Launching error."))
@@ -2553,16 +2544,15 @@ def do_set_launch(self,obj):
         elif(obj_x.db.status["open_landing"] != 1):
             alerts.notify(self,alerts.ansi_red("{:s}'s landing bay doors are closed.".format(obj_x.name)))
         else:
-            obj.db.location = obj_x.db.location
+            obj.location = obj_x.location
             alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} launching from {:s}".format(obj.name,obj_x.name)))
             alerts.console_message(obj_x,["helm","science","tactical"],alerts.ansi_alert("{:s} launching from {:s}".format(obj.name,obj_x.name)))
             alerts.do_ship_notify(obj,"The {:s} lifts off from it's landing pad.".format(obj.name))
             alerts.do_space_notify_two(obj,obj_x,["helm","science","tactical"],"launching from")
 
             #where we are going
-            l = obj_x.db.location
-            if (l != 0):
-                l = search_object(l)[0]
+            l = obj_x.location
+            if (l is not None):
                 alerts.console_message(obj,["helm","science","tactical"],alerts.ansi_cmd(self.name,"{:s} landing on {:s}".format(obj.name,l.name)))
                 alerts.console_message(l,["helm","science","tactical"],alerts.ansi_alert("{:s} landing on {:s}".format(obj.name,l.name)))
                 alerts.do_ship_notify(obj,"The {:s} settles onto its landing pad.".format(obj.name))
@@ -2580,7 +2570,7 @@ def do_set_launch(self,obj):
 
             #we
             obj.db.space = obj_x.db.space
-            obj.db.location = obj_x.db.location
+            obj.location = obj_x.location
             for i in range(obj.db.beam["banks"]):
                 obj.db.blist[i]["lock"] = 0
             for i in range(obj.db.missile["tubes"]):
@@ -2606,7 +2596,7 @@ def do_set_launch(self,obj):
             obj.db.course["roll_in"] = obj_x.db.course["roll_out"]
             obj.db.course["roll_out"] = obj_x.db.course["roll_out"]
             obj.db.status["docked"] = 0
-            if (l != 0):
+            if (l is not None):
                 obj.db.status["landed"] = l.name
             else:
                 obj.db.status["landed"] = 0

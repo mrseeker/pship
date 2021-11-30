@@ -36,8 +36,8 @@ class CmdExit(default_cmds.MuxCommand):
         obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if (obj.db.location != 0):
-            ship_airlock = utils.name2sdb(obj.db.location)
+        if (obj.location is not None):
+            ship_airlock = obj.location
             airlock = search_tag("airlock",category=ship_airlock.name)
             if(len(airlock) > 0):
                 airlock = airlock[0]
@@ -54,7 +54,7 @@ class CmdExit(default_cmds.MuxCommand):
         elif("override" in self.switches):
             space = create_object(space_room,key="space-" + caller.name)
             space.db.sdesc = "Space"
-            space.db.desc = "You are a corpse happily floating in space"
+            space.db.desc = "You are now a corpse happily floating in space"
             space.db.coords["x"] = obj.db.coords["x"]
             space.db.coords["y"] = obj.db.coords["y"]
             space.db.coords["z"] = obj.db.coords["z"]

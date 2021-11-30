@@ -195,29 +195,25 @@ def contact2sdb(obj,c):
     for i in range(int(obj.db.sensor["contacts"])):
         if (c == obj.db.slist[i]["num"]):
             return search_object(obj.db.slist[i]["key"])[0]
-            break
     return constants.SENSOR_FAIL
 
 
 def sdb2contact(obj,s):
     for i in range(int(obj.db.sensor["contacts"])):
-        if (s.name == obj.db.slist[i]["key"]):
+        if (s.dbref == obj.db.slist[i]["key"]):
             return (obj.db.slist[i]["num"])
-            break
     return constants.SENSOR_FAIL
 
 def contact2slist(obj,c):
     for i in range(int(obj.db.sensor["contacts"])):
         if (c == obj.db.slist[i]["num"]):
             return i
-            break
     return constants.SENSOR_FAIL
 
 def sdb2slist(obj,s):
     for i in range(int(obj.db.sensor["contacts"])):
-        if (s == obj.db.slist[i]["key"]):
+        if (s.dbref == obj.db.slist[i]["key"]):
             return i
-            break
     return constants.SENSOR_FAIL
 
 def sdb2shield(n1,n2):
@@ -486,11 +482,10 @@ def debug_space(obj):
         bug = 0
     
     #location
-    obj_x = search_object(obj.db.location)
-    if (len(obj_x) >0):
-        obj_x = obj_x[0]
-        if(obj.db.location == obj_x.name):
-            obj_x.db.location = obj.name
+    obj_x = obj.location
+    if (obj_x is not None):
+        if(obj.location == obj_x):
+            obj.location = None
 
     #main
     if(obj.db.main["exist"] != 1 or obj.db.main["gw"] <= 0):
@@ -694,7 +689,7 @@ def debug_space(obj):
         obj.db.sensor["contacts"] = 0
         obj.db.sensor["counter"] = 0
         for i in range(constants.MAX_SENSOR_CONTACTS):
-            obj.db.slist[i]["key"] = 0
+            obj.db.slist[i]["key"] = ""
             obj.db.slist[i]["num"] = 0
             obj.db.slist[i]["lev"] = 0
     

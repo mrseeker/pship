@@ -873,7 +873,7 @@ def up_sensor_list(self):
     temp_lev = [0] * constants.MAX_SENSOR_CONTACTS
     
     for obj in objects:
-        if (self.db.location == obj.db.location and self.db.space == obj.db.space and obj.db.structure["type"] > 0 and self.name != obj.name):
+        if (self.location == obj and self.db.space == obj.db.space and obj.db.structure["type"] > 0 and self.name != obj.name):
             x = math.fabs(self.db.coords["x"] - obj.db.coords["x"])
             if (x > limit):
                 continue
@@ -894,7 +894,7 @@ def up_sensor_list(self):
                     level *= obj.db.cloak["level"]
             if (level < 0.01):
                 continue
-            temp_sdb.insert(contacts,obj.name)
+            temp_sdb.insert(contacts,obj.dbref)
             temp_lev.insert(contacts,level)
             contacts = contacts + 1
             if (contacts == constants.MAX_SENSOR_CONTACTS):

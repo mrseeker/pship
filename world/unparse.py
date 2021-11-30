@@ -182,9 +182,9 @@ def unparse_cargo(value):
 def unparse_contact(obj, obj2):
     if (obj == obj2):
         return obj.name
-    if (obj.db.location == obj2):
+    if (obj.location == obj2):
         return obj2.name
-    if (obj == obj2.db.location):
+    if (obj == obj2.location):
         return obj2.name
         
     slist = utils.sdb2list(obj,obj2)
@@ -223,18 +223,18 @@ def unparse_shield(value):
 def unparse_identity(obj1,obj2):
     if (obj1.name == obj2.name):
         return obj1.name
-    if (obj1.db.location == obj2.name):
+    if (obj1.location == obj2):
         return obj2.name
-    if (obj1.name == obj2.db.location):
+    if (obj1 == obj2.location):
         return obj2.name
     
     slist = utils.sdb2slist(obj1,obj2)
     if (slist == constants.SENSOR_FAIL):
         return "unknown contact"
     else:
-        if(obj1.slist["lev"][slist] >= 0.5 and not obj2.db.cloak["active"]):
+        if(obj1.slist["lev"][slist] >= 0.5 and obj2.db.cloak["active"] == 0):
             return obj2.name + " (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
-        elif(obj1.slist["lev"][slist] >= 0.25 and not obj2.db.cloak["active"]):
+        elif(obj1.slist["lev"][slist] >= 0.25 and obj2.db.cloak["active"] == 0):
             return unparse_class(obj2) + " class (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
         else:
             return "contact (" + str(int(utils.sdb2contact(obj1,obj2))) + ")"
