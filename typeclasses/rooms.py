@@ -22,6 +22,14 @@ class Room(ContribRPRoom):
     def at_object_creation(self):
         super().at_object_creation()
 
+    def get_display_name(self,looker, **kwargs):
+        idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
+        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
+        if (looker.location != self) and not self.access(looker, access_type="control"):
+           return ""    
+        return "%s%s" % (selfdesc, idstr)
+
+
 class space_room(Room):
     """
     This creates a default space_room.
