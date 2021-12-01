@@ -53,7 +53,7 @@ class CmdExit(default_cmds.MuxCommand):
                 if (ship_airlock == constants.SENSOR_FAIL):
                     alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
                     return 0
-                elif(ship_airlock not in obj.contents or obj.location != ship_airlock):
+                elif(ship_airlock not in obj.contents and obj.location != ship_airlock):
                     alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
                     return 0
                 elif(ship_airlock.tags.get(category="space_object") is None):
