@@ -205,9 +205,9 @@ class CmdDocking(default_cmds.MuxCommand):
         elif(self.args[0][0] == "s"):
             doors = "|b--[|yDocking Report|b]-------------------------------------------------------------|n\n"
             if obj.db.status["open_docking"] == 1:
-                doors += "|cCurrent status: |gOpen|n"
+                doors += "|cCurrent status: |gOpen|n\n"
             else:
-                doors += "|cCurrent status: |rClosed|n"
+                doors += "|cCurrent status: |rClosed|n\n"
             docked = []
             if obj.contents:
                 for con in obj.contents:
@@ -216,15 +216,15 @@ class CmdDocking(default_cmds.MuxCommand):
                             docked.append(con.name)
                         elif(con.db.cloak["active"] != 1):
                             docked.append("Ship")
-                            alerts.write_spacelog(self,con,"BUG: Bad location SDB")
+                            alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
                         else:
-                            alerts.write_spacelog(self,con,"BUG: Bad location SDB")
+                            alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
             if docked:
                 doors += "Docked ships: " + ", ".join(docked)        
             doors += l_line()
-            alerts.notify(self,doors)
+            alerts.notify(caller,doors)
         else:
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
 
 class CmdLanding(default_cmds.MuxCommand):
     """
@@ -266,9 +266,9 @@ class CmdLanding(default_cmds.MuxCommand):
         elif(self.args[0][0] == "s"):
             doors = "|b--[|yLanding Report|b]-------------------------------------------------------------|n\n"
             if obj.db.status["open_landing"] == 1:
-                doors += "|cCurrent status: |gOpen|n"
+                doors += "|cCurrent status: |gOpen|n\n"
             else:
-                doors += "|cCurrent status: |rClosed|n"
+                doors += "|cCurrent status: |rClosed|n\n"
             docked = []
             if obj.contents:
                 for con in obj.contents:
@@ -277,12 +277,12 @@ class CmdLanding(default_cmds.MuxCommand):
                             docked.append(con.name)
                         elif(con.db.cloak["active"] != 1):
                             docked.append("Ship")
-                            alerts.write_spacelog(self,con,"BUG: Bad location SDB")
+                            alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
                         else:
-                            alerts.write_spacelog(self,con,"BUG: Bad location SDB")
+                            alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
             if docked:
                 doors += "Landed ships: " + ", ".join(docked)        
             doors += l_line()
-            alerts.notify(self,doors)
+            alerts.notify(caller,doors)
         else:
-            self.caller.msg("Command not found: " + str(self.args))
+            caller.msg("Command not found: " + str(self.args))
