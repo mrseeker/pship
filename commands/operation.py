@@ -219,7 +219,7 @@ class CmdDocking(default_cmds.MuxCommand):
                             alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
             if docked:
                 doors += "Docked ships: " + ", ".join(docked)        
-            doors += l_line()
+            doors += "\n" + l_line()
             alerts.notify(caller,doors)
         else:
             caller.msg("Command not found: " + str(self.args))
@@ -278,7 +278,7 @@ class CmdLanding(default_cmds.MuxCommand):
                             alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
             if docked:
                 doors += "Landed ships: " + ", ".join(docked)        
-            doors += l_line()
+            doors += "\n"+ l_line()
             alerts.notify(caller,doors)
         else:
             caller.msg("Command not found: " + str(self.args))
