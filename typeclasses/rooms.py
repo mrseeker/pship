@@ -134,7 +134,7 @@ class space_room(Room):
         if users or things:
             string += "\n " + "\n ".join(users + things)
         if (docked or landed or space_objects):
-            string += "\n\n|b--[|yShip Report|b]----------------------------------------------------------------|n\n"
+            string += "\n\n|b--[|yShip Report|b]----------------------------------------------------------------|n"
         if docked:
             string += "\n|gDocked here:|n " + ", ".join(docked)
         if landed:
