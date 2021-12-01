@@ -151,7 +151,7 @@ class CmdConnect(default_cmds.MuxCommand):
         elif(ship_airlock not in obj.contents):
             alerts.notify(caller,alerts.ansi_red("That is not a valid contact."))
             return 0
-        elif(self.args[1][0] != "o" or self.args[1][0] == "c"):
+        elif(self.args[1][0] != "o" or self.args[1][0] != "c"):
             alerts.notify(caller,alerts.ansi_red("That is not a valid command."))
             return 0
         elif(self.args[1][0] == "o"):
