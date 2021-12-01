@@ -39,9 +39,9 @@ class CmdExit(default_cmds.MuxCommand):
 
         if (self.args[0] == "list"):
             list = []
-            for obj in obj.contents:
-                if (obj.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
-                    list.append(obj.name)
+            for obj_c in obj.contents:
+                if (obj_c.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
+                    list.append(obj_c.name)
             if obj.location is not None:
                 list.append(obj.location.name)
             alerts.notify(caller,"Available exits: " + ", ".join(list))
