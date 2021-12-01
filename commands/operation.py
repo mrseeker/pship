@@ -214,10 +214,8 @@ class CmdDocking(default_cmds.MuxCommand):
                     if (con.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
                         if ((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["docked"] != 0):
                             docked.append(con.name)
-                        elif(con.db.cloak["active"] != 1):
+                        elif(con.db.cloak["active"] != 1 and con.db.status["docked"] != 0):
                             docked.append("Ship")
-                            alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
-                        else:
                             alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
             if docked:
                 doors += "Docked ships: " + ", ".join(docked)        
@@ -275,10 +273,8 @@ class CmdLanding(default_cmds.MuxCommand):
                     if (con.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
                         if ((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["landed"] != 0):
                             docked.append(con.name)
-                        elif(con.db.cloak["active"] != 1):
+                        elif(con.db.cloak["active"] != 1  and con.db.status["landed"] != 0):
                             docked.append("Ship")
-                            alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
-                        else:
                             alerts.write_spacelog(caller,con,"BUG: Bad location SDB")
             if docked:
                 doors += "Landed ships: " + ", ".join(docked)        
