@@ -8,6 +8,7 @@ Rooms are simple containers that has no location of their own.
 from unicodedata import category
 from evennia.contrib.rpsystem import ContribRPRoom
 from world import constants,format
+from world.alerts import write_spacelog
 
 class Room(ContribRPRoom):
     """
@@ -116,6 +117,9 @@ class space_room(Room):
                         landed.append(con.name)
                     elif(con.db.cloak["active"] != 1):
                         space_objects.append("Ship")
+                        write_spacelog(self,con,"BUG: Bad location SDB")
+                    else:
+                        write_spacelog(self,con,"BUG: Bad location SDB")
                 else:
                     space_objects.append(con.tags.get(category="space_object"))
             else:
