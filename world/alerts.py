@@ -212,9 +212,8 @@ def do_all_console_notify(obj, text):
     for console_name in constants.CONSOLE_LIST:
         console_obj = search_tag(console_name, category=obj.key.lower())
         if (console_obj.count() > 0):
-            for obj in console_obj:
-                if (obj.db.ship == obj.name):
-                    obj.msg_contents(text)
+            for i in console_obj:
+                i.msg_contents(text)
 
 
 def do_ship_notify(obj, text):
