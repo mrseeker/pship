@@ -73,6 +73,10 @@ class CmdExit(default_cmds.MuxCommand):
                 elif(ship_airlock.db.status["connected"] == 0):
                     if("override" in self.switches):
                         if caller.move_to(airlock):
+                            if (obj.location is not None):
+                                obj.db.status["connected"] = 1
+                            elif(obj.db.location is not None):
+                                ship_airlock.db.status["connected"] = 1
                             alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
                             alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} forced itself on the ship through the airlock.".format(caller.db._sdesc)))
                             alerts.do_ship_notify(ship_airlock,alerts.ansi_alert("An unauthorized entry has been made."))
