@@ -23,7 +23,7 @@ class CmdExit(default_cmds.MuxCommand):
     Override - Exits the airlock, even if it means you end up in space.
 
     Command list:
-    None
+    list - Gives a list of available exits
     """
 
     key = "exit"
@@ -37,13 +37,23 @@ class CmdExit(default_cmds.MuxCommand):
         obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
+        if (self.args[0] == "list"):
+            list = []
+            for obj in obj.contents:
+                if (obj.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
+                    list.append(obj.name)
+            if obj.location is not None:
+                list.append(obj.location.name)
+            alerts.notify(caller,"Available exits: " + ", ".split(list))
+            return 1
+
         if (obj.location is not None or len(self.args) == 1):
             if (len(self.args[0]) != 0):
                 ship_airlock = utils.name2sdb(self.args[0])
                 if (ship_airlock == constants.SENSOR_FAIL):
                     alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
                     return 0
-                elif(ship_airlock not in obj.contents):
+                elif(ship_airlock not in obj.contents or obj.location != ship_airlock):
                     alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
                     return 0
                 elif(ship_airlock.tags.get(category="space_object") is None):
