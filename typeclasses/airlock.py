@@ -43,16 +43,23 @@ class CmdExit(default_cmds.MuxCommand):
                 airlock = airlock[0]
                 if (obj.db.status["connected"] == 1 or obj.db.status["landed"] == 1 or obj.db.status["docked"] == 1):
                     if caller.move_to(airlock):
-                        alerts.do_console_notify(obj,["security"],"Someone left the ship through the airlock.")
-                        alerts.do_console_notify(ship_airlock,["security"],"Someone entered the ship through the airlock.")
+                        alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.sdesc)))
+                        alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} entered the ship through the airlock.".format(caller.sdesc)))
                     else:
                         alerts.notify(caller,"The airlock opens, but you stare at a sealed door.")
+                elif(obj.db.status["connected"] == 0):
+                    if("override" in self.switches):
+                        alerts.notify(caller,"The airlock opens, but you stare at a sealed door.")
+                    else:
+                        alerts.notify(caller,"The airlock refuses to open.")
                 else:
                     alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
             else:
                 alerts.notify(caller,alerts.ansi_red("{:s} does not have an airlock.".format(ship_airlock.name)))
         elif("override" in self.switches):
             space = create_object(space_room,key="space-" + caller.name)
+            self.tags.remove(constants.type_name[0],category="space_object")
+            self.tags.add(constants.type_name[9],category="airlock")
             space.db.sdesc = "Space"
             space.db.desc = "You are now a corpse happily floating in space"
             space.db.coords["x"] = obj.db.coords["x"]
@@ -72,8 +79,8 @@ class CmdExit(default_cmds.MuxCommand):
             space.tags.add("corpse",category=caller.name)
             space.cmdset.add("commands.science.ScienceCmdSet",persistent=True)
             caller.move_to(space)
-            alerts.do_console_notify(obj,["security"],alerts.ansi_alert("Someone left the ship through the airlock."))
-            alerts.log_msg("{:s} exited through the airlock.".format(caller.name))
+            alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.sdesc)))
+            alerts.write_spacelog(caller,obj,"LOG: exit through the airlock in space: {:s}".format(space.dbref))
         else:
             alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
 

@@ -32,3 +32,4 @@ class Character(ContribRPCharacter):
 
     def at_object_creation(self):
         super().at_object_creation()
+        self.sdesc.add("A humanoid")
