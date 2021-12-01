@@ -109,10 +109,10 @@ class space_room(Room):
             elif con.has_account:
                 users.append(key)
             elif con.tags.get(category="space_object") is not None:
-                if (con.tags.get(category="space_object")[0] == constants.SHIP_ATTR_NAME):
+                if (con.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
                     ship.append(key)
                 else:
-                    ship.append(con.tags.get(category="space_object")[0])
+                    ship.append(con.tags.get(category="space_object"))
             else:
                 things.append(key)
         # get description, build string
