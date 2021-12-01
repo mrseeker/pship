@@ -44,7 +44,7 @@ class CmdExit(default_cmds.MuxCommand):
                     list.append(obj.name)
             if obj.location is not None:
                 list.append(obj.location.name)
-            alerts.notify(caller,"Available exits: " + ", ".split(list))
+            alerts.notify(caller,"Available exits: " + ", ".join(list))
             return 1
 
         if (obj.location is not None or len(self.args) == 1):
