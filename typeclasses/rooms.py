@@ -110,9 +110,9 @@ class space_room(Room):
                 users.append(key)
             elif con.tags.get(category="space_object") is not None:
                 if (con.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
-                    if ((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["docked"] == 1):
+                    if ((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["docked"] != 0):
                         docked.append(con.name)
-                    elif((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["landed"] == 1):
+                    elif((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["landed"] != 0):
                         landed.append(con.name)
                     elif(con.db.cloak["active"] != 1):
                         space_objects.append("Ship")
