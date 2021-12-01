@@ -53,7 +53,7 @@ class CmdExit(default_cmds.MuxCommand):
             airlock = search_tag("airlock",category=ship_airlock.name)
             if(len(airlock) > 0):
                 airlock = airlock[0]
-                if (ship_airlock.db.status["connected"] == 1 or ship_airlock.db.status["landed"] == 1 or ship_airlock.db.status["docked"] == 1):
+                if ((obj.location is not None and obj.db.status["connected"] == 1) or (obj.location is None and ship_airlock.db.status["connected"] == 1) or ship_airlock.db.status["landed"] == 1 or ship_airlock.db.status["docked"] == 1):
                     if caller.move_to(airlock):
                         alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
                         alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} entered the ship through the airlock.".format(caller.db._sdesc)))
