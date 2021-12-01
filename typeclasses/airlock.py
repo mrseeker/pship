@@ -78,7 +78,7 @@ class CmdExit(default_cmds.MuxCommand):
                         else:
                             alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                     else:
-                        alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
+                        alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a locked door."))
                 else:
                     alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
             else:
