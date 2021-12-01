@@ -117,7 +117,7 @@ CLASS_ATTR_NAME = "class"
 CONSOLE_ATTR_NAME = "consoles"
 CONSOLE_USER_ATTR_NAME = "user"
 EMPIRE_ATTR_NAME = "beacon"
-SHIP_ATTR_NAME = type_name[1]
+SHIP_ATTR_NAME = type_name[1].lower()
 
 ALLOCATE_ATTR_NAME = "allocate"
 ALLOCATE_DATA_NUMBER = 21
