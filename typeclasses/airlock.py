@@ -53,17 +53,17 @@ class CmdExit(default_cmds.MuxCommand):
             airlock = search_tag("airlock",category=ship_airlock.name)
             if(len(airlock) > 0):
                 airlock = airlock[0]
-                if (obj.db.status["connected"] == 1 or obj.db.status["landed"] == 1 or obj.db.status["docked"] == 1):
+                if (ship_airlock.db.status["connected"] == 1 or ship_airlock.db.status["landed"] == 1 or ship_airlock.db.status["docked"] == 1):
                     if caller.move_to(airlock):
                         alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.sdesc)))
                         alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} entered the ship through the airlock.".format(caller.sdesc)))
                     else:
-                        alerts.notify(caller,"The airlock opens, but you stare at a sealed door.")
-                elif(obj.db.status["connected"] == 0):
+                        alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
+                elif(ship_airlock.db.status["connected"] == 0):
                     if("override" in self.switches):
-                        alerts.notify(caller,"The airlock opens, but you stare at a sealed door.")
+                        alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                     else:
-                        alerts.notify(caller,"The airlock refuses to open.")
+                        alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
                 else:
                     alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
             else:
