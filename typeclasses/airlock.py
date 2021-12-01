@@ -71,7 +71,11 @@ class CmdExit(default_cmds.MuxCommand):
                         alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                 elif(ship_airlock.db.status["connected"] == 0):
                     if("override" in self.switches):
-                        alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
+                        if caller.move_to(airlock):
+                            alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
+                            alerts.do_ship_notify(ship_airlock,alerts.ansi_alert("An unauthorized entry has been made."))
+                        else:
+                            alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                     else:
                         alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
                 else:
