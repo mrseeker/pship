@@ -55,8 +55,8 @@ class CmdExit(default_cmds.MuxCommand):
                 airlock = airlock[0]
                 if (ship_airlock.db.status["connected"] == 1 or ship_airlock.db.status["landed"] == 1 or ship_airlock.db.status["docked"] == 1):
                     if caller.move_to(airlock):
-                        alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.sdesc)))
-                        alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} entered the ship through the airlock.".format(caller.sdesc)))
+                        alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
+                        alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} entered the ship through the airlock.".format(caller.db._sdesc)))
                     else:
                         alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                 elif(ship_airlock.db.status["connected"] == 0):
