@@ -191,7 +191,7 @@ class CmdDocking(default_cmds.MuxCommand):
         elif(obj.db.structure["has_docking_bay"] == 0):
             alerts.notify(caller,alerts.ansi_red("{:s} has no docking bay.".format(obj.name)))
             return 0
-        elif(self.args[0][0] != "o" or self.args[0][0] == "c" or self.args[0][0] =="s"):
+        elif(self.args[0][0] != "o" or self.args[0][0] != "c" or self.args[0][0] !="s"):
             alerts.notify(caller,alerts.ansi_red("That is not a valid command."))
             return 0
         elif(self.args[0][0] == "o"):
@@ -252,7 +252,7 @@ class CmdLanding(default_cmds.MuxCommand):
         elif(obj.db.structure["has_landing_pad"] == 0):
             alerts.notify(caller,alerts.ansi_red("{:s} has no landing pad.".format(obj.name)))
             return 0
-        elif(self.args[0][0] != "o" or self.args[0][0] == "c" or self.args[0][0] =="s"):
+        elif(self.args[0][0] != "o" or self.args[0][0] != "c" or self.args[0][0] !="s"):
             alerts.notify(caller,alerts.ansi_red("That is not a valid command."))
             return 0
         elif(self.args[0][0] == "o"):
