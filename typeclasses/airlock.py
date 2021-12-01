@@ -65,7 +65,6 @@ class CmdExit(default_cmds.MuxCommand):
                 airlock = airlock[0]
                 if ((obj.location is not None and obj.db.status["connected"] == 1) or (obj.location is None and ship_airlock.db.status["connected"] == 1) or ship_airlock.db.status["landed"] == 1 or ship_airlock.db.status["docked"] == 1):
                     if caller.move_to(airlock):
-                        alerts.notify(caller,alerts.ansi_yellow("You breach through a sealed door."))
                         alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
                         alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_alert("{:s} entered the ship through the airlock.".format(caller.db._sdesc)))
                     else:
@@ -75,8 +74,9 @@ class CmdExit(default_cmds.MuxCommand):
                         if caller.move_to(airlock):
                             if (obj.location is not None):
                                 obj.db.status["connected"] = 1
-                            elif(obj.db.location is not None):
+                            elif(ship_airlock.location is not None):
                                 ship_airlock.db.status["connected"] = 1
+                            alerts.notify(caller,alerts.ansi_yellow("You breach through the locked door."))
                             alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
                             alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} forced itself on the ship through the airlock.".format(caller.db._sdesc)))
                             alerts.do_ship_notify(ship_airlock,alerts.ansi_alert("An unauthorized entry has been made."))
