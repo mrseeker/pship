@@ -38,7 +38,7 @@ class CmdExit(default_cmds.MuxCommand):
         obj = search_object(obj_x.db.ship)[0]
 
         if (obj.location is not None or len(self.args) == 1):
-            if (self.args[0] != 0):
+            if (len(self.args[0]) != 0):
                 ship_airlock = utils.name2sdb(self.args[0])
                 if (ship_airlock == constants.SENSOR_FAIL):
                     alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
