@@ -17,10 +17,10 @@ class CmdExit(default_cmds.MuxCommand):
     """
     Exits the airlock
 
-    Usage: exit/override [name]
+    Usage: exit/force [name]
     
     Switches:
-    Override - Exits the airlock, even if it means you end up in space.
+    force - Exits the airlock forcefully
 
     Command list:
     list - Gives a list of available exits
@@ -28,7 +28,7 @@ class CmdExit(default_cmds.MuxCommand):
 
     key = "exit"
     help_category = "Airlock"
-    switch_options = ("override",)
+    switch_options = ("force",)
 
     def func(self):
         self.args = self.args.strip()
@@ -70,7 +70,7 @@ class CmdExit(default_cmds.MuxCommand):
                     else:
                         alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                 elif(ship_airlock.db.status["connected"] == 0):
-                    if("override" in self.switches):
+                    if("force" in self.switches):
                         if caller.move_to(airlock):
                             if (obj.location is not None):
                                 obj.db.status["connected"] = 1
@@ -88,7 +88,7 @@ class CmdExit(default_cmds.MuxCommand):
                     alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
             else:
                 alerts.notify(caller,alerts.ansi_red("{:s} does not have an airlock.".format(ship_airlock.name)))
-        elif("override" in self.switches):
+        elif("force" in self.switches):
             space = create_object(Corpse,key=caller.name)
             space.db.coords["x"] = obj.db.coords["x"]
             space.db.coords["y"] = obj.db.coords["y"]
