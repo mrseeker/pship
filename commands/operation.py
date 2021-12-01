@@ -16,6 +16,9 @@ class OperationCmdSet(CmdSet):
             self.add(CmdReFuel())
             self.add(CmdDeFuel())
             self.add(CmdFreq())
+            self.add(CmdConnect())
+            self.add(CmdDocking())
+            self.add(CmdLanding())
 
 class CmdReFuel(default_cmds.MuxCommand):
     """
