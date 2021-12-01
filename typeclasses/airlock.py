@@ -66,14 +66,15 @@ class CmdExit(default_cmds.MuxCommand):
                 if ((obj.location is not None and obj.db.status["connected"] == 1) or (obj.location is None and ship_airlock.db.status["connected"] == 1) or ship_airlock.db.status["landed"] == 1 or ship_airlock.db.status["docked"] == 1):
                     if caller.move_to(airlock):
                         alerts.notify(caller,alerts.ansi_yellow("You breach through a sealed door."))
-                        alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
-                        alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} entered the ship through the airlock.".format(caller.db._sdesc)))
+                        alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
+                        alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_alert("{:s} entered the ship through the airlock.".format(caller.db._sdesc)))
                     else:
                         alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
                 elif(ship_airlock.db.status["connected"] == 0):
                     if("override" in self.switches):
                         if caller.move_to(airlock):
-                            alerts.do_console_notify(obj,["security"],alerts.ansi_warn("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
+                            alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.db._sdesc)))
+                            alerts.do_console_notify(ship_airlock,["security"],alerts.ansi_warn("{:s} forced itself on the ship through the airlock.".format(caller.db._sdesc)))
                             alerts.do_ship_notify(ship_airlock,alerts.ansi_alert("An unauthorized entry has been made."))
                         else:
                             alerts.notify(caller,alerts.ansi_red("The airlock opens, but you stare at a sealed door."))
