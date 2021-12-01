@@ -5,6 +5,7 @@ Rooms are simple containers that has no location of their own.
 
 """
 
+from unicodedata import category
 from evennia.contrib.rpsystem import ContribRPRoom
 from world import constants
 
@@ -32,9 +33,7 @@ class Room(ContribRPRoom):
 
     def get_display_name(self,looker, **kwargs):
         idstr = "(#%s)" % self.id if self.access(looker, access_type="control") else ""
-        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc
-        if (looker.location != self) and not self.access(looker, access_type="control"):
-           return ""    
+        selfdesc = self.name if self.access(looker, access_type="control") else self.db.sdesc    
         return "%s%s" % (selfdesc, idstr)
 
 
@@ -89,6 +88,45 @@ class space_room(Room):
         for i in range(constants.MAX_SENSOR_CONTACTS):
             sensor_combo[i] = {"key":"","num":0,"lev":0.0}
         self.db.slist = sensor_combo
+
+    def return_appearance(self, looker):
+        """
+        This formats a description. It is the hook a 'look' command
+        should call.
+
+        Args:
+            looker (Object): Object doing the looking.
+        """
+        if not looker:
+            return ""
+        # get and identify all objects
+        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        exits, users, ship, things = [], [], [], []
+        for con in visible:
+            key = con.get_display_name(looker, pose=True)
+            if con.destination:
+                exits.append(key)
+            elif con.has_account:
+                users.append(key)
+            elif con.tags.get(category="space_object") is not None:
+                if (con.tags.get(category="space_object")[0] == constants.SHIP_ATTR_NAME):
+                    ship.append(key)
+                else:
+                    ship.append(con.tags.get(category="space_object")[0])
+            else:
+                things.append(key)
+        # get description, build string
+        string = "|c%s|n\n" % self.get_display_name(looker, pose=True)
+        desc = self.db.desc
+        if desc:
+            string += "%s" % desc
+        if exits:
+            string += "\n|wExits:|n " + ", ".join(exits)
+        if users or things:
+            string += "\n " + "\n ".join(users + things)
+        if ship:
+            string += "\n|gCargo:|n " + ", ".join(ship)
+        return string
         
 class Console(Room):
     def at_object_creation(self):
