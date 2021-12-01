@@ -133,12 +133,16 @@ class space_room(Room):
             string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
             string += "\n " + "\n ".join(users + things)
+        if (docked or landed or space_objects):
+            string += "\n\n|b--[|yShip Report|b]----------------------------------------------------------------|n\n"
         if docked:
             string += "\n|gDocked here:|n " + ", ".join(docked)
         if landed:
             string += "\n|gLanded here:|n " + ", ".join(landed)
         if space_objects:
             string += "\n|gCargo:|n " + ", ".join(space_objects)
+        if (docked or landed or space_objects):
+            string += "\n"+format.l_line+"\n"
         return string
         
 class Console(Room):
