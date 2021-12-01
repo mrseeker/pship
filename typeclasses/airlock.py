@@ -1,3 +1,4 @@
+from unicodedata import category
 from evennia.utils.create import create_object
 from typeclasses.rooms import Room, space_room
 from evennia import CmdSet
@@ -16,7 +17,7 @@ class CmdExit(default_cmds.MuxCommand):
     """
     Exits the airlock
 
-    Usage: exit/override
+    Usage: exit/override [name]
     
     Switches:
     Override - Exits the airlock, even if it means you end up in space.
@@ -36,7 +37,17 @@ class CmdExit(default_cmds.MuxCommand):
         obj_x = search_object(caller.location)[0]
         obj = search_object(obj_x.db.ship)[0]
 
-        if (obj.location is not None):
+        if (obj.location is not None or len(self.args) == 1):
+            if (len(self.args) == 1):
+                ship_airlock = utils.name2sdb(self.args[0])
+                if (ship_airlock == constants.SENSOR_FAIL):
+                    alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
+                    return 0
+                elif(ship_airlock not in obj.contents):
+                    alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
+                    return 0
+                elif(ship_airlock.tags.get(category="space_object") is None):
+                    alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
             ship_airlock = obj.location
             airlock = search_tag("airlock",category=ship_airlock.name)
             if(len(airlock) > 0):
@@ -57,11 +68,7 @@ class CmdExit(default_cmds.MuxCommand):
             else:
                 alerts.notify(caller,alerts.ansi_red("{:s} does not have an airlock.".format(ship_airlock.name)))
         elif("override" in self.switches):
-            space = create_object(space_room,key="space-" + caller.name)
-            self.tags.remove(constants.type_name[0],category="space_object")
-            self.tags.add(constants.type_name[9],category="airlock")
-            space.db.sdesc = "Space"
-            space.db.desc = "You are now a corpse happily floating in space"
+            space = create_object(Corpse,key=caller.name)
             space.db.coords["x"] = obj.db.coords["x"]
             space.db.coords["y"] = obj.db.coords["y"]
             space.db.coords["z"] = obj.db.coords["z"]
@@ -69,13 +76,7 @@ class CmdExit(default_cmds.MuxCommand):
             space.db.course["d"][0][0] = obj.db.course["d"][0][0]
             space.db.course["d"][0][1] = obj.db.course["d"][0][1]
             space.db.course["d"][0][2] = obj.db.course["d"][0][2]
-            space.db.type = constants.type_name[9]
-            space.db.status["active"] = 1
-            space.db.structure["type"] = 9
             space.db.ship = space.name
-            space.db.sensor["srs_exist"] = 1
-            space.db.sensor["srs_active"] = 1
-            space.db.sensor["srs_resolution"] = 0.01
             space.tags.add("corpse",category=caller.name)
             space.cmdset.add("commands.science.ScienceCmdSet",persistent=True)
             caller.move_to(space)
@@ -84,6 +85,20 @@ class CmdExit(default_cmds.MuxCommand):
         else:
             alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
 
+class Corpse(space_room):
+    def at_object_creation(self):
+        super().at_object_creation()
+        self.tags.remove(constants.type_name[0],category="space_object")
+#        self.tags.add(constants.type_name[9],category="airlock")
+        self.db.sdesc = "Space"
+        self.db.desc = "You are now a corpse happily floating in space"
+        self.db.type = constants.type_name[9]
+        self.db.status["active"] = 1
+        self.db.structure["type"] = 9
+        self.db.sensor["srs_exist"] = 1
+        self.db.sensor["srs_active"] = 1
+        self.db.sensor["srs_resolution"] = 0.01
+
 class Airlock(Room):
     def at_object_creation(self):
         super().at_object_creation()
@@ -91,4 +106,4 @@ class Airlock(Room):
         self.db.type=constants.CONSOLE_ATTR_NAME
         self.db.sdesc = "Airlock"
         self.db.ship=""
-        self.cmdset.add("typeclasses.airlock.AirlockCmdSet", persistent=True)
+#        self.cmdset.add("typeclasses.airlock.AirlockCmdSet", persistent=True)

@@ -269,6 +269,9 @@ def arc_check(contact, weapon):
         return constants.ARC_FAIL
 
 def name2sdb(name):
+    """
+    Returns the object's name or SENSOR_FAIL
+    """
     obj = search_object(name)
     if (len(obj) > 0):
         return obj[0]
