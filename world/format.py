@@ -1,4 +1,5 @@
-from world import unparse, utils
+from unicodedata import category
+from world import constants, unparse, utils
 
 def l_line():
     return '|b-------------------------------------------------------------------------------|w\n'
@@ -73,6 +74,43 @@ def facing_shield(obj1,obj2):
             return f'|c{"Facing Shield":16}:|w {unparse.unparse_shield(shield):<17} UP'
         else:
             return f'|c{"Facing Shield":16}:|w {unparse.unparse_shield(shield):<20}'
+
+def l_Landed(obj):
+    first = 1
+    open = "Closed"
+    if (obj.db.status["open_landing"] == 1):
+        open = "Open"
+    buffer = "|cLanded here {:s}:|w".format(open)
+    for obj_l in obj.contents:
+        if obj_l.tags.get(category="space_object") == constants.SHIP_ATTR_NAME:
+            if ((obj_l.db.cloak["active"] != 1 or obj_l.db.status["connected"] == 1) and obj_l.status["landed"] == 1):
+                if(first == 1):
+                    first = 0
+                    buffer += "\n"
+                else:
+                    buffer += ", "
+                buffer += obj_l.name
+    buffer += "\n"
+    return buffer
+
+def l_Docked(obj):
+    first = 1
+    open = "Closed"
+    if (obj.db.status["open_docking"] == 1):
+        open = "Open"
+    buffer = "|cDocked here {:s}:|w".format(open)
+    for obj_l in obj.contents:
+        if obj_l.tags.get(category="space_object") == constants.SHIP_ATTR_NAME:
+            if ((obj_l.db.cloak["active"] != 1 or obj_l.db.status["connected"] == 1) and obj_l.status["docked"] == 1):
+                if(first == 1):
+                    first = 0
+                    buffer += "\n"
+                else:
+                    buffer += ", "
+                buffer += obj_l.name
+    buffer += "\n"
+    return buffer
+
 
 def location(obj):
     l = obj.location

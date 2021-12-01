@@ -7,7 +7,7 @@ Rooms are simple containers that has no location of their own.
 
 from unicodedata import category
 from evennia.contrib.rpsystem import ContribRPRoom
-from world import constants
+from world import constants,format
 
 class Room(ContribRPRoom):
     """
@@ -101,7 +101,7 @@ class space_room(Room):
             return ""
         # get and identify all objects
         visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
-        exits, users, ship, things = [], [], [], []
+        exits, users, space_objects, docked, landed, things = [], [], [], [],[],[]
         for con in visible:
             key = con.get_display_name(looker, pose=True)
             if con.destination:
@@ -110,9 +110,14 @@ class space_room(Room):
                 users.append(key)
             elif con.tags.get(category="space_object") is not None:
                 if (con.tags.get(category="space_object") == constants.SHIP_ATTR_NAME):
-                    ship.append(key)
+                    if ((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["docked"] == 1):
+                        docked.append(con.name)
+                    elif((con.db.cloak["active"] != 1 or con.db.status["connected"] == 1) and con.db.status["landed"] == 1):
+                        landed.append(con.name)
+                    elif(con.db.cloak["active"] != 1):
+                        space_objects.append("Ship")
                 else:
-                    ship.append(con.tags.get(category="space_object"))
+                    space_objects.append(con.tags.get(category="space_object"))
             else:
                 things.append(key)
         # get description, build string
@@ -124,8 +129,12 @@ class space_room(Room):
             string += "\n|wExits:|n " + ", ".join(exits)
         if users or things:
             string += "\n " + "\n ".join(users + things)
-        if ship:
-            string += "\n|gCargo:|n " + ", ".join(ship)
+        if docked:
+            string += "\n|gDocked here:|n " + ", ".join(docked)
+        if landed:
+            string += "\n|gLanded here:|n " + ", ".join(landed)
+        if space_objects:
+            string += "\n|gCargo:|n " + ", ".join(space_objects)
         return string
         
 class Console(Room):
