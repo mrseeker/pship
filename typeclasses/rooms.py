@@ -142,7 +142,7 @@ class space_room(Room):
         if space_objects:
             string += "\n|gCargo:|n " + ", ".join(space_objects)
         if (docked or landed or space_objects):
-            string += "\n"+format.l_line+"\n"
+            string += "\n"+format.l_line()+"\n"
         return string
         
 class Console(Room):
