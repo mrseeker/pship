@@ -48,7 +48,8 @@ class CmdExit(default_cmds.MuxCommand):
                     return 0
                 elif(ship_airlock.tags.get(category="space_object") is None):
                     alerts.notify(caller,alerts.ansi_red("That is not a valid contact"))
-            ship_airlock = obj.location
+            else:
+                ship_airlock = obj.location
             airlock = search_tag("airlock",category=ship_airlock.name)
             if(len(airlock) > 0):
                 airlock = airlock[0]
