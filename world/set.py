@@ -2660,3 +2660,49 @@ def do_set_enter_wormhole(self,obj,contact):
             iterate.up_wormhole(obj,obj_x)
             return 1
     return 0
+
+def do_set_eta(self, obj, speed):
+    if(errors.error_on_console(self,obj)):
+        return 0
+    elif(obj.db.engine["warp_exist"] != 1 or obj.db.engine["impulse_exist"] != 1):
+        alerts.notify(self,alerts.ansi_red("{:s} has no engines.".format(obj.name)))
+        return 0
+    speed = math.fabs(speed)
+    if (speed == 0.0):
+        speed = math.fabs(obj.db.move["in"])
+        if (speed == 0.0):
+            alerts.notify(self,alerts.ansi_red("{:s} has no motion".format(obj.name)))
+            return 0
+    if (speed < 1.0):
+        speed *= constants.LIGHTSPEED
+    else:
+        speed = constants.LIGHTSPEED * pow(speed,3.333333) * 0.5 * (utils.xyz2cochranes(obj.db.coords["x"],obj.db.coords["y"],obj.db.coords["z"]) + utils.xyz2cochranes(obj.db.coords["dx"],obj.db.coords["dy"],obj.db.coords["dz"]))
+    
+    dx = obj.db.coords["dx"] - obj.db.coords["x"]
+    dy = obj.db.coords["dy"] - obj.db.coords["y"]
+    dz = obj.db.coords["dz"] - obj.db.coords["z"]
+
+    seconds = math.sqrt(dx*dx + dy*dy + dz*dz) / speed
+    years = math.floor(seconds / 31557081.168)
+    seconds -= years * 31557081.168
+    days = math.floor(seconds / 86400.0)
+    seconds -= days * 86400.0
+    hours = math.floor(seconds / 3600.0)
+    seconds -= hours * 3600.0
+    minutes = math.floor(seconds / 60.0)
+    seconds -= minutes * 60.0
+
+    buffer = "ETA is "
+    if(years > 0.0):
+        buffer += "{:.0f} years ".format(years)
+    if(days > 0.0):
+        buffer += "{:.0f} days ".format(days)
+    if(hours > 0.0):
+        buffer += "{:.0f} hrs ".format(hours)
+    if(minutes > 0.0):
+        buffer += "{:.0f} min ".format(minutes)
+    if(seconds > 0.0):
+        buffer += "{:.0f} sec".format(years)
+    
+    alerts.notify(self,alerts.ansi_alert(buffer))
+    return 1
