@@ -148,11 +148,14 @@ class CmdConnect(default_cmds.MuxCommand):
         elif ship_airlock == constants.SENSOR_FAIL:
             alerts.notify(caller,alerts.ansi_red("That is not a valid contact."))
             return 0
-        elif(ship_airlock not in obj.contents):
+        elif(ship_airlock not in obj.contents and ship_airlock != obj):
             alerts.notify(caller,alerts.ansi_red("That is not a valid contact."))
             return 0
         elif(self.args[1][0] != "o" and self.args[1][0] != "c"):
             alerts.notify(caller,alerts.ansi_red("That is not a valid command."))
+            return 0
+        elif(self.args[1][0] == "o" and ship_airlock == obj):
+            alerts.notify(caller,alerts.ansi_red("The airlock can only be opened from the outside."))
             return 0
         elif(self.args[1][0] == "o"):
             ship_airlock.db.status["connected"] = 1

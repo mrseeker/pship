@@ -8,6 +8,7 @@ from world import alerts, errors,unparse, utils,constants
 from evennia import CmdSet
 from evennia.utils.search import search_object
 from evennia.utils import evtable
+from commands import operation
 
 class HelmCmdSet(CmdSet):
         
@@ -61,6 +62,7 @@ class FighterCmdSet(CmdSet):
             self.add(CmdDock())
             self.add(CmdUndock())
             self.add(CmdETA())
+            self.add(operation.CmdConnect())
 
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
