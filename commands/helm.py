@@ -34,6 +34,7 @@ class HelmCmdSet(CmdSet):
             self.add(CmdLaunch())
             self.add(CmdDock())
             self.add(CmdUndock())
+            self.add(CmdETA())
 
 class FighterCmdSet(CmdSet):
         key = "FighterCmdSet"
@@ -59,6 +60,7 @@ class FighterCmdSet(CmdSet):
             self.add(CmdLaunch())
             self.add(CmdDock())
             self.add(CmdUndock())
+            self.add(CmdETA())
 
 
 class CmdStatus_Fighter(default_cmds.MuxCommand):
@@ -381,6 +383,35 @@ class CmdFreq(default_cmds.MuxCommand):
             alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 
+class CmdETA(default_cmds.MuxCommand):
+    """
+    Commands related to the ETA.
+
+    Usage: eta <speed>
+
+    Command list:
+    speed - Speed in warp
+    """
+
+    key="eta"
+    help_category = "Helm"
+
+    def func(self):
+        self.args = self.args.split(" ")
+        caller = self.caller
+        obj_x = search_object(caller.location)[0]
+        obj = search_object(obj_x.db.ship)[0]
+        try:
+            if(errors.error_on_console(caller,obj)):
+                return 0
+            if (len(self.args) == 0):
+                setter.do_set_eta(caller,obj,0)
+            elif(len(self.args) == 1):
+                setter.do_set_eta(caller,obj,float(self.args[0]))    
+            else:
+                alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
+        except:
+            alerts.notify(caller,alerts.ansi_red("Wrong command entered."))
 
 class CmdAxis(default_cmds.MuxCommand):
     """
