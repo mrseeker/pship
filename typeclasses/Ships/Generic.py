@@ -4,6 +4,23 @@ from typeclasses.exits import Exit
 from typeclasses.rooms import Room, Console
 from typeclasses.spaceship import Generic_Ship
 
+class EVA(Generic_Ship):
+    def at_object_creation(self):
+        super().at_object_creation()
+        self.db.move["ratio"] = 1000
+        self.db.main["exist"] = 0 
+        self.db.aux["gw"] = 0.1
+        self.db.batt["gw"]= 0.1
+        self.db.beam["exist"] = 0
+        self.db.shields["exist"] = 0
+        self.db.engine["warp_exist"] = 0
+        self.db.tract["exist"] = 0
+        self.db.trans["exist"] = 0
+        self.db.shield["exist"] = 0
+        self.db.structure = {"type":10,"displacement":0.1,"cargo_hold":0,"cargo_mass":0.0,"superstructure":0.1,"max_structure":0.1,"has_landing_pad":0,"has_docking_bay":0,"can_land":0,"can_dock":0,"repair":0,"max_repair":0}
+        self.db.cost = 0
+        create_fighter_layout(self)
+
 class Shuttle(Generic_Ship):
     def at_object_creation(self):
         super().at_object_creation()

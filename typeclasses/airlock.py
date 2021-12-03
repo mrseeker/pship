@@ -1,5 +1,6 @@
 from unicodedata import category
 from evennia.utils.create import create_object
+from typeclasses.Ships.Generic import EVA
 from typeclasses.rooms import Room, space_room
 from evennia import CmdSet
 from evennia.utils.search import search_object,search_tag
@@ -17,10 +18,11 @@ class CmdExit(default_cmds.MuxCommand):
     """
     Exits the airlock
 
-    Usage: exit/force [name]
+    Usage: exit/[switch] [name]
     
     Switches:
     force - Exits the airlock forcefully
+    eva - Exits the airlock using an EVA
 
     Command list:
     list - Gives a list of available exits
@@ -103,6 +105,18 @@ class CmdExit(default_cmds.MuxCommand):
             caller.move_to(space)
             alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.sdesc)))
             alerts.write_spacelog(caller,obj,"LOG: exit through the airlock in space: {:s}".format(space.dbref))
+        elif("eva" in self.switches):
+            space = create_object(EVA,key=caller.name)
+            space.db.coords["x"] = obj.db.coords["x"]
+            space.db.coords["y"] = obj.db.coords["y"]
+            space.db.coords["z"] = obj.db.coords["z"]
+            space.db.move["v"] = obj.db.move["v"]
+            space.db.course["d"][0][0] = obj.db.course["d"][0][0]
+            space.db.course["d"][0][1] = obj.db.course["d"][0][1]
+            space.db.course["d"][0][2] = obj.db.course["d"][0][2]
+            space.db.ship = space.name
+            caller.move_to(space)
+            alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.sdesc)))
         else:
             alerts.notify(caller,alerts.ansi_red("The airlock refuses to open."))
 
