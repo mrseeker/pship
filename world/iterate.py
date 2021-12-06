@@ -95,7 +95,7 @@ def up_main_damage(self):
                 self, alerts.ansi_warn("Impulse Drive core breach."))
             self.db.main = main
             damage.damage_structure(
-                self, self.db.power["main"] * (random.random(0, 100)+1.0))
+                self, self.db.power["main"] * (random.randint(0, 99)+1.0))
             self.db.main["in"] = 0.0
             self.db.main["out"] = 0.0
             self.db.power["main"] = 0.0
@@ -118,7 +118,7 @@ def up_aux_damage(self):
                 self, alerts.ansi_warn("fusion reactor core breach."))
             self.db.aux = aux
             damage.damage_structure(
-                self, self.db.power["aux"] * (random.random(0, 100)+1.0))
+                self, self.db.power["aux"] * (random.randint(0, 99)+1.0))
             self.db.aux["in"] = 0.0
             self.db.aux["out"] = 0.0
             self.db.power["aux"] = 0.0
