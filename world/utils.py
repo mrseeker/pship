@@ -433,8 +433,10 @@ def xyz2cochranes(x,y,z):
         return 1.0
         
 def sdb2angular(n1, n2):
-    obj1 = search_object(n1)[0]
-    obj2 = search_object(n2)[0]
+    obj1 = name2sdb(n1)
+    obj2 = name2sdb(n2)
+    if (obj1 == constants.SENSOR_FAIL or obj2 == constants.SENSOR_FAIL):
+        raise Exception
     
     a = [0.0,0.0,0.0]
     b = [0.0,0.0,0.0]
@@ -459,9 +461,11 @@ def sdb2angular(n1, n2):
     return math.fabs(math.acos(x) * 180 / math.pi)
     
 def sdb2friendly(n1,n2):
-    obj1 = search_object(n1)[0]
-    obj2 = search_object(n2)[0]
-    
+    obj1 = name2sdb(n1)
+    obj2 = name2sdb(n2)
+    if (obj1 == constants.SENSOR_FAIL or obj2 == constants.SENSOR_FAIL):
+        raise Exception
+        
     if (math.fabs(obj1.db.iff["frequency"] - obj2.db.iff["frequency"] ) > 0.001):
         return 1
     else:

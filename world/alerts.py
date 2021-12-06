@@ -484,12 +484,6 @@ def deut_runout(obj):
         "DEUTERIUM DEPLETION: All reactors now offline"))
     return 1
 
-
-def batt_balance(obj):
-    console_message(obj, ["engineering"], ansi_alert(
-        "Batteries set at {:.3f}%".format(obj.db.batt["out"] * 100.0)))
-
-
 def batt_runout(obj):
     console_message(obj, ["engineering"], ansi_warn(
         "BATTERY DEPLETION: Batteries now offline"))
@@ -507,6 +501,13 @@ def aux_overload(obj):
         "FUSION REACTOR CORE BREACH IN PROGRESS"))
     return 1
 
+def warp_overload(obj):
+    console_message(obj,["engineering","damage"],ansi_warn("WARP DRIVE BURNOUT: Warp drive now offline"))
+    return 1
+
+def impulse_overload(obj):
+    console_message(obj,["engineering","damage"],ansi_warn("IMPULSE DRIVE BURNOUT: Impulse drive now offline"))
+    return 1
 
 def ship_hurt(obj):
     if(obj.db.structure["type"] == 1 or obj.db.structure["type"] == 2):

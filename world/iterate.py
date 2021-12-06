@@ -3,7 +3,7 @@ Iterates the world and it's settings
 """
 
 import time
-from world import constants, alerts, utils, balance, damage
+from world import constants, alerts, utils, balance, damage,unparse
 from world import set as setter
 from evennia.utils.search import search_tag,search_object
 from evennia import gametime
@@ -11,8 +11,6 @@ from evennia.scripts.tickerhandler import TICKER_HANDLER
 import math
 import random
 import sys
-
-from world.unparse import unparse_identity, unparse_type
 
 def up_alloc_balance(self):
     balance.balance_eng_power(self)
@@ -31,168 +29,217 @@ def up_alloc_balance(self):
     self.db.cloak["version"] = 1
     
 def up_main_io(self):
-    if self.db.main["gw"]:
-        if (self.db.main["out"] > self.db.main["in"]):
-            self.db.main["out"] -= self.db.move["dt"] / 30.0
-            if (self.db.main["out"] <= self.db.main["in"]):
-                self.db.main["out"] = self.db.main["in"]
+    main = dict(self.db.main)
+    dt = self.db.move["dt"]
+    if main["gw"] != 0.0:
+        if (main["out"] > main["in"]):
+            main["out"] -= dt / 30.0
+            if (main["out"] <= main["in"]):
+                main["out"] = main["in"]
+                self.db.main = main
                 alerts.main_balance(self)
-        elif(self.db.main["out"] < self.db.main["in"]):
-            self.db.main["out"] += self.db.move["dt"] / 60.0
-            if (self.db.main["out"] >= self.db.main["in"]):
-                self.db.main["out"] = self.db.main["in"]
+        elif(main["out"] < main["in"]):
+            main["out"] += dt / 60.0
+            if (main["out"] >= main["in"]):
+                main["out"] = main["in"]
+                self.db.main = main
                 alerts.main_balance(self)
-    self.db.power["main"] = self.db.main["gw"] * self.db.main["out"]
+    self.db.power["main"] = main["gw"] * main["out"]
     self.db.power["version"] = 1
+    self.db.main = main
     
 def up_aux_io(self):
-    if self.db.aux["gw"]:
-        if (self.db.aux["out"] > self.db.aux["in"]):
-            self.db.aux["out"] -= self.db.move["dt"] / 5.0
-            if (self.db.aux["out"] <= self.db.aux["in"]):
-                self.db.aux["out"] = self.db.aux["in"]
+    aux = dict(self.db.aux)
+    dt = self.db.move["dt"]
+    if aux["gw"] != 0.0:
+        if (aux["out"] > aux["in"]):
+            aux["out"] -= dt / 5.0
+            if (aux["out"] <= aux["in"]):
+                aux["out"] = aux["in"]
+                self.db.aux = aux
                 alerts.aux_balance(self)
-        elif(self.db.aux["out"] < self.db.main["in"]):
-            self.db.aux["out"] += self.db.move["dt"] / 10.0
-            if (self.db.aux["out"] >= self.db.aux["in"]):
-                self.db.aux["out"] = self.db.aux["in"]
+        elif(aux["out"] < aux["in"]):
+            aux["out"] += dt / 10.0
+            if (aux["out"] >= aux["in"]):
+                aux["out"] = aux["in"]
+                self.db.aux = aux
                 alerts.aux_balance(self)
-    self.db.power["aux"] = self.db.aux["gw"] * self.db.aux["out"]
+    self.db.power["aux"] = aux["gw"] * aux["out"]
     self.db.power["version"] = 1
+    self.db.aux = aux
 
 def up_batt_io(self):
-    self.db.batt["out"] = self.db.batt["in"]
+    batt = dict(self.db.batt)
+    batt["out"] = batt["in"]
+    self.db.batt = batt
     alerts.batt_balance(self)
-    self.db.power["batt"] = self.db.batt["gw"] * self.db.batt["out"]
+    self.db.power["batt"] = batt["gw"] * batt["out"]
     self.db.power["version"] = 1
     
 
 def up_main_damage(self):
-    if (self.db.main["exist"] == 1):
-        dmg = (self.db.main["out"] - self.db.main["damage"]) * self.db.move["dt"] / self.db.tech["main_max"] / 1000.0
-        if (self.db.main["damage"] > 0.0 and (self.db.main["damage"] - dmg) <= 0.0):
+    main = dict(self.db.main)
+    if (main["exist"] == 1):
+        dmg = (main["out"] - main["damage"]) * self.db.move["dt"] / self.db.tech["main_max"] / 1000.0
+        if (main["damage"] > 0.0 and (main["damage"] - dmg) <= 0.0):
             alerts.main_overload(self)
-        self.db.main["damage"] -= dmg
-        if (self.db.main["damage"] <= -1.0):
-            self.db.main["damage"] = -1.0
+        main["damage"] -= dmg
+        if (main["damage"] <= -1.0):
+            main["damage"] = -1.0
             alerts.all_console_notify(self,alerts.ansi_warn("Impulse Drive core breach."))
+            self.db.main = main
             damage.damage_structure(self.db.power["main"] * (random(0,100)+1.0))
             self.db.main["in"] = 0.0
             self.db.main["out"] = 0.0
             self.db.power["main"] = 0.0
             self.db.power["version"] = 1
+        else:
+            self.db.main = main
             
 
 def up_aux_damage(self):
-    if (self.db.aux["exist"] == 1):
-        dmg = (self.db.aux["out"] - self.db.aux["damage"]) * self.db.move["dt"] / self.db.tech["aux_max"] / 1000.0
-        if (self.db.aux["damage"] > 0.0 and (self.db.aux["damage"] - dmg) <= 0.0):
+    aux = dict(self.db.aux)
+    if (aux["exist"] == 1):
+        dmg = (aux["out"] - aux["damage"]) * self.db.move["dt"] / self.db.tech["aux_max"] / 1000.0
+        if (aux["damage"] > 0.0 and (aux["damage"] - dmg) <= 0.0):
             alerts.aux_overload(self)
-        self.db.aux["damage"] -= dmg
-        if (self.db.aux["damage"] <= -1.0):
-            self.db.aux["damage"] = -1.0
+        aux["damage"] -= dmg
+        if (aux["damage"] <= -1.0):
+            aux["damage"] = -1.0
             alerts.all_console_notify(self,alerts.ansi_warn("fusion reactor core breach."))
+            self.db.aux = aux
             damage.damage_structure(self.db.power["aux"] * (random(0,100)+1.0))
             self.db.aux["in"] = 0.0
             self.db.aux["out"] = 0.0
             self.db.power["aux"] = 0.0
             self.db.power["version"] = 1
+        else:
+            self.db.aux = aux
 
 def up_fuel(self):
-    mloss = self.db.main["out"] * self.db.main["out"] * self.db.main["gw"] * 100.0 / self.db.tech["fuel"] * self.db.move["dt"]
-    aloss = self.db.aux["out"] * self.db.aux["out"] * self.db.aux["gw"] * 100.0 / self.db.tech["fuel"] * self.db.move["dt"]
+    main = dict(self.db.main)
+    aux = dict(self.db.aux)
+    fuel = dict(self.db.fuel)
+    power = dict(self.db.power)
+    mloss = main["out"] * main["out"] * main["gw"] * 100.0 / self.db.tech["fuel"] * self.db.move["dt"]
+    aloss = aux["out"] * aux["out"] * aux["gw"] * 100.0 / self.db.tech["fuel"] * self.db.move["dt"]
     
-    self.db.fuel["antimatter"] -= mloss
-    self.db.fuel["deuterium"] -= mloss + aloss
-    if (self.db.fuel["antimatter"] < 0.0):
-        if(self.db.main["out"] > 0.0):
+    fuel["antimatter"] -= mloss
+    fuel["deuterium"] -= mloss + aloss
+    if (fuel["antimatter"] < 0.0):
+        if(main["out"] > 0.0):
             alerts.anti_runout(self)
-        self.db.fuel["antimatter"] = 0.0
-        self.db.main["in"] = 0.0
-        self.db.main["out"] = 0.0
-        self.db.power["main"] = 0.0
-        self.db.power["version"] = 1
+        fuel["antimatter"] = 0.0
+        main["in"] = 0.0
+        main["out"] = 0.0
+        power["main"] = 0.0
+        power["version"] = 1
         
-    if (self.db.fuel["deuterium"] < 0.0):
-        if (self.db.aux["out"] > 0.0 or self.db.main["out"] > 0.0):
+    if (fuel["deuterium"] < 0.0):
+        if (aux["out"] > 0.0 or main["out"] > 0.0):
             alerts.deut_runout(self)
-        self.db.fuel["deuterium"] = 0.0
-        self.db.main["in"] = 0.0
-        self.db.main["out"] = 0.0
-        self.db.power["main"] = 0.0
-        self.db.aux["in"] = 0.0
-        self.db.aux["out"] = 0.0
-        self.db.power["aux"] = 0.0
-        self.db.power["version"] = 1
-        
+        fuel["deuterium"] = 0.0
+        main["in"] = 0.0
+        main["out"] = 0.0
+        power["main"] = 0.0
+        aux["in"] = 0.0
+        aux["out"] = 0.0
+        power["aux"] = 0.0
+        power["version"] = 1
+    self.db.main = main
+    self.db.aux = aux
+    self.db.fuel = fuel
+    self.db.power = power
+
 def up_reserve(self):
-    self.db.fuel["reserves"] += (((self.db.power["main"] + self.db.power["aux"] + self.db.power["batt"]) * self.db.alloc["miscellaneous"]) - self.db.power["batt"]) * self.db.move["dt"]
-    if (self.db.fuel["reserves"] < 0.0):
-        self.db.fuel["reserves"] = 0.0
-        self.db.batt["in"] = 0.0
-        self.db.batt["out"] = 0.0
-        self.db.power["batt"] = 0.0
+    fuel = dict(self.db.fuel)
+    batt = dict(self.db.batt)
+    power = dict(self.db.power)
+    fuel["reserves"] += (((power["main"] + power["aux"] + power["batt"]) * self.db.alloc["miscellaneous"]) - power["batt"]) * self.db.move["dt"]
+    if (fuel["reserves"] < 0.0):
+        fuel["reserves"] = 0.0
+        batt["in"] = 0.0
+        batt["out"] = 0.0
+        power["batt"] = 0.0
         alerts.batt_runout(self)
-    elif (self.db.fuel["reserves"] > utils.sdb2max_reserves(self)):
-        self.db.fuel["reserves"] = utils.sdb2max_reserves(self)
+    elif (fuel["reserves"] > batt["gw"] * 3600.0):
+        fuel["reserves"] = batt["gw"] * 3600.0
+    self.db.fuel = fuel
+    self.db.batt = batt
+    self.db.power = power
         
 def up_total_power(self):
-    self.db.power["total"] = self.db.power["main"] + self.db.power["aux"] + self.db.power["batt"]
-    self.db.power["version"] = 0
+    power = dict(self.db.power)
+    power["total"] = power["main"] + power["aux"] + power["batt"]
+    power["version"] = 0
+    self.db.power = power
     self.db.engine["version"] = 1
     self.db.sensor["version"] = 1
     self.db.cloak["version"] = 1
     up_turn_rate(self)
     
 def up_warp_damage(self):
-    if (self.db.engine["warp_exist"] == 1):
-        if(math.fabs(self.db.move["out"]) >= 1.0):
-            if (math.fabs(self.db.move["out"]) > self.db.engine["warp_cruise"]):
-                self.db.engine["warp_damage"] -= (math.fabs(self.db.move["out"]) - self.db.engine["warp_cruise"]) * self.db.move["dt"] / self.db.tech["main_max"] / 10000.0
+    move = dict(self.db.move)
+    engine = dict(self.db.engine)
+    if (engine["warp_exist"] == 1):
+        if(math.fabs(move["out"]) >= 1.0):
+            if (math.fabs(move["out"]) > engine["warp_cruise"]):
+                self.db.engine["warp_damage"] = engine["warp_damage"] - (math.fabs(move["out"]) - engine["warp_cruise"]) * move["dt"] / self.db.tech["main_max"] / 10000.0
                 if (self.db.engine["warp_damage"] < 0.0):
-                    self.db.move["in"] = 0.0
-                    self.db.move["out"] = 0.0
-                    self.db.move["v"] = 0.0
+                    move["in"] = 0.0
+                    move["out"] = 0.0
+                    move["v"] = 0.0
+                    self.db.move = move
                     alerts.warp_overload(self)
                     alerts.speed_stop(self)
                     alerts.ship_exit_warp(self)
                 up_warp_max(self)
 
 def up_impulse_damage(self):
-    if(self.db.engine["impulse_exist"] == 1):
-        if(math.fabs(self.db.move["out"]) < 1.0):
-            if(math.fabs(self.db.move["out"]) > self.db.engine["impulse_cruise"] and math.fabs(self.db.move["in"]) < 1.0):
-                self.db.engine["impulse_damage"] -= (math.fabs(self.db.move["out"])-self.db.engine["impulse_cruise"]) * self.db.move["dt"] / self.db.tech["aux_max"] / 10000.0
+    move = dict(self.db.move)
+    engine = dict(self.db.engine)
+    if(engine["impulse_exist"] == 1):
+        if(math.fabs(move["out"]) < 1.0):
+            if(math.fabs(move["out"]) > engine["impulse_cruise"] and math.fabs(move["in"]) < 1.0):
+                self.db.engine["impulse_damage"] = engine["impulse_damage"] - (math.fabs(move["out"])-engine["impulse_cruise"]) * move["dt"] / self.db.tech["aux_max"] / 10000.0
                 if (self.db.engine["impulse_damage"] < 0.0):
-                    self.db.move["in"] = 0.0
-                    self.db.move["out"] = 0.0
-                    self.db.move["v"] = 0.0
+                    move["in"] = 0.0
+                    move["out"] = 0.0
+                    move["v"] = 0.0
+                    self.db.move = move
                     alerts.impulse_overload(self)
                     alerts.speed_stop(self)
                 up_impulse_max(self)
 
 def up_warp_max(self):
-    self.db.engine["warp_max"] = utils.sdb2max_warp(self)
-    self.db.engine["warp_cruise"] = utils.sdb2cruise_warp(self)
+    move = dict(self.db.move)
+    engine = dict(self.db.engine)
+    engine["warp_max"] = utils.sdb2max_warp(self)
+    engine["warp_cruise"] = utils.sdb2cruise_warp(self)
     
-    if((self.db.move["in"] >= 1.0) and (self.db.move["in"] > self.db.engine["warp_max"])):
-        self.db.move["in"] = self.db.engine["warp_max"]
-    elif((self.db.move["in"] <= -1.0) and (self.db.move["in"] < (self.db.engine["warp_max"] / 2.0))):
-        self.db.move["in"] = -self.db.engine["warp_max"] / 2.0
+    if((move["in"] >= 1.0) and (move["in"] > engine["warp_max"])):
+        move["in"] = engine["warp_max"]
+    elif((move["in"] <= -1.0) and (move["in"] < (engine["warp_max"] / 2.0))):
+        move["in"] = -engine["warp_max"] / 2.0
+    self.db.engine = engine
+    self.db.move = move
 
 def up_impulse_max(self):
-    self.db.engine["impulse_max"] = utils.sdb2max_impulse(self)
-    self.db.engine["impulse_cruise"] = utils.sdb2cruise_impulse(self)
+    move = dict(self.db.move)
+    engine = dict(self.db.engine)
+    engine["impulse_max"] = utils.sdb2max_impulse(self)
+    engine["impulse_cruise"] = utils.sdb2cruise_impulse(self)
     
-    if((self.db.move["in"] >= 0.0) and (self.db.move["in"] < 1.0) and (self.db.move["in"] > self.db.engine["impulse_max"])):
-        self.db.move["in"] = self.db.engine["impulse_max"]
-    elif((self.db.move["in"] > -1.0) and (self.db.move["in"] < 0.0) and (self.db.move["in"] < (-self.db.engine["impulse_max"] / 2.0))):
-        self.db.move["in"] = -self.db.engine["impulse_max"] / 2.0
+    if((move["in"] >= 0.0) and (move["in"] < 1.0) and (move["in"] > engine["impulse_max"])):
+        move["in"] = engine["impulse_max"]
+    elif((move["in"] > -1.0) and (move["in"] < 0.0) and (move["in"] < (-engine["impulse_max"] / 2.0))):
+        move["in"] = -engine["impulse_max"] / 2.0
+    self.db.engine = engine
+    self.db.move = move
 
 def up_tract_status(self):
     if(self.db.status["tractoring"] == 1):
-        x = self.db.status["tractoring"]
-        obj_x = search_object(x)[0]
+        obj_x = utils.name2sdb(self.db.status["tractoring"])
         p = self.db.tract["damage"] * self.db.power["total"] * self.db.alloc["tractors"] / (utils.sdb2range(self,obj_x) + 1.0)
         if((obj_x.db.tract["active"] and p < obj_x.db.tract["damage"] * obj_x.db.power["total"] * obj_x.db.alloc["tractors"]) or p < 1.0):
             alerts.tract_lost(self)
@@ -201,9 +248,8 @@ def up_tract_status(self):
             obj_x.db.status["tractored"] = 0
             self.db.power["version"] = 1
             obj_x.db.power["version"] = 1
-        elif(self.db.status["tractored"] and self.db.tract["active"]):
-            x = self.db.status["tractored"]
-            obj_x = search_object(x)[0]
+        elif(self.db.status["tractored"] == 1 and self.db.tract["active"] == 1):
+            obj_x = utils.name2sdb(self.db.status["tractored"])
             p = self.db.tract["damage"] * self.db.power["total"] * self.db.alloc["tractors"] / (utils.sdb2range(obj_x,self) + 1.0)
             if (p < (self.db.tract["damage"] * self.db.power["total"] * self.db.alloc["tractors"])):
                 alerts.tract_lost(self)
@@ -224,18 +270,20 @@ def up_cloak_status(self):
     self.db.cloak["version"] = 0
 
 def up_beam_io(self):
-    if(self.db.beam["out"] > self.db.beam["in"]):
-        self.db.beam["out"] = self.db.beam["in"]
+    beam = dict(self.db.beam)
+    if(beam["out"] > beam["in"]):
+        beam["out"] = beam["in"]
         alerts.beam_balance(self)
     elif(self.db.alloc["beams"] * self.db.power["total"] > 0.0):
-        self.db.beam["out"] += self.db.alloc["beams"] * self.db.power["total"] * self.db.move["dt"]
-        if (self.db.beam["out"] >= self.db.beam["in"]):
-            self.db.beam["out"] = self.db.beam["in"]
+        beam["out"] += self.db.alloc["beams"] * self.db.power["total"] * self.db.move["dt"]
+        if (beam["out"] >= beam["in"]):
+            beam["out"] = beam["in"]
             alerts.beam_charged(self)
-    if(self.db.beam["out"] < 0.0):
-        self.db.beam["out"] = 0.0
+    if(beam["out"] < 0.0):
+        beam["out"] = 0.0
     self.db.sensor["version"] = 1
-    
+    self.db.beam = beam
+
 def up_empire(self):
     space_obj = search_tag(constants.EMPIRE_ATTR_NAME,category="space_object")
     best_range = sys.maxsize
@@ -244,26 +292,30 @@ def up_empire(self):
         if(obj.db.status["active"] == 1):
             if (obj.db.space != 0 and self.db.space != obj.db.space):
                 continue
-            dx = (obj.db.coords["x"] - self.db.coords["x"]) / constants.PARSEC
-            dy = (obj.db.coords["y"] - self.db.coords["y"]) / constants.PARSEC
-            dz = (obj.db.coords["z"] - self.db.coords["z"]) / constants.PARSEC
+            self_coords = dict(self.db.coords)
+            obj_coords = dict(obj.db.coords)
+            dx = (obj_coords["x"] - self_coords["x"]) / constants.PARSEC
+            dy = (obj_coords["y"] - self_coords["y"]) / constants.PARSEC
+            dz = (obj_coords["z"] - self_coords["z"]) / constants.PARSEC
             range = (dx * dx + dy * dy + dz * dz)
-            inside_range = math.fabs(range - (obj.db.radius * obj.db.radius))
+            radius = obj.db.radius
+            inside_range = math.fabs(range - (radius * radius))
             
-            if (range <= (obj.db.radius * obj.db.radius)): #object in radius
+            if (range <= (radius * radius)): #object in radius
                 if (best_empire == "" or inside_range < best_range): #closer to center than previous best
                     best_range = range
                     best_empire = obj.name
-    if (self.db.move["empire"] != best_empire):
-        if (self.db.move["empire"] != ""):
+    empire = self.db.move["empire"]
+    if (empire != best_empire):
+        if (empire != ""):
             same = 0
-            if (self.db.move["empire"] == best_empire):
+            if (empire == best_empire):
                 same = 1
             if (same == 0):
                 alerts.exit_empire(self)
                 if(random.randint(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
                     alerts.border_cross(self,0)
-        if (self.db.move["empire"] == ""):
+        if (empire == ""):
             self.db.move["empire"] = best_empire
             alerts.enter_empire(self)
             if(random.randint(1,100) < (self.db.sensor["lrs_signature"] * self.db.sensor["visibility"] * 100.0)):
@@ -271,20 +323,23 @@ def up_empire(self):
         self.db.move["empire"] = best_empire
     
 def up_missile_io(self):
-    if (self.db.missile["out"] > self.db.missile["in"]):
-        self.db.missile["out"] = self.db.missile["in"]
+    missile = dict(self.db.missile)
+    if (missile["out"] > missile["in"]):
+        missile["out"] = missile["in"]
         alerts.missile_balance(self)
     elif(self.db.alloc["missiles"] * self.db.power["total"] > 0.0):
-        self.db.missile["out"] += self.db.alloc["missiles"] * self.db.power["total"] * self.db.move["dt"]
-        if (self.db.missile["out"] >= self.db.missile["in"]):
-            self.db.missile["out"] = self.db.missile["in"]
+        missile["out"] += self.db.alloc["missiles"] * self.db.power["total"] * self.db.move["dt"]
+        if (missile["out"] >= missile["in"]):
+            missile["out"] = missile["in"]
             alerts.missile_charged(self)
-    if(self.db.missile["out"] < 0.0):
-        self.db.missile["out"] = 0.0
+    if(missile["out"] < 0.0):
+        missile["out"] = 0.0
     self.db.sensor["version"] = 1
+    self.db.missile = missile
         
 def up_autopilot(self):
-    r = utils.xyz2range(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"],self.db.coords["xd"],self.db.coords["yd"],self.db.coords["zd"])
+    coords = dict(self.db.coords)
+    r = utils.xyz2range(coords["x"],coords["y"],coords["z"],coords["xd"],coords["yd"],coords["zd"])
     speed = 99
     autopilot = self.db.status["autopilot"]
     
@@ -385,8 +440,8 @@ def up_autopilot(self):
     
     if(self.db.status["autopilot"] != autopilot):
         self.db.status["autopilot"] = autopilot
-        self.db.course["yaw_in"] = utils.xy2bearing(self.db.coords["xd"] - self.db.coords["x"],self.db.coords["yd"] - self.db.coords["y"])
-        self.db.course["pitch_in"] = utils.xyz2elevation(self.db.coords["xd"] - self.db.coords["x"],self.db.coords["yd"] - self.db.coords["y"],self.db.coords["zd"] - self.db.coords["z"])
+        self.db.course["yaw_in"] = utils.xy2bearing(coords["xd"] - coords["x"],coords["yd"] - coords["y"])
+        self.db.course["pitch_in"] = utils.xyz2elevation(coords["xd"] - coords["x"],coords["yd"] - coords["y"],coords["zd"] - coords["z"])
         if(self.db.move["in"] > speed):
             if (speed >=1.0 and speed > self.db.engine["warp_cruise"]):
                 speed = self.db.engine["warp_cruise"]
@@ -395,147 +450,161 @@ def up_autopilot(self):
             self.db.move["in"] = speed
 
 def up_speed_io(self):
-    if (self.db.move["ratio"] <= 0.0):
+    move = dict(self.db.move)
+    power = dict(self.db.power)
+    engine = dict(self.db.engine)
+    alloc = self.db.alloc["movement"]
+    structure = dict(self.db.structure)
+
+    if (move["ratio"] <= 0.0):
         return
-    if (math.fabs(self.db.move["out"]) < 1.0):
-        if(math.fabs(self.db.move["in"]) >= 1.0):
-            a = self.db.power["main"] * 0.99 + self.db.power["total"] * self.db.alloc["movement"] * 0.01
+    if (math.fabs(move["out"]) < 1.0):
+        if(math.fabs(move["in"]) >= 1.0):
+            a = power["main"] * 0.99 + power["total"] * alloc * 0.01
         else:
-            a = self.db.power["aux"] * 0.9 + self.db.power["total"] * self.db.alloc["movement"] * 0.1
-        a *= (1.0 - math.fabs(self.db.move["out"]))/ self.db.move["ratio"] / 50.0
+            a = power["aux"] * 0.9 + power["total"] * alloc * 0.1
+        a *= (1.0 - math.fabs(move["out"]))/ move["ratio"] / 50.0
     else:
-        a = (self.db.power["main"] * 0.99 + self.db.power["total"] * self.db.alloc["movement"] * 0.01) / self.db.move["ratio"] / math.fabs(self.db.move["out"]) / 5.0
-    a *= (self.db.move["ratio"] + 1.0) / self.db.move["ratio"] * self.db.move["dt"]
+        a = (power["main"] * 0.99 + power["total"] * alloc * 0.01) / move["ratio"] / math.fabs(move["out"]) / 5.0
+    a *= (move["ratio"] + 1.0) / move["ratio"] * move["dt"]
     
-    if (self.db.move["out"] < 0.0):
+    if (move["out"] < 0.0):
         a /= 2.0
-    
-    if (self.db.status["tractoring"]):
-        x = self.db.status["tractoring"]
-        obj_x = search_object(x)[0]
-        
-        a *= (self.db.structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + self.db.structure["displacement"] + 0.1)
-    elif(self.db.status["tractored"]):
-        x = self.db.status["tractored"]
-        obj_x = search_object(x)[0]
-        a *= (self.db.structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + self.db.structure["displacement"] + 0.1)
-    
+    obj_x = utils.name2sdb(self.db.status["tractoring"])
+    if (obj_x == constants.SENSOR_FAIL):
+        obj_x = utils.name2sdb(self.db.status["tractored"])    
+    if (obj_x != constants.SENSOR_FAIL):
+        a *= (structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + structure["displacement"] + 0.1)
     if (a < 0.01):
         a = 0.01
     
-    if((self.db.move["in"] >= 1.0) and (self.db.move["in"] > self.db.engine["warp_max"])):
-        self.db.move["in"] = self.db.engine["warp_max"]
-    elif((self.db.move["in"] <= -1.0) and (self.db.move["in"] < (-self.db.engine["warp_max"] / 2.0))):
-        self.db.move["in"] = -self.db.engine["warp_max"] / 2.0
-    elif((self.db.move["in"] >= 0.0) and (self.db.move["in"] < 1.0) and (self.db.move["in"] > self.db.engine["impulse_max"])):
-        self.db.move["in"] = self.db.engine["impulse_max"]
-    elif((self.db.move["in"] <= 0.0) and (self.db.move["in"] > -1.0) and (self.db.move["in"] < (-self.db.engine["impulse_max"] / 2.0))):
-        self.db.move["in"] = - self.db.engine["impulse_max"] / 2.0
+    if((move["in"] >= 1.0) and (move["in"] > engine["warp_max"])):
+        move["in"] = engine["warp_max"]
+    elif((move["in"] <= -1.0) and (move["in"] < (-engine["warp_max"] / 2.0))):
+        move["in"] = -engine["warp_max"] / 2.0
+    elif((move["in"] >= 0.0) and (move["in"] < 1.0) and (move["in"] > engine["impulse_max"])):
+        move["in"] = engine["impulse_max"]
+    elif((move["in"] <= 0.0) and (move["in"] > -1.0) and (move["in"] < (-engine["impulse_max"] / 2.0))):
+        move["in"] = - engine["impulse_max"] / 2.0
         
-    if(self.db.move["out"] > self.db.move["in"]):
-        if (self.db.move["out"] >= 1.0):
-            if (self.db.move["in"] >= 1.0):
-                self.db.move["out"] = self.db.move["in"]
+    if(move["out"] > self.db.move["in"]):
+        if (move["out"] >= 1.0):
+            if (move["in"] >= 1.0):
+                move["out"] = move["in"]
+                self.db.move = move
                 alerts.speed_warp(self)
-            elif(self.db.move["in"] > 0.0 and self.db.move["in"] < 1.0):
-                self.db.move["out"] = self.db.move["in"]
+            elif(move["in"] > 0.0 and move["in"] < 1.0):
+                move["out"] = move["in"]
+                self.db.move = move
                 alerts.speed_impulse(self)
                 alerts.ship_exit_warp(self)
-            elif(self.db.move["in"] <= 0.0):
-                self.db.move["out"] = 0.0
+            elif(move["in"] <= 0.0):
+                move["out"] = 0.0
                 alerts.speed_stop(self)
                 alerts.ship_exit_warp(self)
                 
-            elif(self.db.move["out"] > 0.0 and self.db.move["out"] < 1.0):
-                if (self.db.move["in"] > 0.0):
-                    self.db.move["out"] = self.db.move["in"]
+            elif(move["out"] > 0.0 and move["out"] < 1.0):
+                if (move["in"] > 0.0):
+                    move["out"] = move["in"]
+                    self.db.move = move
                     alerts.speed_impulse(self)
-                elif(self.db.move["in"] <= 0.0):
-                    self.db.move["out"] = 0.0
+                elif(move["in"] <= 0.0):
+                    move["out"] = 0.0
                     alerts.speed_stop(self)
-            elif(self.db.move["out"] <= 0.0):
-                if (self.db.move["out"] > -1.0):
-                    self.db.move["out"] -= a
-                    if (self.db.move["out"] <= self.db.move["in"]):
-                        self.db.move["out"] = self.db.move["in"]
-                        if (self.db.move["out"] > -1.0):
+            elif(move["out"] <= 0.0):
+                if (move["out"] > -1.0):
+                    move["out"] -= a
+                    if (move["out"] <= move["in"]):
+                        move["out"] = move["in"]
+                        if (move["out"] > -1.0):
+                            self.db.move = move
                             alerts.speed_impulse(self)
                         else:
+                            self.db.move = move
                             alerts.speed_warp(self)
                             alerts.ship_enter_warp(self)
-                    elif(self.db.move["out"] <= -1.0):
+                    elif(move["out"] <= -1.0):
+                        self.db.move = move
                         alerts.ship_enter_warp(self)
             else:
-                self.db.move["out"] -= a
-                if (self.db.move["out"] <= self.db.move["in"]):
-                    self.db.move["out"] = self.db.move["in"]
+                move["out"] -= a
+                if (move["out"] <= move["in"]):
+                    move["out"] = move["in"]
+                    self.db.move = move
                     alerts.speed_warp(self)
-    elif(self.db.move["out"] < self.db.move["in"]):
-        if (self.db.move["out"] <= -1.0):
-            if (self.db.move["in"] <= -1.0):
-                self.db.move["out"] = self.db.move["in"]
+    elif(move["out"] < move["in"]):
+        if (move["out"] <= -1.0):
+            if (move["in"] <= -1.0):
+                move["out"] = move["in"]
+                self.db.move = move
                 alerts.speed_warp(self)
-            elif(self.db.move["in"]< 0.0 and self.db.move["in"] > -1.0):
-                self.db.move["out"] = self.db.move["in"]
+            elif(move["in"]< 0.0 and move["in"] > -1.0):
+                move["out"] = move["in"]
+                self.db.move = move
                 alerts.speed_impulse(self)
                 alerts.ship_exit_warp(self)
-            elif(self.db.move["in"] >= 0.0):
-                self.db.move["out"] = 0.0
+            elif(move["in"] >= 0.0):
+                move["out"] = 0.0
                 alerts.speed_stop(self)
                 alerts.ship_exit_warp(self)
-        elif (self.db.move["out"] < 0.0 and self.db.move["out"] > -1.0):
-            if (self.db.move["in"] < 0.0):
-                self.db.move["out"] = self.db.move["in"]
+        elif (move["out"] < 0.0 and move["out"] > -1.0):
+            if (move["in"] < 0.0):
+                move["out"] = move["in"]
+                self.db.move = move
                 alerts.speed_impulse(self)
-            elif(self.db.move["in"] >= 0.0):
-                self.db.move["out"] = 0.0
+            elif(move["in"] >= 0.0):
+                move["out"] = 0.0
                 alerts.speed_stop(self)
-        elif(self.db.move["out"] >= 0.0):
-            if (self.db.move["out"] < 1.0):
-                self.db.move["out"] += a
-                if (self.db.move["out"] >= self.db.move["in"]):
-                    self.db.move["out"] = self.db.move["in"]
-                    if (self.db.move["out"] < 1.0):
+        elif(move["out"] >= 0.0):
+            if (move["out"] < 1.0):
+                move["out"] += a
+                if (move["out"] >= move["in"]):
+                    move["out"] = move["in"]
+                    if (move["out"] < 1.0):
+                        self.db.move = move
                         alerts.speed_impulse(self)
                     else:
+                        self.db.move = move
                         alerts.speed_warp(self)
                         alerts.ship_enter_warp(self)
-                elif(self.db.move["out"] >= 1.0):
+                elif(move["out"] >= 1.0):
                     alerts.ship_enter_warp(self)
             else:
-                self.db.move["out"] += a
-                if (self.db.move["out"] >= self.db.move["in"]):
-                    self.db.move["out"] = self.db.move["in"]
+                move["out"] += a
+                if (move["out"] >= move["in"]):
+                    move["out"] = move["in"]
+                    self.db.move = move
                     alerts.speed_warp(self)
     
     self.db.sensor["version"] = 1
+    self.db.move = move
 
 def up_turn_rate(self):
+    move = dict(self.db.move)
+    power = dict(self.db.power)
+    alloc = float(self.db.alloc["movement"])
+
     a = 0
-    if(self.db.move["ratio"] <= 0.0):
+    if(move["ratio"] <= 0.0):
         return
-    if(math.fabs(self.db.move["out"]) < 1.0):
-        if(math.fabs(self.db.move["in"]) >= 1.0):
-            a = self.db.power["main"] * 0.99 + self.db.power["total"] * self.db.alloc["movement"] * 0.01
+    if(math.fabs(move["out"]) < 1.0):
+        if(math.fabs(move["in"]) >= 1.0):
+            a = power["main"] * 0.99 + power["total"] * alloc * 0.01
         else:
-            a = self.db.power["aux"] * 0.9 + self.db.power["total"] * self.db.alloc["movement"] * 0.1
-        a *= 3.6 * (1.0 - math.fabs(self.db.move["out"])) / self.db.move["ratio"]
+            a = power["aux"] * 0.9 + power["total"] * alloc * 0.1
+        a *= 3.6 * (1.0 - math.fabs(move["out"])) / move["ratio"]
     else:
-        a = 3.6 * (self.db.power["main"] * 0.99 + self.db.power["total"] * self.db.alloc["movement"] * 0.01) / self.db.move["ratio"] / math.fabs(self.db.move["out"])
+        a = 3.6 * (power["main"] * 0.99 + power["total"] * alloc * 0.01) / move["ratio"] / math.fabs(move["out"])
     
-    a *= (self.db.move["ratio"] + 1.0) / self.db.move["ratio"] * self.db.move["dt"]
+    a *= (move["ratio"] + 1.0) / move["ratio"] * move["dt"]
     
-    if (self.db.move["out"] < 0.0):
+    if (move["out"] < 0.0):
         a /= 2.0
     
-    if (self.db.status["tractoring"] == 1):
-        x = self.db.status["tractoring"]
-        obj_x = search_object(x)[0]
-        
-        a *= (self.db.structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + self.db.structure["displacement"] + 0.1)
-    elif(self.db.status["tractored"] == 1):
-        x = self.db.status["tractored"]
-        obj_x = search_object(x)[0]
+    obj_x = utils.name2sdb(self.db.status["tractoring"])
+    if (obj_x == constants.SENSOR_FAIL):
+        obj_x = utils.name2sdb(self.db.status["tractored"])    
+    if (obj_x != constants.SENSOR_FAIL):
         a *= (self.db.structure["displacement"] + 0.1) / (obj_x.db.structure["displacement"] + self.db.structure["displacement"] + 0.1)
     
     if(a < 1.0):
@@ -544,16 +613,19 @@ def up_turn_rate(self):
     self.db.course["rate"] = a
 
 def up_cochranes(self):
-    self.db.move["cochranes"] = utils.xyz2cochranes(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"])
+    coords = dict(self.db.coords)
+    self.db.move["cochranes"] = utils.xyz2cochranes(coords["x"],coords["y"],coords["z"])
 
 def up_velocity(self):
+    move = dict(self.db.move)
     if (self.db.engine["warp_exist"] or self.db.engine["impulse_exist"]):
-        if (self.db.move["out"] >= 1.0):
-            self.db.move["v"] = constants.LIGHTSPEED * pow(self.db.move["out"],3.333333)
-        elif (self.db.move["out"] <= -1.0):
-            self.db.move["v"] = constants.LIGHTSPEED * -pow(math.fabs(self.db.move["out"]),3.333333)
+        if (move["out"] >= 1.0):
+            move["v"] = constants.LIGHTSPEED * pow(move["out"],3.333333)
+        elif (move["out"] <= -1.0):
+            move["v"] = constants.LIGHTSPEED * -pow(math.fabs(move["out"]),3.333333)
         else:
-            self.db.move["v"] = constants.LIGHTSPEED * self.db.move["out"]
+            move["v"] = constants.LIGHTSPEED * move["out"]
+    self.db.move = move
 
 def up_quadrant(self):
     q = -1
@@ -572,143 +644,173 @@ def up_quadrant(self):
         alerts.enter_quadrant(self)
 
 def up_visibility(self):
+    coords = dict(self.db.coords)
     if (self.db.status["docked"] == 1 or self.db.status["landed"] == 1):
         self.db.sensor["visibility"] = 1.0
     else:
-        self.db.sensor["visibility"] = float(utils.xyz2vis(self.db.coords["x"],self.db.coords["y"],self.db.coords["z"]))
+        self.db.sensor["visibility"] = float(utils.xyz2vis(coords["x"],coords["y"],coords["z"]))
 
 def up_yaw_io(self):
-    if(self.db.course["yaw_out"] < self.db.course["yaw_in"]):
-        if((self.db.course["yaw_in"] - self.db.course["yaw_out"]) <= 180.0):
-            self.db.course["yaw_out"] += self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["yaw_out"] >= self.db.course["yaw_in"]):
-                self.db.course["yaw_out"] = self.db.course["yaw_in"]
+    course = dict(self.db.course)
+    dt = self.db.move["dt"]
+    if(course["yaw_out"] < course["yaw_in"]):
+        if((course["yaw_in"] - course["yaw_out"]) <= 180.0):
+            course["yaw_out"] += course["rate"] * dt
+            if (course["yaw_out"] >= course["yaw_in"]):
+                course["yaw_out"] = course["yaw_in"]
+                self.db.course = course
                 alerts.yaw(self)
         else:
-            self.db.course["yaw_out"] -=self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["yaw_out"] < 0.0):
-                self.db.course["yaw_out"] += 360.0
-                if (self.db.course["yaw_out"] <= self.db.course["yaw_in"]):
-                    self.db.course["yaw_out"] = self.db.course["yaw_in"]
+            course["yaw_out"] -=course["rate"] * dt
+            if (course["yaw_out"] < 0.0):
+                course["yaw_out"] += 360.0
+                if (course["yaw_out"] <= course["yaw_in"]):
+                    course["yaw_out"] = course["yaw_in"]
+                    self.db.course = course
                     alerts.yaw(self)
     
     else:
-        if((self.db.course["yaw_out"] - self.db.course["yaw_in"]) <= 180.0):
-            self.db.course["yaw_out"] -= self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["yaw_out"] <= self.db.course["yaw_in"]):
-                self.db.course["yaw_out"] = self.db.course["yaw_in"]
+        if((course["yaw_out"] - course["yaw_in"]) <= 180.0):
+            course["yaw_out"] -= course["rate"] * dt
+            if (course["yaw_out"] <= course["yaw_in"]):
+                course["yaw_out"] = course["yaw_in"]
+                self.db.course = course
                 alerts.yaw(self)
         else:
-            self.db.course["yaw_out"] +=self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["yaw_out"] >= 0.0):
-                self.db.course["yaw_out"] -= 360.0
-                if (self.db.course["yaw_out"] >= self.db.course["yaw_in"]):
-                    self.db.course["yaw_out"] = self.db.course["yaw_in"]
+            course["yaw_out"] += course["rate"] * dt
+            if (course["yaw_out"] >= 0.0):
+                course["yaw_out"] -= 360.0
+                if (course["yaw_out"] >= course["yaw_in"]):
+                    course["yaw_out"] = course["yaw_in"]
+                    self.db.course = course
                     alerts.yaw(self)
 
-    self.db.course["version"] = 1
+    course["version"] = 1
+    self.db.course = course
 
 def up_pitch_io(self):
-    if(self.db.course["pitch_out"] < self.db.course["pitch_in"]):
-        if((self.db.course["pitch_in"] - self.db.course["pitch_out"]) <= 180.0):
-            self.db.course["pitch_out"] += self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["pitch_out"] >= self.db.course["pitch_in"]):
-                self.db.course["pitch_out"] = self.db.course["pitch_in"]
+    course = dict(self.db.course)
+    dt = self.db.move["dt"]
+    if(course["pitch_out"] < course["pitch_in"]):
+        if((course["pitch_in"] - course["pitch_out"]) <= 180.0):
+            course["pitch_out"] += course["rate"] * dt
+            if (course["pitch_out"] >= course["pitch_in"]):
+                course["pitch_out"] = course["pitch_in"]
+                self.db.course = course
                 alerts.pitch(self)
         else:
-            self.db.course["pitch_out"] -=self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["pitch_out"] < 0.0):
-                self.db.course["pitch_out"] += 360.0
-                if (self.db.course["pitch_out"] <= self.db.course["pitch_in"]):
-                    self.db.course["pitch_out"] = self.db.course["pitch_in"]
+            course["pitch_out"] -= course["rate"] * dt
+            if (course["pitch_out"] < 0.0):
+                course["pitch_out"] += 360.0
+                if (course["pitch_out"] <= course["pitch_in"]):
+                    course["pitch_out"] = course["pitch_in"]
+                    self.db.course = course
                     alerts.pitch(self)
     
     else:
-        if((self.db.course["pitch_out"] - self.db.course["pitch_in"]) <= 180.0):
-            self.db.course["pitch_out"] -= self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["pitch_out"] <= self.db.course["pitch_in"]):
-                self.db.course["pitch_out"] = self.db.course["pitch_in"]
+        if((course["pitch_out"] - course["pitch_in"]) <= 180.0):
+            course["pitch_out"] -= course["rate"] * dt
+            if (course["pitch_out"] <= course["pitch_in"]):
+                course["pitch_out"] = course["pitch_in"]
+                self.db.course = course
                 alerts.pitch(self)
         else:
-            self.db.course["pitch_out"] +=self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["pitch_out"] >= 0.0):
-                self.db.course["pitch_out"] -= 360.0
-                if (self.db.course["pitch_out"] >= self.db.course["pitch_in"]):
-                    self.db.course["pitch_out"] = self.db.course["pitch_in"]
+            course["pitch_out"] +=course["rate"] * dt
+            if (course["pitch_out"] >= 0.0):
+                course["pitch_out"] -= 360.0
+                if (course["pitch_out"] >= course["pitch_in"]):
+                    course["pitch_out"] = course["pitch_in"]
+                    self.db.course = course
                     alerts.pitch(self)
 
-    self.db.course["version"] = 1
+    course["version"] = 1
+    self.db.course = course
 
 def up_roll_io(self):
-    if(self.db.course["roll_out"] < self.db.course["roll_in"]):
-        if((self.db.course["roll_in"] - self.db.course["roll_out"]) <= 180.0):
-            self.db.course["roll_out"] += self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["roll_out"] >= self.db.course["roll_in"]):
-                self.db.course["roll_out"] = self.db.course["roll_in"]
+    course = dict(self.db.course)
+    dt = self.db.move["dt"]
+    if(course["roll_out"] < course["roll_in"]):
+        if((course["roll_in"] - course["roll_out"]) <= 180.0):
+            course["roll_out"] += course["rate"] * dt
+            if (course["roll_out"] >= course["roll_in"]):
+                course["roll_out"] = course["roll_in"]
+                self.db.course = course
                 alerts.roll(self)
         else:
-            self.db.course["roll_out"] -=self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["roll_out"] < 0.0):
-                self.db.course["roll_out"] += 360.0
-                if (self.db.course["roll_out"] <= self.db.course["roll_in"]):
-                    self.db.course["roll_out"] = self.db.course["roll_in"]
+            course["roll_out"] -=course["rate"] * dt
+            if (course["roll_out"] < 0.0):
+                course["roll_out"] += 360.0
+                if (course["roll_out"] <= course["roll_in"]):
+                    course["roll_out"] = course["roll_in"]
+                    self.db.course = course
                     alerts.roll(self)
     
     else:
-        if((self.db.course["roll_out"] - self.db.course["roll_in"]) <= 180.0):
-            self.db.course["roll_out"] -= self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["roll_out"] <= self.db.course["roll_in"]):
-                self.db.course["roll_out"] = self.db.course["roll_in"]
+        if((course["roll_out"] - course["roll_in"]) <= 180.0):
+            course["roll_out"] -= course["rate"] * dt
+            if (course["roll_out"] <= course["roll_in"]):
+                course["roll_out"] = course["roll_in"]
+                self.db.course = course
                 alerts.roll(self)
         else:
-            self.db.course["roll_out"] +=self.db.course["rate"] * self.db.move["dt"]
-            if (self.db.course["roll_out"] >= 0.0):
-                self.db.course["roll_out"] -= 360.0
-                if (self.db.course["roll_out"] >= self.db.course["roll_in"]):
-                    self.db.course["roll_out"] = self.db.course["roll_in"]
+            course["roll_out"] += course["rate"] * dt
+            if (course["roll_out"] >= 0.0):
+                course["roll_out"] -= 360.0
+                if (course["roll_out"] >= course["roll_in"]):
+                    course["roll_out"] = course["roll_in"]
+                    self.db.course = course
                     alerts.roll(self)
 
-    self.db.course["version"] = 1
+    course["version"] = 1
+    self.db.course = course
 
 def up_vectors(self):
     d2r = math.pi / 180.0
-    sy = math.sin(self.db.course["yaw_out"] * d2r)
-    cy = math.cos(self.db.course["yaw_out"] * d2r)
-    sp = math.sin(self.db.course["pitch_out"] * d2r)
-    cp = math.cos(self.db.course["pitch_out"] * d2r)
-    sr = math.sin(self.db.course["roll_out"] * d2r)
-    cr = math.cos(self.db.course["roll_out"] * d2r)
+    course = dict(self.db.course)
+    sy = math.sin(course["yaw_out"] * d2r)
+    cy = math.cos(course["yaw_out"] * d2r)
+    sp = math.sin(course["pitch_out"] * d2r)
+    cp = math.cos(course["pitch_out"] * d2r)
+    sr = math.sin(course["roll_out"] * d2r)
+    cr = math.cos(course["roll_out"] * d2r)
 
-    self.db.course["d"][0][0] = cy * cp
-    self.db.course["d"][0][1] = sy * cp
-    self.db.course["d"][0][2] = sp
-    self.db.course["d"][1][0] = -(sy * cr) + (cy * sp * sr)
-    self.db.course["d"][1][1] = (cy * cr) + (sy * sp * sr)
-    self.db.course["d"][1][2] = -(cp * sr)
-    self.db.course["d"][2][0] = -(sy * sr) - (cy * sp * cr)
-    self.db.course["d"][2][1] = (cy * sr) - (sy * sp * cr)
-    self.db.course["d"][2][2] = (cp * cr)
+    coursed0 = [0,0,0]
+    coursed1 = [0,0,0]
+    coursed2 = [0,0,0]
+    
+    coursed0[0] = cy * cp
+    coursed0[1] = sy * cp
+    coursed0[2] = sp
+    coursed1[0] = -(sy * cr) + (cy * sp * sr)
+    coursed1[1] = (cy * cr) + (sy * sp * sr)
+    coursed1[2] = -(cp * sr)
+    coursed2[0] = -(sy * sr) - (cy * sp * cr)
+    coursed2[1] = (cy * sr) - (sy * sp * cr)
+    coursed2[2] = (cp * cr)
+    self.db.course["d"] = [coursed0,coursed1,coursed2]
     self.db.course["version"] = 0
     
 def up_position(self):
-    dv = self.db.move["v"] * self.db.move["dt"]
-    if (math.fabs(self.db.move["out"]) >= 1.0):
-        dv *= self.db.move["cochranes"]
-    if (self.db.status["tractoring"] != 0):
-        x = self.db.status["tractoring"]
-        obj_x = search_object(x)[0]
-        obj_x.coords["x"] += dv * self.db.course["d"][0][0]
-        obj_x.coords["y"] += dv * self.db.course["d"][0][1]
-        obj_x.coords["z"] += dv * self.db.course["d"][0][2]
-    elif (self.db.status["tractored"] != 0):
-        x = self.db.status["tractored"]
-        obj_x = search_object(x)[0]
-        obj_x.coords["x"] += dv * self.db.course["d"][0][0]
-        obj_x.coords["y"] += dv * self.db.course["d"][0][1]
-        obj_x.coords["z"] += dv * self.db.course["d"][0][2]
-    self.db.coords["x"] += dv * self.db.course["d"][0][0]
-    self.db.coords["y"] += dv * self.db.course["d"][0][1]
-    self.db.coords["z"] += dv * self.db.course["d"][0][2]
+    move = dict(self.db.move)
+    status = dict(self.db.status)
+    dv = move["v"] * move["dt"]
+    if (math.fabs(move["out"]) >= 1.0):
+        dv *= move["cochranes"]
+    coursed0 = list(self.db.course["d"][0])
+    obj_x = utils.name2sdb(status["tractoring"])
+    if (obj_x == constants.SENSOR_FAIL):
+        obj_x = utils.name2sdb(status["tractored"])
+    if (obj_x != constants.SENSOR_FAIL):
+        coords = dict(obj_x.db.coords)
+        coords["x"] += dv * coursed0[0]
+        coords["y"] += dv * coursed0[1]
+        coords["z"] += dv * coursed0[2]
+        obj_x.db.coords = coords
+    coords = dict(self.db.coords)
+    coords["x"] += dv * coursed0[0]
+    coords["y"] += dv * coursed0[1]
+    coords["z"] += dv * coursed0[2]
+    self.db.coords = coords
 
 def up_wormhole(self,obj,obj_x):
     alerts.do_ship_notify(obj,"The {:s} shudders and rocks about violently for a few moments.".format(obj.name))
@@ -723,7 +825,7 @@ def up_wormhole(self,obj,obj_x):
     #clear contacts and reset sensors
     for i in range(obj.db.sensor["contacts"]):
         tmp_c = search_object(obj.db.slist[i]["key"])[0]
-        alerts.console_message(obj,["helm","science","tactical"],"{:s} contact lost: {:s}".format(unparse_type(tmp_c),unparse_identity(obj,tmp_c)))
+        alerts.console_message(obj,["helm","science","tactical"],"{:s} contact lost: {:s}".format(unparse.unparse_type(tmp_c),unparse.unparse_identity(obj,tmp_c)))
     obj.db.sensor["contacts"] = 0
     up_sensor_message(obj,0,[""] * constants.MAX_SENSOR_CONTACTS,[0] * constants.MAX_SENSOR_CONTACTS)
     obj_link = search_object(obj_x.db.status["link"])
@@ -734,9 +836,12 @@ def up_wormhole(self,obj,obj_x):
     else:
         obj_link = obj_link[0]    
     obj.db.space = obj_link.db.space
-    obj.db.coords["x"] = obj_link.db.coords["x"]
-    obj.db.coords["y"] = obj_link.db.coords["y"]
-    obj.db.coords["z"] = obj_link.db.coords["z"]
+    coords = dict(obj.db.coords)
+    link_coords = dict(obj_link.db.coords)
+    coords["x"] = link_coords["x"]
+    coords["y"] = link_coords["y"]
+    coords["z"] = link_coords["z"]
+    obj.db.coords = coords
     obj.db.status["autopilot"] = 0
     alerts.do_space_notify_one(obj_link,["helm","tactical","science"],"expells an unknown contact")
     up_cochranes(obj)
@@ -745,60 +850,72 @@ def up_wormhole(self,obj,obj_x):
     up_resolution(obj)
     up_signature(obj)
     up_visibility(obj)
-    return
+    return 1
 
 def up_resolution(self):
-    if(self.db.sensor["lrs_active"] == 1):
-        self.db.sensor["lrs_resolution"] = self.db.tech["sensors"] * self.db.sensor["lrs_damage"]
-        if (self.db.sensor["ew_active"] == 1):
-            self.db.sensor["lrs_resolution"] *= utils.sdb2eccm_lrs(self)
+    sensor = dict(self.db.sensor)
+    tech_sensors = self.db.tech["sensors"]
+    if(sensor["lrs_active"] == 1):
+        sensor["lrs_resolution"] = tech_sensors * sensor["lrs_damage"]
+        if (sensor["ew_active"] == 1):
+            sensor["lrs_resolution"] *= utils.sdb2eccm_lrs(self)
         if (self.db.cloak["active"] == 1):
-            self.db.sensor["lrs_resolution"] /= 10.0
+            sensor["lrs_resolution"] /= 10.0
     else:
-        self.db.sensor["lrs_resolution"] = 0.0
-    if (self.db.sensor["srs_active"] == 1):
-        self.db.sensor["srs_resolution"] = self.db.tech["sensors"] * self.db.sensor["srs_damage"]
-        if (self.db.sensor["ew_active"] == 1):
-            self.db.sensor["srs_resolution"] *= utils.sdb2eccm_srs(self)
+        sensor["lrs_resolution"] = 0.0
+    if (sensor["srs_active"] == 1):
+        sensor["srs_resolution"] = tech_sensors * sensor["srs_damage"]
+        if (sensor["ew_active"] == 1):
+            sensor["srs_resolution"] *= utils.sdb2eccm_srs(self)
         if(self.db.cloak["active"] == 1):
-            self.db.sensor["srs_resolution"] /= 10.0
+            sensor["srs_resolution"] /= 10.0
     else:
-        self.db.sensor["srs_resolution"] = 0.0
-        
-def up_signature(self):
-    base = math.pow(self.db.structure["displacement"],0.333333) / self.db.tech["stealth"] / 100.0
-    sig = base
-    
-    if(self.db.cloak["active"] == 1):
-        self.db.cloak["level"] = 0.001 / self.db.power["total"] / self.db.alloc["cloak"] / self.db.tech["cloak"] * self.db.cloak["cost"]
-        if (self.db.status["tractored"] == 1):
-            self.db.cloak["level"] *= 100.0
-        if (self.db.status["tractoring"] == 1):
-            self.db.cloak["level"] *= 100.0
-        if (self.db.beam["out"] > 1.0):
-            self.db.cloak["level"] *= self.db.beam["out"]
-        if (self.db.missile["out"] > 1.0):
-            self.db.cloak["level"] *= self.db.missile["out"]
-        if (self.db.sensor["visibility"] < 1.0):
-            self.db.cloak["level"] *= (1.0 - self.db.sensor["visibility"]) * 10000.0
-        if (self.db.cloak["level"] > 1.0):
-            self.db.cloak["level"] = 1.0
-    else:
-        self.db.cloak["level"] = 1.0
-        
-    self.db.sensor["lrs_signature"] = sig
-    self.db.sensor["srs_signature"] = sig * 10.0
-    self.db.sensor["lrs_signature"] *= self.db.move["out"] * self.db.move["out"] + 1.0
-    self.db.sensor["srs_signature"] *= 1.0 + self.db.power["main"] + (self.db.power["aux"] / 10.0) + (self.db.power["batt"] / 100.0)
-    if (self.db.sensor["ew_active"] == 1):
-        self.db.sensor["lrs_signature"] /= utils.sdb2ecm_lrs(self)
-        self.db.sensor["srs_signature"] /= utils.sdb2ecm_srs(self)
-        
-    self.db.sensor["version"] = 0
-    
-def up_sensor_message(self, contacts, temp_sdb, temp_lev):
-    temp_num = [0] * constants.MAX_SENSOR_CONTACTS
+        sensor["srs_resolution"] = 0.0
+    self.db.sensor = sensor
+    return 1
 
+def up_signature(self):
+    sensor = dict(self.db.sensor)
+    cloak = dict(self.db.cloak)
+    status = dict(self.db.status)
+    tech = dict(self.db.tech)
+    power = dict(self.db.power)
+    base = math.pow(self.db.structure["displacement"],0.333333) / tech["stealth"] / 100.0
+    sig = base
+
+    if(cloak["active"] == 1):
+        cloak["level"] = 0.001 / power["total"] / self.db.alloc["cloak"] / tech["cloak"] * cloak["cost"]
+        if (status["tractored"] == 1):
+            cloak["level"] *= 100.0
+        if (status["tractoring"] == 1):
+            cloak["level"] *= 100.0
+        if (self.db.beam["out"] > 1.0):
+            cloak["level"] *= self.db.beam["out"]
+        if (self.db.missile["out"] > 1.0):
+            cloak["level"] *= self.db.missile["out"]
+        if (sensor["visibility"] < 1.0):
+            cloak["level"] *= (1.0 - sensor["visibility"]) * 10000.0
+        if (cloak["level"] > 1.0):
+            cloak["level"] = 1.0
+    else:
+        cloak["level"] = 1.0
+        
+    sensor["lrs_signature"] = sig
+    sensor["srs_signature"] = sig * 10.0
+    sensor["lrs_signature"] *= self.db.move["out"] * self.db.move["out"] + 1.0
+    sensor["srs_signature"] *= 1.0 + power["main"] + (power["aux"] / 10.0) + (power["batt"] / 100.0)
+    if (sensor["ew_active"] == 1):
+        sensor["lrs_signature"] /= utils.sdb2ecm_lrs(self)
+        sensor["srs_signature"] /= utils.sdb2ecm_srs(self)
+        
+    sensor["version"] = 0
+    self.db.sensor = sensor
+    self.db.cloak = cloak
+    return 1
+
+def up_sensor_message(self, contacts, temp_sdb, temp_lev):
+    sensor = dict(self.db.sensor)
+    temp_num = [0] * constants.MAX_SENSOR_CONTACTS
     for i in range(contacts):
         gain = 0
         for j in range(contacts):
@@ -810,11 +927,11 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 temp_num[i] = self.db.slist[j]["num"]
                 break
         if (gain == 0):
-            self.db.sensor["counter"] += 1
-            if (self.db.sensor["counter"] > 999):
-                self.db.sensor["counter"] = 1
-            temp_num[i] = self.db.sensor["counter"]
-            obj_x = search_object(temp_sdb[i])[0]
+            sensor["counter"] += 1
+            if (sensor["counter"] > 999):
+                sensor["counter"] = 1
+            temp_num[i] = sensor["counter"]
+            obj_x = utils.name2sdb(temp_sdb[i])
             alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn("New sensor contact ("+str(temp_num[i]) + "): " + str(constants.type_name[obj_x.db.structure["type"]])))
     for i in range(contacts):
         lose = 0
@@ -826,7 +943,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 lose = 1
                 break
         if (lose == 0 and self.db.slist[i]["key"] != "" and self.db.slist[i]["key"] != 0):
-            obj_x = search_object(self.db.slist[i]["key"])[0]
+            obj_x = utils.name2sdb(self.db.slist[i]["key"])
             alerts.console_message(self,["helm","science","tactical"],alerts.ansi_warn(str(constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.name)))
             if (self.db.trans["s_lock"] == self.db.slist[i]["key"]):
                 alerts.console_message(self,["operation","transporter"],alerts.ansi_warn("Transporters lost lock on " + str(obj_x.name)))
@@ -856,14 +973,15 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
             if (flag > 0):
                 alerts.console_message(self,["tactical"],alerts.ansi_warn("Missile lock lost on {:s}".format(obj_x.name)))
                 
-    self.db.sensor["contacts"] = contacts
+    sensor["contacts"] = contacts
     if (contacts == 0):
-        self.db.sensor["counter"] = 0
+        sensor["counter"] = 0
     else:
         for i in range(contacts):
             self.db.slist[i]["key"] = temp_sdb[i]
             self.db.slist[i]["num"] = temp_num[i]
             self.db.slist[i]["lev"] = temp_lev[i]
+    self.db.sensor = sensor
 
 def up_sensor_list(self):
     contacts = 0
@@ -921,11 +1039,12 @@ def do_space_db_iterate():
         if (obj.db.status["active"] == 1 and obj.db.structure["type"] > 0):
             count = count + 1
             now = gametime.gametime(absolute=True)
-            obj.db.move["dt"] = now - obj.db.move["time"]
+            dt = now - obj.db.move["time"]
+            obj.db.move["dt"] = dt
             obj.db.move["time"] = now
-            if (obj.db.move["dt"] > 0.0):
+            if (dt > 0.0):
                 if (obj.db.structure["type"] == 1):
-                    if(obj.db.move["time"] - obj.db.status["time"] > 3600):
+                    if(now - obj.db.status["time"] > 3600):
                         if(obj.db.main["in"] > 0.0):
                             setter.do_set_main_reactor(obj,0.0,obj)
                             obj.db.main["in"] = 0.0
@@ -936,7 +1055,7 @@ def do_space_db_iterate():
                             setter.do_set_battery(obj,0.0,obj)
                         if(obj.db.power["total"] == 0.0):
                             setter.do_set_inactive(obj,obj)
-                if(obj.db.move["dt"] > 60.0):
+                if(dt > 60.0):
                     obj.db.move["dt"] = 60
                 if(obj.db.alloc["version"] == 1):
                     up_alloc_balance(obj)

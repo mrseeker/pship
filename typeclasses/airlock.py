@@ -1,6 +1,5 @@
-from unicodedata import category
 from evennia.utils.create import create_object
-from typeclasses.Ships.Generic import EVA
+from typeclasses.Ships import Generic
 from typeclasses.rooms import Room, space_room
 from evennia import CmdSet
 from evennia.utils.search import search_object,search_tag
@@ -106,7 +105,7 @@ class CmdExit(default_cmds.MuxCommand):
             alerts.do_console_notify(obj,["security"],alerts.ansi_alert("{:s} left the ship through the airlock.".format(caller.sdesc)))
             alerts.write_spacelog(caller,obj,"LOG: exit through the airlock in space: {:s}".format(space.dbref))
         elif("eva" in self.switches):
-            space = create_object(EVA,key=caller.name)
+            space = create_object(Generic.EVA,key=caller.name)
             space.db.coords["x"] = obj.db.coords["x"]
             space.db.coords["y"] = obj.db.coords["y"]
             space.db.coords["z"] = obj.db.coords["z"]

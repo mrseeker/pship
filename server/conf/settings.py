@@ -39,7 +39,7 @@ SERVERNAME = "Space Combat Simulator"
 GAME_SLOGAN = "The Python MUD/MU* creation system"
 # Lockdown mode will cut off the game from any external connections
 # and only allow connections from localhost. Requires a cold reboot.
-LOCKDOWN_MODE = True
+LOCKDOWN_MODE = False
 # If this is true, errors and tracebacks from the engine will be
 # echoed as text in-game as well as to the log. This can speed up
 # debugging. OBS: Showing full tracebacks to regular users could be a
@@ -86,7 +86,7 @@ GAME_INDEX_LISTING = {
 # below. If True, show a detailed traceback for the web
 # browser to display. Note however that this will leak memory when
 # active, so make sure to turn it off for a production server!
-DEBUG = False
+DEBUG = True
 # Emails are sent to these people if the above DEBUG value is False. If you'd
 # rather prefer nobody receives emails, leave this commented out or empty.
 ADMINS = ()  # 'Your Name', 'your_email@domain.com'),)
