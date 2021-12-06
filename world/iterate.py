@@ -91,7 +91,7 @@ def up_main_damage(self):
         main["damage"] -= dmg
         if (main["damage"] <= -1.0):
             main["damage"] = -1.0
-            alerts.all_console_notify(
+            alerts.do_all_console_notify(
                 self, alerts.ansi_warn("Impulse Drive core breach."))
             self.db.main = main
             damage.damage_structure(
@@ -114,7 +114,7 @@ def up_aux_damage(self):
         aux["damage"] -= dmg
         if (aux["damage"] <= -1.0):
             aux["damage"] = -1.0
-            alerts.all_console_notify(
+            alerts.do_all_console_notify(
                 self, alerts.ansi_warn("fusion reactor core breach."))
             self.db.aux = aux
             damage.damage_structure(
