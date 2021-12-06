@@ -2000,7 +2000,7 @@ def do_set_fix_damage(self,obj,sys1,sys2,type,name):
         alerts.notify(self,alerts.ansi_red("Invalid system specification."))
         return 0
 
-    dmg = damage_getter(num,unit)
+    dmg = damage_getter(obj,num,unit)
     if (dmg >= 1.0):
         alerts.notify(self,alerts.ansi_red("{:s} on {:s} has no damage to repair.".format(constants.system_name[num],obj_x.name)))
         dmg = 1.0
