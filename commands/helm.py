@@ -150,9 +150,9 @@ class CmdStatus(default_cmds.MuxCommand):
             return 0
         buffer = "|y|[bHelm Status Report|n\n"
         table = evtable.EvTable("Name","Data")
-        table.add_row("|cGalactic X Y Z|n",str(utils.su2pc(obj.db.coords["x"])) + " " + str(utils.su2pc(obj.db.coords["y"])) + " " + str(utils.su2pc(obj.db.coords["z"])))
-        table.add_row("|cRelative X Y Z|n",str(utils.su2pc(obj.db.coords["x"] - obj.db.coords["xo"])) + " " + str(utils.su2pc(obj.db.coords["y"] - obj.db.coords["yo"])) + " " + str(utils.su2pc(obj.db.coords["z"] - obj.db.coords["zo"])))
-        table.add_row("|cDestination X Y Z|n",str(utils.su2pc(obj.db.coords["xd"] - obj.db.coords["xo"])) + " " + str(utils.su2pc(obj.db.coords["yd"] - obj.db.coords["yo"])) + " " + str(utils.su2pc(obj.db.coords["zd"] - obj.db.coords["zo"])))
+        table.add_row("|cGalactic X Y Z|n",str(obj.db.coords["x"]) + " " + str(obj.db.coords["y"]) + " " + str(obj.db.coords["z"]))
+        table.add_row("|cRelative X Y Z|n",str(obj.db.coords["x"] - obj.db.coords["xo"]) + " " + str(obj.db.coords["y"] - obj.db.coords["yo"]) + " " + str(obj.db.coords["z"] - obj.db.coords["zo"]))
+        table.add_row("|cDestination X Y Z|n",str(obj.db.coords["xd"] - obj.db.coords["xo"]) + " " + str(obj.db.coords["yd"] - obj.db.coords["yo"]) + " " + str(obj.db.coords["zd"] - obj.db.coords["zo"]))
         table.add_row("")
         table.add_row("|cName|n",obj.name)
         table.add_row("|cClass|n",unparse.unparse_class(obj))

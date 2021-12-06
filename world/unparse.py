@@ -125,20 +125,20 @@ def unparse_movement(obj):
         return "{:.3f}".format(obj.db.move["out"] * 100) + "% Impulse"
 
 def unparse_velocity(obj):
+    obj_x = utils.name2sdb(obj.db.status["tractored"])
+    if (obj_x == constants.SENSOR_FAIL):
+        obj_x = utils.name2sdb(obj.db.status["tractoring"])
     if (obj.db.status["tractored"]):
         x = obj.db.status["tractored"]
-        obj_x = search_object(x)[0]
     elif(obj.db.status["tractoring"]):
         x = obj.db.status["tractored"]
-        obj_x = search_object(x)[0]
-    x = 0
     
     if (math.fabs(obj.db.move["out"]) >= 1.0):
         v = obj.db.move["v"] * obj.db.move["cochranes"]
     else:
         v = obj.db.move["v"]
     
-    if (x):
+    if (obj_x != constants.SENSOR_FAIL):
         if (math.fabs(obj_x.db.move["out"]) >= 1.0):
             vx = obj_x.db.move["v"] * obj_x.db.move["cochranes"]
         else:
