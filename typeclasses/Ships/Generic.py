@@ -264,14 +264,17 @@ def create_ship_layout(self):
         ship_console.db.ship = self.key
         #specific commands for the consoles
         if(console == "engineering"):
+            ship_console.tags.add("damage",category=self.key)
             ship_console.cmdset.add("commands.engineering.EngineeringCmdSet", persistent=True)
         if(console == "tactical"):
             ship_console.cmdset.add("commands.tactical.TacticalCmdSet", persistent=True)
         if(console == "helm"):
+            ship_console.tags.add("damage",category=self.key)
             ship_console.cmdset.add("commands.helm.HelmCmdSet", persistent=True)
         if(console == "science"):
             ship_console.cmdset.add("commands.science.ScienceCmdSet", persistent=True)
         if(console == "operation"):
+            ship_console.tags.add("damage",category=self.key)
             ship_console.cmdset.add("commands.operation.OperationCmdSet", persistent=True)
         ship_console.tags.add(console,category=self.key)
         exit_console_bridge = create_object(Exit, key=console, location=self, destination=ship_console)
@@ -296,7 +299,8 @@ def create_fighter_layout(self):
         self.cmdset.add("commands.helm.FighterCmdSet", persistent=True)
         self.cmdset.add("commands.science.ScienceCmdSet", persistent=True)
         self.tags.add("bridge",category=self.key)
-
+        self.tags.add("damage",category=self.key)
+        
         ship_airlock = create_object(Airlock,key=self.key + "-airlock")
         ship_airlock.db.ship = self.key
         ship_airlock.tags.add("airlock",category=self.key)
