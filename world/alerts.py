@@ -185,11 +185,12 @@ def transmit_message(self, obj, freq, range, code, message, language="default"):
                 if(obj_x.location == obj.location):
                     if(obj_x.name != obj.name):
                         if(utils.sdb2range(obj, obj_x) < range):
-                            if(obj_x.db.language != language):
-                                message = rplanguage.obfuscate_language(message, language=language, level=1.0)
-                            if(code):
-                                message = encrypt_message(code, message)
-                            do_console_notify(obj_x, ["communication"], "[|b"+obj.name+"|n]: " + message)
+                            if(obj_x.db.freq["max"] < freq and obj_x.db.freq["min"] > freq):
+                                if(obj_x.db.language != language):
+                                    message = rplanguage.obfuscate_language(message, language=language, level=1.0)
+                                if(code is not None):
+                                    message = encrypt_message(code, message)
+                                do_console_notify(obj_x, ["communication"], "[|b"+obj.name+"|n]: " + message)
 
 
 def console_message(obj, console, text):

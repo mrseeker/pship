@@ -24,6 +24,7 @@ class TacticalCmdSet(CmdSet):
             self.add(CmdUnlock())
             self.add(science.CmdIdent())
             self.add(CmdFreq())
+            self.add(CmdAlloc())
 
 class CmdAlloc(default_cmds.MuxCommand):
     """
