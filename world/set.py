@@ -19,9 +19,8 @@ def do_set_coords_manual(self,obj,x,y,z):
         obj.db.coords["xo"] = obj.db.coords["x"] - utils.pc2su(x)
         obj.db.coords["yo"] = obj.db.coords["y"] - utils.pc2su(y)
         obj.db.coords["zo"] = obj.db.coords["z"] - utils.pc2su(z)
-        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Relative coordinates set to " + str("{:10.3f}".format(x)) + " " +  str("{:10.3f}".format(y)) + " " + str("{:10.3f}".format(z))))
+        alerts.do_console_notify(obj,["helm"],alerts.ansi_cmd(self.name,"Relative coordinates set to " + str("{:10.3f}".format(x)) + " " +  str("{:10.3f}".format(y)) + " " + str("{:10.3f}".format(z))))
         return 1
-    return 0
 
 def do_set_coords_reset(self,obj):
     if (errors.error_on_console(self,obj)):
@@ -30,9 +29,8 @@ def do_set_coords_reset(self,obj):
         obj.db.coords["xo"] = 0
         obj.db.coords["yo"] = 0
         obj.db.coords["zo"] = 0
-        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Relative coordinates reset to " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"]))) + " " +  str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"]))) + " " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"])))))
+        alerts.do_console_notify(obj,["helm"],alerts.ansi_cmd(self.name,"Relative coordinates reset to " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"]))) + " " +  str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"]))) + " " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["x"])))))
         return 1
-    return 0
 
 def do_set_coords_layin(self,obj,x,y,z):
     if (errors.error_on_console(self,obj)):
@@ -45,7 +43,7 @@ def do_set_coords_layin(self,obj,x,y,z):
         obj.db.coords["xd"] = utils.pc2su(x) + obj.db.coords["xo"];
         obj.db.coords["yd"] = utils.pc2su(y) + obj.db.coords["yo"];
         obj.db.coords["zd"] = utils.pc2su(z) + obj.db.coords["zo"];
-        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Coordinates " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["xd"]))) + " " +  str("{:10.3f}".format(utils.su2pc(obj.db.coords["yd"]))) + " " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["zd"]))) + " laid in"))
+        alerts.do_console_notify(obj,["helm"],alerts.ansi_cmd(self.name,"Coordinates " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["xd"]))) + " " +  str("{:10.3f}".format(utils.su2pc(obj.db.coords["yd"]))) + " " + str("{:10.3f}".format(utils.su2pc(obj.db.coords["zd"]))) + " laid in"))
         return 1
     return 0
 
@@ -67,7 +65,7 @@ def do_set_coords_engage(self,obj):
         yaw_in = utils.xy2bearing(delta_x,delta_y)
         obj.db.course["yaw_in"] = yaw_in
         obj.db.course["pitch_in"] = float(utils.xyz2elevation(obj.db.coords["xd"] - obj.db.coords["x"],obj.db.coords["yd"] - obj.db.coords["y"],obj.db.coords["zd"] - obj.db.coords["z"]))
-        alerts.do_console_notify(self,["helm"],alerts.ansi_cmd(self.name,"Course " + str("{:3.3f}".format(obj.db.course["yaw_in"])) + " " +  str("{:3.3f}".format(obj.db.course["pitch_in"])) + " engaged"))
+        alerts.do_console_notify(obj,["helm"],alerts.ansi_cmd(self.name,"Course " + str("{:3.3f}".format(obj.db.course["yaw_in"])) + " " +  str("{:3.3f}".format(obj.db.course["pitch_in"])) + " engaged"))
         return 1
     return 0
 

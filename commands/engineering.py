@@ -6,6 +6,7 @@ from evennia import default_cmds
 from world import damage, set as setter
 from world import alerts, errors,unparse,constants
 from world import utils as WorldUtils
+from commands import communication as comms
 from evennia import CmdSet
 from evennia.utils.search import search_object
 from evennia.utils import evtable, utils
@@ -30,6 +31,7 @@ class EngineeringFighterCmdSet(CmdSet):
             self.add(CmdEngine())
             self.add(CmdAlloc_Fighter())
             self.add(CmdFreq())
+            self.add(comms.CmdTransmit())
             self.add(CmdDamageReport())
 
 class CmdAlloc_Fighter(default_cmds.MuxCommand):
@@ -42,10 +44,12 @@ class CmdAlloc_Fighter(default_cmds.MuxCommand):
     status - Gives a full status of the allocations
     HTO - Sets the allocation of the Helm, Tactical and Operations
     MSC - Sets the allocation of the Movement, Shields and Cloak
+    BMS - Sets the allocation of the Beams, Missiles and Sensors
     shield - Allocation of the shields (forward, starboard, aft, port, dorsal, ventral)
     main - Allocation of the M/A reactor
     aux - Allocation of the Fusion reactor
     batt - Allocation of the batteries
+    sensor - Allocation of the sensors (ECM and ECCM)
     """
 
     key = "alloc"
@@ -61,13 +65,17 @@ class CmdAlloc_Fighter(default_cmds.MuxCommand):
         if (self.args[0] == "HTO" and len(self.args) == 4):
             setter.do_set_eng_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
         elif (self.args[0] == "main" and len(self.args) == 2):
-            setter.do_set_main_reactor(caller,float(self.args[1]),obj)
+            setter.do_set_main_reactor(caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "aux" and len(self.args) == 2):
-            setter.do_set_aux_reactor(caller,float(self.args[1]),obj)
+            setter.do_set_aux_reactor(caller,float(self.args[1])/100,obj)
         elif (self.args[0] == "batt" and len(self.args) == 2):
-            setter.do_set_battery(caller,float(self.args[1]),obj)
-        if (self.args[0] == "MSC" and len(self.args) == 4):
+            setter.do_set_battery(caller,float(self.args[1])/100,obj)
+        elif (self.args[0] == "MSC" and len(self.args) == 4):
             setter.do_set_helm_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),obj)
+        elif (self.args[0] == "BMS" and len(self.args) == 4):
+            setter.do_set_tactical_alloc(caller,obj,float(self.args[1]),float(self.args[2]),float(self.args[3]))
+        elif (self.args[0] == "sensor" and len(self.args) == 3):
+            setter.do_set_sensor_alloc(caller,obj,float(self.args[1]),float(self.args[2]))
         elif (self.args[0] == "shield" and len(self.args) == 7):
             setter.do_set_shield_alloc(caller,float(self.args[1]),float(self.args[2]),float(self.args[3]),float(self.args[4]),float(self.args[5]),float(self.args[6]),obj)
         elif (self.args[0] == "status"):
@@ -218,21 +226,32 @@ class CmdFreq(default_cmds.MuxCommand):
         if(errors.error_on_console(caller,obj)):
             return 0
     
-        if(len(self.args) == 2):
+        if(len(self.args) >= 2):
             if self.args[0][0] == "b":
-                setter.do_set_beam_freq(self,obj,float(self.args[1]))
+                setter.do_set_beam_freq(caller,obj,float(self.args[1]))
             elif self.args[0][0] == "m":
-                setter.do_set_missile_freq(self,obj,float(self.args[1]))
+                setter.do_set_missile_freq(caller,obj,float(self.args[1]))
             elif self.args[0][0] == "s":
-                setter.do_set_shield_freq(self,obj,float(self.args[1]))
+                setter.do_set_shield_freq(caller,obj,float(self.args[1]))
             elif self.args[0][0] == "c":
-                setter.do_set_cloak_freq(self,obj,float(self.args[1]))
-            elif self.args[0] == "trans":
-                setter.do_set_trans_freq(self,obj,float(self.args[1]))
-            elif self.args[0] == "tract":
-                setter.do_set_tract_freq(self,obj,float(self.args[1]))
+                if self.args[0][1] == "l":
+                    setter.do_set_cloak_freq(caller,obj,float(self.args[1]))
+                elif self.args[0][1] == "o":
+                    if (len(self.args) == 3):
+                        if (float(self.args[1]) > constants.MAX_COMMS_FREQUENCY or float(self.args[1]) < constants.MIN_COMMS_FREQUENCY or float(self.args[2]) > constants.MAX_COMMS_FREQUENCY or float(self.args[2]) < constants.MIN_COMMS_FREQUENCY):
+                            alerts.notify(caller,alerts.ansi_red("Wrong frequency. Make sure the frequency is between 1 and 1000 Mhz"))
+                        else:
+                            obj.db.freq["min"] = float(self.args[1])
+                            obj.db.freq["max"] = float(self.args[2])
+                    else:
+                        alerts.notify(caller,alerts.ansi_red("Wrong amount of arguments."))
+            elif self.args[0][0] == "t":
+                if self.args[0][3] == "n":
+                    setter.do_set_trans_freq(caller,obj,float(self.args[1]))
+                elif self.args[0][3] == "c":
+                    setter.do_set_tract_freq(caller,obj,float(self.args[1]))
             else:
-                alerts.notify(self,alerts.ansi_red("Wrong device: {.s}".format(self.args[0])))    
+                alerts.notify(self,alerts.ansi_red("Wrong device: {:s}".format(self.args[0])))    
         else:
             alerts.notify(self,alerts.ansi_red("Wrong command entered."))
 

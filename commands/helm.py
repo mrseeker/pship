@@ -47,7 +47,6 @@ class FighterCmdSet(CmdSet):
             self.add(CmdStatus_Fighter())
             self.add(CmdAutopilot())
             self.add(CmdIntercept())
-            self.add(CmdFreq())
             self.add(CmdPitch())
             self.add(CmdPitch())
             self.add(CmdRoll())

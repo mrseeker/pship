@@ -26,6 +26,19 @@ class TacticalCmdSet(CmdSet):
             self.add(CmdFreq())
             self.add(CmdAlloc())
 
+class TacticalFighterCmdSet(CmdSet):
+        
+        key = "TacticalFighterCmdSet"
+    
+        def at_cmdset_creation(self):
+            self.add(CmdCloak())
+            self.add(CmdEW())
+            self.add(CmdFire())
+            self.add(CmdEnable())
+            self.add(CmdDisable())
+            self.add(CmdTarget())
+            self.add(CmdUnlock())
+            
 class CmdAlloc(default_cmds.MuxCommand):
     """
     Commands related to the allocation of the tactical systems.

@@ -4,9 +4,8 @@ Handles all communication-related commands
 
 from evennia import default_cmds, CmdSet
 from evennia.utils.search import search_object
-from world import alerts, errors, set as setter, utils
+from world import alerts, errors
 from world import constants
-from world.format import l_line
 
 class CommunicationCmdSet(CmdSet):
         
@@ -87,7 +86,7 @@ class CmdTransmit(default_cmds.MuxCommand):
             alerts.transmit_message(caller,obj,float(self.args[0]),float(self.args[1]),self.args[2],' '.join(self.args[4:]),self.args[3])
         elif("lang" in self.switches):
             alerts.transmit_message(caller,obj,float(self.args[0]),float(self.args[1]),None,' '.join(self.args[3:]),self.args[2])
-        elif(len(self.args) == 3):
+        elif(len(self.args) > 3):
             alerts.transmit_message(caller,obj,float(self.args[0]),float(self.args[1]),None,' '.join(self.args[2:]))
         else:
             self.caller.msg("Command not found: " + str(self.args))

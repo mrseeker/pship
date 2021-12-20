@@ -200,8 +200,8 @@ def console_message(obj, console, text):
             for i in console_obj:
                 i.msg_contents(text)
         else:
-            if (console != "bridge"):
-                console_message(obj, "bridge", text)
+            if (console_name != "bridge"):
+                console_message(obj,["bridge"], text)
             return
 
 
