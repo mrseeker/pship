@@ -174,14 +174,14 @@ def sdb2true_speed(obj):
 
     v1 = math.fabs(obj.db.move["out"])
 
-    if (obj.db.status["tractored"]):
+    if (obj.db.status["tractored"] == 1):
         obj_tract = search_object(obj.db.status["tractored"])[0]
         v2 = math.fabs(obj_tract.db.move["out"]);
         if (v1 > v2):
             v1 = v1 
         else:
             v1 = v2
-    elif(obj.db.status["tractoring"]):      
+    elif(obj.db.status["tractoring"] == 1):      
         obj_tract = search_object(obj.db.status["tractoring"])[0]
         v2 = math.fabs(obj_tract.db.move["out"]);
         if (v1 > v2):
@@ -216,21 +216,21 @@ def sdb2slist(obj,s):
             return i
     return constants.SENSOR_FAIL
 
-def sdb2shield(n1,n2):
-    obj1 = search_object(n1)[0]
-    obj2 = search_object(n2)[0]
-    
-    x = obj2.db.coords["x"] - obj1.db.coords["x"]
-    y = obj2.db.coords["y"] - obj1.db.coords["y"]
-    z = obj2.db.coords["z"] - obj1.db.coords["z"]
+def sdb2shield(obj1,obj2):
+    coords1 = dict(obj1.db.coords)
+    coords2 = dict(obj2.db.coords)
+    x = coords2["x"] - coords1["x"]
+    y = coords2["y"] - coords1["y"]
+    z = coords2["z"] - coords1["z"]
     r = math.sqrt(x * x + y * y + z * z)
     
     if (r == 0.0):
         return 0
     else:
-        v1 = (x * obj1.db.course["d"][0][0] + y * obj1.db.course["d"][0][1] + z * obj1.db.course["d"][0][2]) / r / math.sqrt(obj1.db.course["d"][0][0] * obj1.db.course["d"][0][0] + obj1.db.course["d"][0][1] * obj1.db.course["d"][0][1] + obj1.db.course["d"][0][2] * obj1.db.course["d"][0][2])
-        v2 = (x * obj1.db.course["d"][1][0] + y * obj1.db.course["d"][1][1] + z * obj1.db.course["d"][1][2]) / r / math.sqrt(obj1.db.course["d"][1][0] * obj1.db.course["d"][1][0] + obj1.db.course["d"][1][1] * obj1.db.course["d"][1][1] + obj1.db.course["d"][1][2] * obj1.db.course["d"][1][2])
-        v3 = (x * obj1.db.course["d"][2][0] + y * obj1.db.course["d"][2][1] + z * obj1.db.course["d"][2][2]) / r / math.sqrt(obj1.db.course["d"][2][0] * obj1.db.course["d"][2][0] + obj1.db.course["d"][2][1] * obj1.db.course["d"][2][1] + obj1.db.course["d"][2][2] * obj1.db.course["d"][2][2])
+        course1 = list(obj1.db.course["d"])
+        v1 = (x * course1[0][0] + y * course1[0][1] + z * course1[0][2]) / r / math.sqrt(course1[0][0] * course1[0][0] + course1[0][1] * course1[0][1] + course1[0][2] * course1[0][2])
+        v2 = (x * course1[1][0] + y * course1[1][1] + z * course1[1][2]) / r / math.sqrt(course1[1][0] * course1[1][0] + course1[1][1] * course1[1][1] + course1[1][2] * course1[1][2])
+        v3 = (x * course1[2][0] + y * course1[2][1] + z * course1[2][2]) / r / math.sqrt(course1[2][0] * course1[2][0] + course1[2][1] * course1[2][1] + course1[2][2] * course1[2][2])
         if (v1 > 1.0):
             v1 = 1.0
         elif(v1 < -1.0):
@@ -302,10 +302,10 @@ def sdb2max_warp(obj):
         return 0.0
     if (p <= 0.0):
         return 0.0
-    if (obj.db.status["tractoring"]):
+    if (obj.db.status["tractoring"] == 1):
         obj_tractoring = search_object(obj.db.status["tractoring"])[0]
         a *= (obj.db.structure["displacement"] + obj_tractoring.db.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
-    elif(obj.db.status["tractored"]):
+    elif(obj.db.status["tractored"] == 1):
         obj_tractored = search_object(obj.db.status["tractored"])[0]
         a *= (obj.db.structure.displacement + obj_tractored.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
     
@@ -315,9 +315,7 @@ def sdb2max_warp(obj):
     else:
         return a / 2
         
-def sdb2max_impulse(x):
-    obj = search_object(x)[0]
-    
+def sdb2max_impulse(obj):
     a = obj.db.move["ratio"]
     p = (0.9 * obj.db.power["aux"]) + (0.1 * obj.db.power["total"] * obj.db.alloc["movement"])
     
@@ -325,10 +323,10 @@ def sdb2max_impulse(x):
         return 0.0
     if (p <= 0.0):
         return 0.0
-    if (obj.db.status["tractoring"]):
+    if (obj.db.status["tractoring"] == 1):
         obj_tractoring = search_object(obj.db.status["tractoring"])[0]
         a *= (obj.db.structure["displacement"] + obj_tractoring.structure.displacement + 0.1) / (obj.db.structure["displacement"] + 0.1)
-    elif(obj.db.status["tractored"]):
+    elif(obj.db.status["tractored"] == 1):
         obj_tractored = search_object(obj.db.status["tractored"])[0]
         a *= (obj.db.structure.displacement + obj_tractored.db.structure["displacement"] + 0.1) / (obj.db.structure["displacement"] + 0.1)
     
@@ -338,9 +336,7 @@ def sdb2max_impulse(x):
     else:
         return a
         
-def sdb2cruise_warp(x):
-    obj = search_object(x)[0]
-    
+def sdb2cruise_warp(obj):
     if (obj.db.move["ratio"] <= 0.0):
         return 0.0
     if (obj.db.main["gw"] <= 0.0):
@@ -358,9 +354,7 @@ def sdb2cruise_warp(x):
     else:
         return a/2
         
-def sdb2cruise_impulse(x):
-    obj = search_object(x)[0]
-    
+def sdb2cruise_impulse(obj):
     if (obj.db.move["ratio"] <= 0.0):
         return 0.0
     if (obj.db.aux["gw"] <= 0.0):
@@ -377,34 +371,26 @@ def sdb2cruise_impulse(x):
     else:
         return a
 
-def sdb2ecm_lrs(x):
-    obj = search_object(x)[0]
-    
-    if (obj.db.sensor["ew_active"]):
+def sdb2ecm_lrs(obj):
+    if (obj.db.sensor["ew_active"] == 1):
         return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["ecm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"] / 10.0)
     else:
         return 1.0
         
-def sdb2eccm_lrs(x):
-    obj = search_object(x)[0]
-    
-    if (obj.db.sensor["ew_active"]):
+def sdb2eccm_lrs(obj):
+    if (obj.db.sensor["ew_active"] == 1):
         return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"] / 10.0)
     else:
         return 1.0
         
-def sdb2ecm_srs(x):
-    obj = search_object(x)[0]
-    
-    if (obj.db.sensor["ew_active"]):
+def sdb2ecm_srs(obj):
+    if (obj.db.sensor["ew_active"] == 1):
         return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["ecm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
     else:
         return 1.0
         
-def sdb2ecm_srs(x):
-    obj = search_object(x)[0]
-    
-    if (obj.db.sensor["ew_active"]):
+def sdb2ecm_srs(obj):
+    if (obj.db.sensor["ew_active"] == 1):
         return math.sqrt(1.0 + obj.db.power["total"] * obj.db.alloc["eccm"] * obj.db.sensor["ew_damage"] * obj.db.tech["sensors"])
     else:
         return 1.0
@@ -432,22 +418,24 @@ def xyz2cochranes(x,y,z):
     else:
         return 1.0
         
-def sdb2angular(n1, n2):
-    obj1 = name2sdb(n1)
-    obj2 = name2sdb(n2)
-    if (obj1 == constants.SENSOR_FAIL or obj2 == constants.SENSOR_FAIL):
-        raise Exception
-    
+def sdb2angular(obj1, obj2):
+    coords1 = dict(obj1.db.coords)
+    coords2 = dict(obj2.db.coords)
+    move1 = float(obj1.db.move["v"])
+    move2 = float(obj2.db.move["v"])
+    course1 = list(obj1.db.course["d"][0])
+    course2 = list(obj2.db.course["d"][0])
+
     a = [0.0,0.0,0.0]
     b = [0.0,0.0,0.0]
 
-    a[0] = obj2.db.coords["x"] - obj1.db.coords["x"]
-    a[1] = obj2.db.coords["y"] - obj1.db.coords["y"]
-    a[2] = obj2.db.coords["z"] - obj1.db.coords["z"]
+    a[0] = coords2["x"] - coords1["x"]
+    a[1] = coords2["y"] - coords1["y"]
+    a[2] = coords2["z"] - coords1["z"]
     
-    b[0] = (obj2.db.move["v"] * obj2.db.course["d"][0][0]) - (obj1.db.move["v"] * obj1.db.course["d"][0][0]) + a[0]
-    b[1] = (obj2.db.move["v"] * obj2.db.course["d"][0][1]) - (obj1.db.move["v"] * obj1.db.course["d"][0][1]) + a[1]
-    b[2] = (obj2.db.move["v"] * obj2.db.course["d"][0][2]) - (obj1.db.move["v"] * obj1.db.course["d"][0][2]) + a[2]
+    b[0] = (move2 * course2[0]) - (move1 * course1[0]) + a[0]
+    b[1] = (move2 * course2[1]) - (move1 * course1[1]) + a[1]
+    b[2] = (move2 * course2[2]) - (move1 * course1[2]) + a[2]
     
     dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
     mag = math.sqrt((a[0] * a[0] + a[1] * a[1] + a[2] * a[2]) * (b[0] * b[0] + b[1] * b[1] + b[2] * b[2]))
@@ -460,12 +448,7 @@ def sdb2angular(n1, n2):
         x = -1.0
     return math.fabs(math.acos(x) * 180 / math.pi)
     
-def sdb2friendly(n1,n2):
-    obj1 = name2sdb(n1)
-    obj2 = name2sdb(n2)
-    if (obj1 == constants.SENSOR_FAIL or obj2 == constants.SENSOR_FAIL):
-        raise Exception
-        
+def sdb2friendly(obj1,obj2): 
     if (math.fabs(obj1.db.iff["frequency"] - obj2.db.iff["frequency"] ) > 0.001):
         return 1
     else:
