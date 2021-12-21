@@ -1084,6 +1084,8 @@ def up_sensor_list(self):
             x /= constants.PARSEC
             y /= constants.PARSEC
             z /= constants.PARSEC
+            level += self.db.sensor["lrs_resolution"] * obj.db.sensor["lrs_signature"] / (1.0 + (x * x + y * y + z * z) * 99.0)
+            level *= self.db.sensor["visibility"] * obj.db.sensor["visibility"]
             if (level < 0.01):
                 continue
             if(obj.db.cloak["active"] == 1):
