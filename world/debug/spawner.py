@@ -27,9 +27,9 @@ for i in range(0,10):
     iterate.up_main_io(ship)
     iterate.up_aux_io(ship)
     iterate.up_total_power(ship)
+    ship.db.move["dt"] = 1
+    iterate.do_space_db_iterate([ship])
     set.do_set_coords_layin(self,ship,i,i,0)
     set.do_set_speed(self,ship,ship.db.engine["warp_cruise"])
     set.do_set_coords_engage(self,ship)
-    ship.db.move["dt"] = 1
-    iterate.do_space_db_iterate([ship])
-    utils.debug_space(ship)
+    
