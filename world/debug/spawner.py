@@ -21,6 +21,8 @@ for i in range(0,10):
     ship.db.alloc["version"] = 1
     ship.db.main["in"] = 1.00
     ship.db.aux["in"] = 1.00
+    ship.db.move["dt"] = 60
+
     iterate.do_space_db_iterate([ship])
     iterate.up_main_io(ship)
     iterate.up_aux_io(ship)
@@ -28,3 +30,5 @@ for i in range(0,10):
     set.do_set_coords_layin(self,ship,i,i,0)
     set.do_set_speed(self,ship,ship.db.engine["warp_cruise"])
     set.do_set_coords_engage(self,ship)
+    ship.db.move["dt"] = 1
+    iterate.do_space_db_iterate([ship])
