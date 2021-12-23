@@ -620,12 +620,18 @@ def debug_space(obj):
         obj.db.engine["impulse_damage"] = 0.0
         obj.db.engine["impulse_max"] = 0.0
         obj.db.engine["impulse_cruise"] = 0.0
-    
+    else:
+        iterate.up_impulse_damage(obj)
+        iterate.up_impulse_max(obj)
+
     if(obj.db.engine["warp_exist"] != 1):
         obj.db.engine["warp_exist"] = 0
         obj.db.engine["warp_damage"] = 0.0
         obj.db.engine["warp_max"] = 0.0
         obj.db.engine["warp_cruise"] = 0.0
+    else:
+        iterate.up_warp_damage(obj)
+        iterate.up_warp_max(obj)
 
     if(obj.db.engine["warp_exist"] != 1 and obj.db.engine["impulse_exist"] != 1):
         obj.db.move["in"] = 0.0
