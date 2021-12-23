@@ -5,6 +5,7 @@ from world import utils,set,iterate
 
 self = search_object("#1")[0]
 for i in range(0,10):
+    print("Creating ship "+ str(i))
     ship = create_object(Generic.FrS,key="TEST-" + str(i))
 
     ship.db.fuel["antimatter"] = utils.sdb2max_antimatter(ship)
