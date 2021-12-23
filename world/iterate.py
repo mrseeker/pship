@@ -1116,9 +1116,11 @@ def up_repair(self):
         alerts.max_repair(self)
 
 
-def do_space_db_iterate(objects = None):
-    if (objects is None):
+def do_space_db_iterate(custom = None):
+    if (custom is None):
         objects = search_tag(category="space_object")
+    else:
+        objects = custom
     count = 0
     timer = time.time()
     for obj in objects:
@@ -1205,6 +1207,8 @@ def do_space_db_iterate(objects = None):
                 if(obj.db.structure["repair"] != obj.db.structure["max_repair"]):
                     up_repair(obj)
     timer = time.time() - timer
+    if (custom is not None):
+        return count
     if (timer > constants.tickers[0]):
         print("WARN: Ticker delay too long: {:f} seconds".format(timer))
     else:
