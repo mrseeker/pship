@@ -32,3 +32,4 @@ for i in range(0,10):
     set.do_set_coords_engage(self,ship)
     ship.db.move["dt"] = 1
     iterate.do_space_db_iterate([ship])
+    utils.debug_space(ship)
