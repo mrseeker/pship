@@ -1003,7 +1003,7 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
             temp_num[i] = sensor["counter"]
             obj_x = utils.name2sdb(temp_sdb[i])
             alerts.console_message(self, ["helm", "science", "tactical"], alerts.ansi_warn(
-                "New sensor contact ("+str(temp_num[i]) + "): " + str(constants.type_name[obj_x.db.structure["type"]])))
+                "New sensor contact ({:0d}): {:s}".format(temp_num[i],unparse.unparse_type(obj_x))))
     for i in range(contacts):
         lose = 0
         for j in range(contacts):
@@ -1015,19 +1015,15 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                 break
         if (lose == 0 and self.db.slist[i]["key"] != "" and self.db.slist[i]["key"] != 0):
             obj_x = utils.name2sdb(self.db.slist[i]["key"])
-            alerts.console_message(self, ["helm", "science", "tactical"], alerts.ansi_warn(str(
-                constants.type_name[obj_x.db.structure["type"]]) + " contact lost: " + str(obj_x.name)))
+            alerts.console_message(self, ["helm", "science", "tactical"], "{:s} contact lost: {:s}".format(unparse.unparse_type(obj_x), unparse.unparse_identity(self, obj_x)))
             if (self.db.trans["s_lock"] == self.db.slist[i]["key"]):
-                alerts.console_message(self, ["operation", "transporter"], alerts.ansi_warn(
-                    "Transporters lost lock on " + str(obj_x.name)))
+                alerts.console_message(self, ["operation", "transporter"], alerts.ansi_warn("Transporters lost lock on {:s}".format(unparse.unparse_identity(self, obj_x))))
                 self.db.trans.s_lock = 0
             if (self.db.trans["d_lock"] == self.db.slist[i]["key"]):
-                alerts.console_message(self, ["operation", "transporter"], alerts.ansi_warn(
-                    "Transporters lost lock on " + str(obj_x.name)))
+                alerts.console_message(self, ["operation", "transporter"], alerts.ansi_warn("Transporters lost lock on {:s}".format(unparse.unparse_identity(self, obj_x))))
                 self.db.trans.d_lock = 0
             if (self.db.tract["lock"] == self.db.slist[i]["key"]):
-                alerts.console_message(self, ["helm", "operation"], alerts.ansi_warn(
-                    "Tractor beam lost lock on " + str(obj_x.name)))
+                alerts.console_message(self, ["helm", "operation"], alerts.ansi_warn("Tractor beam lost lock on {:s}".format(unparse.unparse_identity(self, obj_x))))
                 self.db.tract["lock"] = 0
                 self.db.status["tractoring"] = 0
                 obj_x.status["tractored"] = 0
@@ -1039,16 +1035,14 @@ def up_sensor_message(self, contacts, temp_sdb, temp_lev):
                     flag = 1
                     self.db.blist[j]["lock"] = 0
             if (flag > 0):
-                alerts.console_message(self, ["tactical"], alerts.ansi_warn(
-                    "Phaser Array lock lost on {:s}".format(obj_x.name)))
+                alerts.console_message(self, ["tactical"], alerts.ansi_warn("Phaser Array lock lost on {:s}".format(unparse.unparse_identity(self, obj_x))))
             flag = 0
             for j in range(self.db.missile["tubes"]):
                 if (self.db.mlist[j]["lock"] == self.db.slist[i]["key"]):
                     flag = 1
                     self.db.mlist[j]["lock"] = 0
             if (flag > 0):
-                alerts.console_message(self, ["tactical"], alerts.ansi_warn(
-                    "Missile lock lost on {:s}".format(obj_x.name)))
+                alerts.console_message(self, ["tactical"], alerts.ansi_warn("Missile lock lost on {:s}".format(unparse.unparse_identity(self, obj_x))))
 
     sensor["contacts"] = contacts
     if (contacts == 0):
@@ -1067,16 +1061,17 @@ def up_sensor_list(self):
     objects = search_tag(category="space_object")
     temp_sdb = [""] * constants.MAX_SENSOR_CONTACTS
     temp_lev = [0] * constants.MAX_SENSOR_CONTACTS
+    coords = dict(self.db.coords)
 
     for obj in objects:
         if ((self.location or 0) == (obj.location or 0) and self.db.space == obj.db.space and obj.db.structure["type"] > 0 and self.name != obj.name):
-            x = math.fabs(self.db.coords["x"] - obj.db.coords["x"])
+            x = math.fabs(coords["x"] - obj.db.coords["x"])
             if (x > limit):
                 continue
-            y = math.fabs(self.db.coords["y"] - obj.db.coords["y"])
+            y = math.fabs(coords["y"] - obj.db.coords["y"])
             if (y > limit):
                 continue
-            z = math.fabs(self.db.coords["z"] - obj.db.coords["z"])
+            z = math.fabs(coords["z"] - obj.db.coords["z"])
             if (z > limit):
                 continue
             level = (self.db.sensor["srs_resolution"] + 0.01) * obj.db.sensor["srs_signature"] / (0.1 + (x * x + y * y + z * z) / 10101.010101)

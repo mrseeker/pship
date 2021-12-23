@@ -25,7 +25,7 @@ def unparse_class(obj):
     return str(obj.__class__.__name__).replace("_"," ")
 
 def unparse_type(obj):
-    return str(obj.db.type)
+    return str(constants.type_name[obj.db.structure["type"]])
 
 def unparse_percent(value):
    return "{:.0f}".format(value * 100) + "%"
