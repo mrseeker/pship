@@ -1116,8 +1116,9 @@ def up_repair(self):
         alerts.max_repair(self)
 
 
-def do_space_db_iterate():
-    objects = search_tag(category="space_object")
+def do_space_db_iterate(objects = None):
+    if (objects is None):
+        objects = search_tag(category="space_object")
     count = 0
     timer = time.time()
     for obj in objects:
